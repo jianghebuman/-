@@ -97,7 +97,7 @@ onMounted(load)
   align-items: center;
   gap: 20px;
   h2 { margin-bottom: 6px; }
-  p { color: #909399; }
+  p { color: var(--cr-text-muted); }
 }
 
 .profile-body {
@@ -126,15 +126,15 @@ onMounted(load)
   align-items: center;
   justify-content: center;
   gap: 16px;
-  border: 1px solid #d9ecff;
+  border: 1px solid var(--cr-border);
   border-radius: 8px;
   background: linear-gradient(180deg, #f8fbff 0%, #ffffff 100%);
   cursor: pointer;
   transition: border-color .2s ease, box-shadow .2s ease;
 
   &:hover {
-    border-color: #409eff;
-    box-shadow: 0 8px 18px rgba(64, 158, 255, .14);
+    border-color: var(--cr-primary);
+    box-shadow: 0 8px 18px rgba(37, 99, 235, .14);
   }
 }
 
@@ -150,10 +150,10 @@ onMounted(load)
   height: 96px !important;
   border: 2px solid #fff;
   border-radius: 8px;
-  background: linear-gradient(135deg, #d9ecff, #faecd8);
-  color: #409eff;
+  background: linear-gradient(135deg, var(--cr-primary-soft), var(--cr-accent-soft));
+  color: var(--cr-primary);
   font-size: 34px;
-  box-shadow: inset 0 0 0 1px rgba(64, 158, 255, .16), 0 6px 16px rgba(31, 45, 61, .12);
+  box-shadow: inset 0 0 0 1px rgba(37, 99, 235, .16), 0 6px 16px rgba(31, 45, 61, .12);
 }
 
 .upload-mark {
@@ -167,9 +167,9 @@ onMounted(load)
   justify-content: center;
   border: 2px solid #fff;
   border-radius: 50%;
-  background: #409eff;
+  background: var(--cr-primary);
   color: #fff;
-  box-shadow: 0 4px 10px rgba(64, 158, 255, .3);
+  box-shadow: 0 4px 10px rgba(37, 99, 235, .3);
 }
 
 .identity-copy {
@@ -181,7 +181,7 @@ onMounted(load)
 }
 
 .upload-label {
-  color: #303133;
+  color: var(--cr-text);
   font-size: 15px;
   font-weight: 600;
   line-height: 1.3;
@@ -190,7 +190,7 @@ onMounted(load)
 .upload-sub {
   max-width: 190px;
   margin-top: 6px;
-  color: #606266;
+  color: var(--cr-text-soft);
   font-size: 12px;
   line-height: 1.4;
 }

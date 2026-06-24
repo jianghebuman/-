@@ -31,4 +31,5 @@ const reload=()=>{query.pageNum=1;load()}
 const withdraw=row=>ElMessageBox.confirm('确定撤回该投递？仅企业尚未深入处理时可撤回。').then(async()=>{await studentApi.cancelApply(row.id);ElMessage.success('已撤回');load()})
 onMounted(load)
 </script>
-<style scoped lang="scss">.header{display:flex;justify-content:space-between;align-items:center;h2{margin-bottom:6px;}p{color:#909399;}}.sub{font-size:12px;color:#909399;margin-top:4px}.salary{color:#f56c6c;font-weight:600}</style>
+<style scoped lang="scss">.header{display:flex;justify-content:space-between;align-items:center;h2{margin-bottom:6px;}p{color:var(--cr-text-muted);}}.sub{font-size:12px;color:var(--cr-text-muted);margin-top:4px}.salary{color:var(--cr-danger);font-weight:600}</style>
+

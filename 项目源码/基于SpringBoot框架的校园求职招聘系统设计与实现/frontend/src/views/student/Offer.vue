@@ -21,4 +21,5 @@ const load=async()=>{loading.value=true;try{const r=await studentApi.offers(quer
 const handle=(row,status)=>ElMessageBox.confirm(status===1?'确认接受该 Offer？':'确认拒绝该 Offer？').then(async()=>{await studentApi.handleOffer(row.id,status);ElMessage.success('处理成功');load()})
 onMounted(load)
 </script>
-<style scoped>.header h2{margin-bottom:6px}.header p{color:#909399}.salary{color:#f56c6c;font-weight:600}</style>
+<style scoped>.header h2{margin-bottom:6px}.header p{color:var(--cr-text-muted)}.salary{color:var(--cr-danger);font-weight:600}</style>
+

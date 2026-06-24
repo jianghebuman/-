@@ -72,28 +72,58 @@ const onCommand = (cmd) => {
 </script>
 
 <style scoped lang="scss">
-.portal-layout { min-height: 100vh; display: flex; flex-direction: column; }
-.portal-header { background: #fff; box-shadow: 0 1px 4px rgba(0,0,0,0.08); padding: 0; height: 64px; }
-.logo { display: flex; align-items: center; gap: 8px; cursor: pointer; font-size: 18px; font-weight: 600; color: #303133; min-width: 220px; }
-.nav { flex: 1; border-bottom: none; margin-left: 44px; min-width: 0; }
-.nav :deep(.el-menu-item) { min-width: 82px; padding: 0 22px; justify-content: center; }
-.user-area { display: flex; align-items: center; gap: 10px; min-width: 140px; justify-content: flex-end; }
-.user-link { appearance: none; border: 0; background: transparent; padding: 6px 8px; display: flex; align-items: center; gap: 6px; cursor: pointer; color: #303133; font: inherit; border-radius: 6px; outline: none; }
-.user-link:hover { background: #f5f7fa; }
-.user-link:focus-visible { box-shadow: 0 0 0 2px rgba(64,158,255,.25); }
+.portal-layout { min-height: 100dvh; display: flex; flex-direction: column; }
+.portal-header {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  height: auto;
+  min-height: 68px;
+  padding: 0;
+  background: rgba(255, 255, 255, 0.88);
+  border-bottom: 1px solid var(--cr-border-soft);
+  box-shadow: 0 8px 24px rgba(22, 38, 68, 0.06);
+  backdrop-filter: blur(14px);
+}
+.portal-header .portal-content {
+  gap: clamp(12px, 2vw, 28px);
+  min-height: 68px;
+  padding: 8px 0;
+}
+.logo { display: flex; align-items: center; gap: 8px; cursor: pointer; font-size: 18px; font-weight: 700; color: var(--cr-text); min-width: max-content; }
+.logo .el-icon { color: var(--cr-primary); }
+.nav { flex: 1; border-bottom: none; margin-left: 0; min-width: 0; overflow-x: auto; }
+.nav :deep(.el-menu--horizontal) { border-bottom: 0; }
+.nav :deep(.el-menu-item) { min-width: auto; padding: 0 clamp(10px, 1.5vw, 20px); justify-content: center; color: var(--cr-text-soft); font-weight: 650; }
+.nav :deep(.el-menu-item.is-active) { color: var(--cr-primary); border-bottom-color: var(--cr-primary); }
+.user-area { display: flex; align-items: center; gap: 10px; min-width: max-content; justify-content: flex-end; }
+.user-link { appearance: none; border: 0; background: transparent; padding: 6px 8px; display: flex; align-items: center; gap: 6px; cursor: pointer; color: var(--cr-text); font: inherit; border-radius: 8px; outline: none; }
+.user-link:hover { background: var(--cr-surface-soft); }
+.user-link:focus-visible { box-shadow: 0 0 0 3px rgba(37,99,235,.18); }
 .user-link span:last-child { max-width: 130px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 :deep(.el-tooltip__trigger:focus-visible) { outline: none; }
 :deep(.el-tooltip__trigger:focus) { outline: none; }
-.portal-main { flex: 1; background: #f5f7fa; padding: 20px 0; }
-.portal-footer { background: #303133; color: #c0c4cc; text-align: center; padding: 20px; height: auto; font-size: 13px; line-height: 1.8; }
+.portal-main { flex: 1; background: transparent; padding: clamp(14px, 2vw, 26px) 0; }
+.portal-footer { background: #172033; color: #b9c5d6; text-align: center; padding: 22px; height: auto; font-size: 13px; line-height: 1.8; }
 
 @media (min-width: 1400px) {
-  .nav :deep(.el-menu-item) { min-width: 92px; padding: 0 28px; }
+  .nav :deep(.el-menu-item) { padding: 0 24px; }
 }
 
 @media (max-width: 1100px) {
-  .logo { min-width: 190px; font-size: 17px; }
-  .nav { margin-left: 20px; }
-  .nav :deep(.el-menu-item) { min-width: 64px; padding: 0 14px; }
+  .portal-header .portal-content {
+    flex-wrap: wrap;
+    justify-content: flex-start;
+  }
+  .logo { font-size: 17px; }
+  .nav { order: 3; flex-basis: 100%; }
+  .nav :deep(.el-menu-item) { padding: 0 14px; }
+  .user-area { margin-left: auto; }
+}
+
+@media (max-width: 640px) {
+  .logo span { max-width: 52vw; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .portal-header .portal-content { gap: 8px 12px; }
+  .user-area :deep(.el-button) { padding: 8px 10px; }
 }
 </style>

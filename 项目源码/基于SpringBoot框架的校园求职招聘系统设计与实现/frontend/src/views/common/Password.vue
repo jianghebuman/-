@@ -68,6 +68,7 @@ const submit = () => {
 
 <style scoped lang="scss">
 .password-card { max-width: 720px; margin: 0 auto; }
-.header h2 { margin-bottom: 6px; color: #303133; } .header p { color: #909399; }
-.security-tips { margin-top: 24px; background: #f5f7fa; border-radius: 8px; padding: 16px 20px; h3 { font-size: 15px; margin-bottom: 10px; color: #303133; } ul { padding-left: 18px; } li { list-style: disc; line-height: 1.8; color: #606266; font-size: 13px; } }
+.header h2 { margin-bottom: 6px; color: var(--cr-text); } .header p { color: var(--cr-text-muted); }
+.security-tips { margin-top: 24px; background: var(--cr-surface-soft); border-radius: 8px; padding: 16px 20px; h3 { font-size: 15px; margin-bottom: 10px; color: var(--cr-text); } ul { padding-left: 18px; } li { list-style: disc; line-height: 1.8; color: var(--cr-text-soft); font-size: 13px; } }
 </style>
+

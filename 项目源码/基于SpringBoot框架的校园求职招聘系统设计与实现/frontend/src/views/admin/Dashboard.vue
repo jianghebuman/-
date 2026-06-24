@@ -85,10 +85,10 @@ let resizeObserver
 const clampRate = (value) => Math.min(Math.max(Number(value) || 0, 0), 100)
 
 const kpis = computed(() => [
-  { title: '学生总数', value: data.value.studentCount || 0, icon: User, color: '#2f7df6' },
-  { title: '企业总数', value: data.value.enterpriseCount || 0, icon: OfficeBuilding, color: '#1f9d73' },
-  { title: '岗位总数', value: data.value.jobCount || 0, icon: Briefcase, color: '#d98718' },
-  { title: '投递总数', value: data.value.applyCount || 0, icon: Tickets, color: '#d94c58' }
+  { title: '学生总数', value: data.value.studentCount || 0, icon: User, color: '#2563eb' },
+  { title: '企业总数', value: data.value.enterpriseCount || 0, icon: OfficeBuilding, color: '#0891b2' },
+  { title: '岗位总数', value: data.value.jobCount || 0, icon: Briefcase, color: '#7c3aed' },
+  { title: '投递总数', value: data.value.applyCount || 0, icon: Tickets, color: '#e45757' }
 ])
 
 const rates = computed(() => [
@@ -96,14 +96,14 @@ const rates = computed(() => [
     name: '面试通过率',
     value: clampRate(data.value.interviewPassRate),
     safeValue: clampRate(data.value.interviewPassRate),
-    color: '#2f7df6',
+    color: '#2563eb',
     caption: '从面试进入通过状态的比例'
   },
   {
     name: 'Offer 接受率',
     value: clampRate(data.value.offerAcceptRate),
     safeValue: clampRate(data.value.offerAcceptRate),
-    color: '#1f9d73',
+    color: '#0891b2',
     caption: '已发 Offer 中被接受的比例'
   }
 ])
@@ -186,7 +186,7 @@ const init = () => {
     grid: { left: 50, right: 24, top: 42, bottom: 58, containLabel: true },
     xAxis: { type: 'category', data: majorData.map((i) => i.name), axisLabel: { rotate: 25, interval: 0 } },
     yAxis: { type: 'value', minInterval: 1 },
-    series: [{ type: 'bar', name: '投递人数', data: majorData.map((i) => i.value), color: '#2f7df6' }]
+    series: [{ type: 'bar', name: '投递人数', data: majorData.map((i) => i.value), color: '#2563eb' }]
   })
   charts.push(major)
 
@@ -198,7 +198,7 @@ const init = () => {
     grid: { left: 45, right: 24, top: 42, bottom: 44, containLabel: true },
     xAxis: { type: 'category', data: catData.map((i) => i.name), axisLabel: { interval: 0 } },
     yAxis: { type: 'value', minInterval: 1 },
-    series: [{ type: 'bar', name: '岗位数', data: catData.map((i) => i.value), color: '#1f9d73' }]
+    series: [{ type: 'bar', name: '岗位数', data: catData.map((i) => i.value), color: '#0891b2' }]
   })
   charts.push(cat)
 
@@ -210,7 +210,7 @@ const init = () => {
     grid: { left: 120, right: 32, top: 42, bottom: 36, containLabel: true },
     xAxis: { type: 'value' },
     yAxis: { type: 'category', data: entData.map((i) => i.name) },
-    series: [{ type: 'bar', name: '发布岗位数', data: entData.map((i) => i.value), color: '#d98718' }]
+    series: [{ type: 'bar', name: '发布岗位数', data: entData.map((i) => i.value), color: '#7c3aed' }]
   })
   charts.push(ent)
 
@@ -246,11 +246,12 @@ onBeforeUnmount(() => {
   border-radius: 12px;
   padding: 22px 24px;
   color: #fff;
-  background: linear-gradient(135deg, var(--c), #263445);
+  background:
+    linear-gradient(135deg, color-mix(in srgb, var(--c) 88%, white), #15243b);
   display: flex;
   justify-content: space-between;
   align-items: center;
-  box-shadow: 0 8px 22px rgba(20, 36, 60, 0.12);
+  box-shadow: var(--cr-shadow-soft);
   overflow: hidden;
 }
 
@@ -269,16 +270,16 @@ onBeforeUnmount(() => {
   min-width: 0;
   height: 100%;
   background: #fff;
-  border: 1px solid #edf0f5;
-  border-radius: 10px;
+  border: 1px solid var(--cr-border-soft);
+  border-radius: var(--cr-radius);
   padding: 18px;
-  box-shadow: 0 2px 12px rgba(20, 36, 60, 0.05);
+  box-shadow: var(--cr-shadow-soft);
 }
 
 .panel-title {
   font-weight: 600;
-  color: #303133;
-  border-left: 3px solid #2f7df6;
+  color: var(--cr-text);
+  border-left: 3px solid var(--cr-primary);
   padding-left: 10px;
   line-height: 1.2;
 }
@@ -308,7 +309,7 @@ onBeforeUnmount(() => {
   align-items: baseline;
   justify-content: space-between;
   gap: 12px;
-  color: #303133;
+  color: var(--cr-text);
 }
 
 .rate-head span {
@@ -327,19 +328,19 @@ onBeforeUnmount(() => {
   margin-top: 12px;
   overflow: hidden;
   border-radius: 999px;
-  background: #eef2f7;
+  background: var(--cr-surface-muted);
 }
 
 .rate-fill {
   height: 100%;
   min-width: 6px;
   border-radius: inherit;
-  background: linear-gradient(90deg, var(--rate-color), rgba(38, 52, 69, 0.88));
+  background: linear-gradient(90deg, var(--rate-color), rgba(21, 36, 59, 0.88));
 }
 
 .rate-meta {
   margin-top: 8px;
-  color: #7b8494;
+  color: var(--cr-text-muted);
   font-size: 13px;
   line-height: 1.5;
 }

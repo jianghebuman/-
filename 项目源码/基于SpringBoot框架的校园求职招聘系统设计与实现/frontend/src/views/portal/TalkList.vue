@@ -62,17 +62,38 @@ onMounted(load)
 </script>
 
 <style scoped lang="scss">
-.head h2 { color: #303133; .el-icon { vertical-align: middle; } }
-.head .sub { color: #909399; margin-top: 6px; }
-.talk-item { background: #fff; border-radius: 8px; padding: 20px; margin-bottom: 16px; display: flex; gap: 20px;
-  .date { width: 80px; flex-shrink: 0; background: linear-gradient(135deg, #409eff, #5470c6); border-radius: 6px; color: #fff; text-align: center; padding: 14px 0;
+.head h2 { color: var(--cr-text); .el-icon { vertical-align: middle; color: var(--cr-primary); } }
+.head .sub { color: var(--cr-text-muted); margin-top: 6px; }
+.talk-item { background: #fff; border: 1px solid var(--cr-border-soft); border-radius: var(--cr-radius); padding: clamp(16px, 1.5vw, 20px); margin-bottom: 16px; display: grid; grid-template-columns: 80px minmax(0, 1fr); gap: 20px; box-shadow: var(--cr-shadow-soft);
+  .date { width: 80px; flex-shrink: 0; background: linear-gradient(135deg, var(--cr-primary), var(--cr-accent)); border-radius: var(--cr-radius-sm); color: #fff; text-align: center; padding: 14px 0;
     .day { font-size: 30px; font-weight: 600; line-height: 1; }
     .month { font-size: 14px; margin-top: 6px; }
   }
-  .body { flex: 1; }
-  .title { color: #303133; margin-bottom: 10px; }
-  .meta { display: flex; gap: 16px; color: #909399; font-size: 13px; margin-bottom: 10px; .el-icon { vertical-align: middle; } }
-  .content { color: #606266; line-height: 1.7; margin-bottom: 14px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+  .body { min-width: 0; }
+  .title { color: var(--cr-text); margin-bottom: 10px; line-height: 1.4; }
+  .meta { display: flex; flex-wrap: wrap; gap: 8px 16px; color: var(--cr-text-muted); font-size: 13px; margin-bottom: 10px; .el-icon { vertical-align: middle; color: var(--cr-primary); } }
+  .content { color: var(--cr-text-soft); line-height: 1.7; margin-bottom: 14px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
   .footer { display: flex; justify-content: space-between; align-items: center; }
+}
+
+@media (max-width: 560px) {
+  .talk-item {
+    grid-template-columns: 1fr;
+    gap: 14px;
+  }
+
+  .talk-item .date {
+    width: 100%;
+    display: flex;
+    align-items: baseline;
+    justify-content: center;
+    gap: 8px;
+  }
+
+  .talk-item .footer {
+    align-items: stretch;
+    flex-direction: column;
+    gap: 10px;
+  }
 }
 </style>

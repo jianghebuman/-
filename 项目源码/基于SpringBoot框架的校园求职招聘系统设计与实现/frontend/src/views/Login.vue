@@ -186,13 +186,13 @@ const onLogin = () => {
 <style scoped lang="scss">
 .login-container {
   position: relative;
-  min-height: 100vh;
+  min-height: 100dvh;
   overflow: hidden;
-  color: #17231d;
+  color: #172033;
   background:
-    linear-gradient(90deg, rgba(23, 35, 29, 0.045) 1px, transparent 1px),
-    linear-gradient(0deg, rgba(23, 35, 29, 0.045) 1px, transparent 1px),
-    #edf2ee;
+    linear-gradient(90deg, rgba(37, 99, 235, 0.05) 1px, transparent 1px),
+    linear-gradient(0deg, rgba(37, 99, 235, 0.05) 1px, transparent 1px),
+    #f4f7fb;
   background-size: 42px 42px;
   font-family: "Inter", "PingFang SC", "Microsoft YaHei", sans-serif;
 }
@@ -203,8 +203,8 @@ const onLogin = () => {
   content: "";
   pointer-events: none;
   background:
-    linear-gradient(115deg, rgba(238, 184, 82, 0.18), transparent 34%),
-    linear-gradient(180deg, transparent 0%, rgba(47, 83, 72, 0.1) 100%);
+    radial-gradient(circle at 16% 18%, rgba(8, 145, 178, 0.16), transparent 28%),
+    linear-gradient(180deg, transparent 0%, rgba(37, 99, 235, 0.08) 100%);
 }
 
 .login-topbar {
@@ -234,8 +234,8 @@ const onLogin = () => {
   width: 36px;
   height: 36px;
   color: #f7efe0;
-  background: #263a33;
-  border: 1px solid rgba(23, 35, 29, 0.16);
+  background: #2563eb;
+  border: 1px solid rgba(37, 99, 235, 0.22);
   border-radius: 8px;
 
   svg {
@@ -245,17 +245,17 @@ const onLogin = () => {
 }
 
 .ghost-link {
-  color: #41554c;
+  color: #5d6f88;
   padding: 9px 12px;
-  border: 1px solid rgba(23, 35, 29, 0.12);
+  border: 1px solid rgba(93, 111, 136, 0.18);
   border-radius: 8px;
   background: rgba(255, 255, 255, 0.56);
   transition: color 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
 }
 
 .ghost-link:hover {
-  color: #17231d;
-  border-color: rgba(23, 35, 29, 0.26);
+  color: #172033;
+  border-color: rgba(37, 99, 235, 0.32);
   transform: translateY(-1px);
 }
 
@@ -265,7 +265,7 @@ const onLogin = () => {
   display: flex;
   align-items: center;
   justify-content: center;
-  min-height: calc(100vh - 88px);
+  min-height: calc(100dvh - 88px);
   padding: 24px 32px;
 }
 
@@ -275,10 +275,10 @@ const onLogin = () => {
   width: min(1480px, 100%);
   min-height: 650px;
   overflow: hidden;
-  border: 1px solid rgba(23, 35, 29, 0.2);
+  border: 1px solid rgba(93, 111, 136, 0.18);
   border-radius: 18px;
-  background: #fffaf0;
-  box-shadow: 0 34px 70px rgba(35, 54, 45, 0.2);
+  background: #ffffff;
+  box-shadow: 0 34px 70px rgba(22, 38, 68, 0.16);
 }
 
 .career-board {
@@ -286,11 +286,11 @@ const onLogin = () => {
   display: flex;
   flex-direction: column;
   padding: 42px;
-  color: #f8f2e6;
+  color: #eef6ff;
   background:
     linear-gradient(90deg, rgba(255, 255, 255, 0.08) 1px, transparent 1px),
     linear-gradient(0deg, rgba(255, 255, 255, 0.06) 1px, transparent 1px),
-    #223930;
+    #15243b;
   background-size: 32px 32px;
 }
 
@@ -301,8 +301,8 @@ const onLogin = () => {
   width: 210px;
   height: 150px;
   content: "";
-  border-right: 1px solid rgba(247, 239, 224, 0.28);
-  border-bottom: 1px solid rgba(247, 239, 224, 0.28);
+  border-right: 1px solid rgba(238, 246, 255, 0.26);
+  border-bottom: 1px solid rgba(238, 246, 255, 0.26);
 }
 
 .window-strip {
@@ -313,7 +313,7 @@ const onLogin = () => {
   span {
     width: 10px;
     height: 10px;
-    border: 1px solid rgba(248, 242, 230, 0.4);
+    border: 1px solid rgba(238, 246, 255, 0.42);
     border-radius: 50%;
   }
 }
@@ -325,8 +325,8 @@ const onLogin = () => {
   font-size: 12px;
   font-weight: 800;
   letter-spacing: 0;
-  color: #223930;
-  background: #eeb852;
+  color: #15243b;
+  background: #0891b2;
   border-radius: 6px;
 }
 
@@ -341,7 +341,7 @@ const onLogin = () => {
 .board-copy {
   width: min(470px, 100%);
   margin: 20px 0 0;
-  color: rgba(248, 242, 230, 0.76);
+  color: rgba(238, 246, 255, 0.76);
   font-size: 16px;
   line-height: 1.8;
 }
@@ -360,7 +360,7 @@ const onLogin = () => {
   gap: 14px;
   align-items: center;
   padding: 12px 0;
-  border-top: 1px dashed rgba(248, 242, 230, 0.22);
+  border-top: 1px dashed rgba(238, 246, 255, 0.22);
 
   b {
     display: block;
@@ -369,7 +369,7 @@ const onLogin = () => {
 
   p {
     margin-top: 4px;
-    color: rgba(248, 242, 230, 0.66);
+    color: rgba(238, 246, 255, 0.66);
     font-size: 13px;
   }
 }
@@ -379,8 +379,8 @@ const onLogin = () => {
   align-items: center;
   justify-content: center;
   height: 34px;
-  color: #223930;
-  background: #f8f2e6;
+  color: #15243b;
+  background: #eef6ff;
   border-radius: 8px;
   font-size: 12px;
   font-weight: 800;
@@ -391,7 +391,7 @@ const onLogin = () => {
   flex-direction: column;
   justify-content: center;
   padding: 56px;
-  background: #fffdf7;
+  background: #ffffff;
 }
 
 .auth-heading {
@@ -399,14 +399,14 @@ const onLogin = () => {
 
   h2 {
     margin: 16px 0 10px;
-    color: #17231d;
+    color: #172033;
     font-size: 28px;
     line-height: 1.25;
   }
 
   p {
     min-height: 44px;
-    color: #607168;
+    color: #5d6f88;
     font-size: 14px;
     line-height: 1.7;
   }
@@ -417,9 +417,9 @@ const onLogin = () => {
   align-items: center;
   gap: 8px;
   padding: 8px 10px;
-  color: #2b4b40;
-  background: #ecf3ee;
-  border: 1px solid rgba(43, 75, 64, 0.12);
+  color: #1d4ed8;
+  background: #eaf1ff;
+  border: 1px solid rgba(37, 99, 235, 0.14);
   border-radius: 8px;
   font-size: 13px;
   font-weight: 800;
@@ -444,9 +444,9 @@ const onLogin = () => {
   gap: 7px;
   min-height: 42px;
   padding: 0 10px;
-  color: #607168;
-  background: #f4f7f3;
-  border: 1px solid rgba(23, 35, 29, 0.1);
+  color: #5d6f88;
+  background: #f8fbff;
+  border: 1px solid rgba(93, 111, 136, 0.16);
   border-radius: 8px;
   cursor: pointer;
   font-size: 13px;
@@ -460,16 +460,16 @@ const onLogin = () => {
 }
 
 .role-chip:hover {
-  color: #17231d;
-  border-color: rgba(23, 35, 29, 0.24);
+  color: #172033;
+  border-color: rgba(37, 99, 235, 0.28);
   transform: translateY(-1px);
 }
 
 .role-chip.active {
-  color: #fffaf0;
-  background: #243a32;
-  border-color: #243a32;
-  box-shadow: inset 0 -2px 0 rgba(238, 184, 82, 0.75);
+  color: #ffffff;
+  background: #2563eb;
+  border-color: #2563eb;
+  box-shadow: inset 0 -2px 0 rgba(8, 145, 178, 0.72);
 }
 
 .auth-form {
@@ -479,7 +479,7 @@ const onLogin = () => {
 
   :deep(.el-form-item__label) {
     margin-bottom: 7px;
-    color: #2d3a34;
+    color: #172033;
     font-weight: 800;
     line-height: 1.2;
   }
@@ -487,18 +487,18 @@ const onLogin = () => {
   :deep(.el-input__wrapper) {
     min-height: 48px;
     border-radius: 8px;
-    background: #f8faf6;
-    box-shadow: inset 0 0 0 1px rgba(23, 35, 29, 0.12);
+    background: #f8fbff;
+    box-shadow: inset 0 0 0 1px rgba(93, 111, 136, 0.2);
     transition: box-shadow 0.2s ease, background 0.2s ease;
   }
 
   :deep(.el-input__wrapper.is-focus) {
     background: #ffffff;
-    box-shadow: inset 0 0 0 1px #2f5f51, 0 0 0 4px rgba(47, 95, 81, 0.12);
+    box-shadow: inset 0 0 0 1px #2563eb, 0 0 0 4px rgba(37, 99, 235, 0.12);
   }
 
   :deep(.el-input__inner) {
-    color: #17231d;
+    color: #172033;
     font-weight: 650;
   }
 }
@@ -511,11 +511,11 @@ const onLogin = () => {
   min-height: 52px;
   margin-top: 4px;
   padding: 0 16px 0 20px;
-  color: #fffaf0;
-  background: #17231d;
-  border: 1px solid #17231d;
+  color: #ffffff;
+  background: #172033;
+  border: 1px solid #172033;
   border-radius: 8px;
-  box-shadow: 0 12px 26px rgba(23, 35, 29, 0.22);
+  box-shadow: 0 12px 26px rgba(37, 99, 235, 0.24);
   cursor: pointer;
   font-size: 15px;
   font-weight: 900;
@@ -523,8 +523,8 @@ const onLogin = () => {
 }
 
 .primary-action:hover:not(:disabled) {
-  background: #2d473c;
-  box-shadow: 0 16px 30px rgba(23, 35, 29, 0.26);
+  background: #1d4ed8;
+  box-shadow: 0 16px 30px rgba(37, 99, 235, 0.28);
   transform: translateY(-1px);
 }
 
@@ -537,8 +537,8 @@ const onLogin = () => {
   width: 16px;
   height: 16px;
   margin-right: 8px;
-  border: 2px solid rgba(255, 250, 240, 0.35);
-  border-top-color: #fffaf0;
+  border: 2px solid rgba(255, 255, 255, 0.38);
+  border-top-color: #ffffff;
   border-radius: 50%;
   animation: spin 0.8s linear infinite;
 }
@@ -552,12 +552,12 @@ const onLogin = () => {
   font-size: 14px;
 
   a {
-    color: #2f5f51;
+    color: #2563eb;
     font-weight: 800;
   }
 
   a:hover {
-    color: #17231d;
+    color: #172033;
   }
 }
 
@@ -664,3 +664,4 @@ const onLogin = () => {
   }
 }
 </style>
+

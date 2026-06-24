@@ -7,7 +7,7 @@
 
     <div class="grid mt-20" v-loading="loading">
       <div class="fair-card" v-for="f in list" :key="f.id">
-        <div class="cover" :style="f.cover ? { backgroundImage: `url(${f.cover})` } : { background: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)' }">
+        <div class="cover" :style="f.cover ? { backgroundImage: `url(${f.cover})` } : { background: 'linear-gradient(135deg, #2563eb 0%, #0891b2 100%)' }">
           <div class="cover-mask">
             <h3 class="title">{{ f.title }}</h3>
           </div>
@@ -60,22 +60,22 @@ onMounted(load)
 </script>
 
 <style scoped lang="scss">
-.head h2 { color: #303133; .el-icon { vertical-align: middle; } }
-.head .sub { color: #909399; margin-top: 6px; }
-.grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; }
-.fair-card { background: #fff; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,.06);
+.head h2 { color: var(--cr-text); .el-icon { vertical-align: middle; color: var(--cr-primary); } }
+.head .sub { color: var(--cr-text-muted); margin-top: 6px; }
+.grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 360px), 1fr)); gap: 20px; }
+.fair-card { background: #fff; border: 1px solid var(--cr-border-soft); border-radius: var(--cr-radius); overflow: hidden; box-shadow: var(--cr-shadow-soft);
   .cover { height: 140px; background-size: cover; background-position: center; position: relative;
     .cover-mask { position: absolute; inset: 0; background: linear-gradient(180deg, transparent, rgba(0,0,0,.6)); padding: 16px; display: flex; align-items: flex-end;
       .title { color: #fff; margin: 0; }
     }
   }
   .body { padding: 16px; }
-  .info-row { color: #606266; font-size: 13px; line-height: 1.8; .el-icon { vertical-align: middle; margin-right: 4px; } }
-  .content { color: #909399; font-size: 13px; margin: 10px 0; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
-  .stats { display: flex; gap: 8px; padding: 12px; background: #f5f7fa; border-radius: 6px; margin-bottom: 12px;
+  .info-row { color: var(--cr-text-soft); font-size: 13px; line-height: 1.8; .el-icon { vertical-align: middle; margin-right: 4px; color: var(--cr-primary); } }
+  .content { color: var(--cr-text-muted); font-size: 13px; margin: 10px 0; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+  .stats { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; padding: 12px; background: var(--cr-surface-soft); border-radius: var(--cr-radius-sm); margin-bottom: 12px;
     .stat-item { flex: 1; text-align: center;
-      .num { display: block; color: #f56c6c; font-size: 20px; font-weight: 600; }
-      .label { color: #909399; font-size: 12px; }
+      .num { display: block; color: var(--cr-danger); font-size: 20px; font-weight: 750; }
+      .label { color: var(--cr-text-muted); font-size: 12px; }
     }
   }
 }

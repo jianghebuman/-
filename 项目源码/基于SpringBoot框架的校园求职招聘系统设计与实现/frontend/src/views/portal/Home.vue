@@ -30,16 +30,16 @@
         <span><el-icon><Briefcase /></el-icon> 热门岗位</span>
         <router-link to="/jobs" class="more">查看更多 ></router-link>
       </div>
-      <el-row :gutter="16">
-        <el-col :xs="24" :sm="12" :lg="6" :xl="4" v-for="j in home.hotJobs" :key="j.id">
+      <div class="job-grid">
+        <div v-for="j in home.hotJobs" :key="j.id">
           <div class="job-card" @click="$router.push(`/job/${j.id}`)">
             <h4>{{ j.title }}</h4>
             <p class="salary">{{ j.salaryMin }}-{{ j.salaryMax }}K</p>
             <p class="meta">{{ j.city }} · {{ j.education }} · {{ j.jobType === 1 ? '全职' : '实习' }}</p>
             <p class="company">{{ j.companyName || '名企推荐' }}</p>
           </div>
-        </el-col>
-      </el-row>
+        </div>
+      </div>
     </div>
 
     <!-- 推荐企业 -->
@@ -48,15 +48,15 @@
         <span><el-icon><OfficeBuilding /></el-icon> 推荐企业</span>
         <router-link to="/enterprises" class="more">查看更多 ></router-link>
       </div>
-      <el-row :gutter="16">
-        <el-col :xs="12" :sm="8" :md="6" :lg="4" :xl="3" v-for="e in home.recommendEnterprises" :key="e.id">
+      <div class="ent-grid">
+        <div v-for="e in home.recommendEnterprises" :key="e.id">
           <div class="ent-card" @click="$router.push(`/enterprise/${e.id}`)">
             <el-avatar :size="64" :src="e.logo" shape="square"><el-icon><OfficeBuilding /></el-icon></el-avatar>
             <p class="name">{{ e.companyName }}</p>
             <p class="meta">{{ e.industry }} · {{ e.scale }}</p>
           </div>
-        </el-col>
-      </el-row>
+        </div>
+      </div>
     </div>
 
     <el-row :gutter="20" class="mt-20">
@@ -130,34 +130,36 @@ onMounted(async () => {
 </script>
 
 <style scoped lang="scss">
-.banner { border-radius: 8px; overflow: hidden; }
+.banner { border-radius: var(--cr-radius); overflow: hidden; border: 1px solid var(--cr-border-soft); box-shadow: var(--cr-shadow-soft); }
 .banner-item { width: 100%; height: 100%; background-size: cover; background-position: center; position: relative; }
 .banner-title { position: absolute; bottom: 20px; left: 30px; color: #fff; font-size: 24px; font-weight: 600; text-shadow: 0 2px 8px rgba(0,0,0,.5); }
 .search-bar { display: flex; }
-.section-title { font-size: 18px; font-weight: 600; margin-bottom: 16px; .el-icon { vertical-align: middle; margin-right: 4px; } }
-.more { color: #909399; font-size: 14px; font-weight: normal; }
-.job-card { background: #f5f7fa; border-radius: 6px; padding: 16px; margin-bottom: 12px; cursor: pointer; transition: all .2s;
-  &:hover { box-shadow: 0 4px 12px rgba(0,0,0,.1); transform: translateY(-2px); }
-  h4 { color: #303133; margin-bottom: 8px; font-size: 15px; }
-  .salary { color: #f56c6c; font-size: 16px; font-weight: 600; margin-bottom: 6px; }
-  .meta { color: #909399; font-size: 12px; margin-bottom: 6px; }
-  .company { color: #606266; font-size: 13px; }
+.section-title { font-size: 18px; font-weight: 750; margin-bottom: 16px; color: var(--cr-text); .el-icon { vertical-align: middle; margin-right: 4px; color: var(--cr-primary); } }
+.more { color: var(--cr-text-muted); font-size: 14px; font-weight: 600; }
+.more:hover { color: var(--cr-primary); }
+.job-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr)); gap: 14px; }
+.ent-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 150px), 1fr)); gap: 14px; }
+.job-card { height: 100%; background: var(--cr-surface-soft); border: 1px solid var(--cr-border-soft); border-radius: var(--cr-radius-sm); padding: 16px; cursor: pointer; transition: border-color .2s ease, box-shadow .2s ease, transform .2s ease;
+  &:hover { border-color: rgba(37,99,235,.26); box-shadow: var(--cr-shadow-soft); transform: translateY(-2px); }
+  h4 { color: var(--cr-text); margin-bottom: 8px; font-size: 15px; line-height: 1.4; }
+  .salary { color: var(--cr-danger); font-size: 16px; font-weight: 750; margin-bottom: 6px; }
+  .meta { color: var(--cr-text-muted); font-size: 12px; margin-bottom: 6px; }
+  .company { color: var(--cr-text-soft); font-size: 13px; }
 }
-.ent-card { text-align: center; padding: 16px 8px; cursor: pointer; border-radius: 6px; transition: background .2s;
-  &:hover { background: #f5f7fa; }
-  .name { margin-top: 8px; font-size: 14px; color: #303133; }
-  .meta { font-size: 12px; color: #909399; margin-top: 4px; }
+.ent-card { height: 100%; text-align: center; padding: 16px 8px; cursor: pointer; border-radius: var(--cr-radius-sm); transition: background .2s, transform .2s;
+  &:hover { background: var(--cr-surface-soft); transform: translateY(-1px); }
+  .name { margin-top: 8px; font-size: 14px; color: var(--cr-text); line-height: 1.4; }
+  .meta { font-size: 12px; color: var(--cr-text-muted); margin-top: 4px; }
 }
 .list-card ul li { display: flex; align-items: center; padding: 10px 0; border-bottom: 1px dashed #ebeef5; font-size: 14px;
-  .dot { width: 4px; height: 4px; background: #409eff; border-radius: 50%; margin-right: 8px; }
-  .title { flex: 1; color: #303133; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-  .time { color: #909399; font-size: 12px; }
+  .dot { width: 4px; height: 4px; background: var(--cr-primary); border-radius: 50%; margin-right: 8px; }
+  .title { flex: 1; color: var(--cr-text); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .time { color: var(--cr-text-muted); font-size: 12px; }
   &:last-child { border-bottom: none; }
 }
 
 @media (min-width: 1400px) {
   .banner { :deep(.el-carousel__container) { height: 360px !important; } }
-  .job-card { min-height: 118px; }
   .ent-card { min-height: 150px; }
 }
 

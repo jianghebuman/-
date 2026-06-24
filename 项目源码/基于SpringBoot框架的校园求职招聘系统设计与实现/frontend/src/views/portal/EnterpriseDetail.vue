@@ -23,8 +23,8 @@
       </div>
 
       <!-- 介绍 + 联系 -->
-      <el-row :gutter="20" class="mt-20">
-        <el-col :span="17">
+      <div class="detail-grid mt-20">
+        <div>
           <div class="page-card">
             <h3 class="block-title">企业介绍</h3>
             <div class="rich-text">{{ enterprise.intro || '该企业暂未填写介绍' }}</div>
@@ -43,8 +43,8 @@
               <el-empty v-if="jobs.length === 0" description="暂无在招职位" :image-size="80" />
             </div>
           </div>
-        </el-col>
-        <el-col :span="7">
+        </div>
+        <div>
           <div class="page-card contact">
             <h3 class="block-title">联系方式</h3>
             <p><b>联系人：</b>{{ enterprise.contactName || '-' }}</p>
@@ -53,8 +53,8 @@
             <p><b>官网：</b>{{ enterprise.website || '-' }}</p>
             <p><b>地址：</b>{{ enterprise.address || '-' }}</p>
           </div>
-        </el-col>
-      </el-row>
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -85,17 +85,25 @@ onMounted(async () => {
 .head { display: flex; gap: 20px; align-items: center; }
 .logo { flex-shrink: 0; }
 .info { flex: 1; }
-.name { color: #303133; display: flex; align-items: center; gap: 10px; }
-.meta { color: #606266; margin-top: 10px; .el-icon { vertical-align: middle; margin-right: 2px; } .sep { margin: 0 10px; color: #dcdfe6; } }
+.name { color: var(--cr-text); display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.meta { color: var(--cr-text-soft); margin-top: 10px; .el-icon { vertical-align: middle; margin-right: 2px; color: var(--cr-primary); } .sep { margin: 0 10px; color: var(--cr-border); } }
 .welfare { margin-top: 12px; display: flex; gap: 6px; flex-wrap: wrap; }
-.block-title { font-size: 16px; color: #303133; border-left: 3px solid #409eff; padding-left: 10px; margin-bottom: 14px; .cnt { color: #909399; font-size: 14px; margin-left: 6px; } }
-.rich-text { color: #606266; line-height: 1.8; white-space: pre-line; }
+.detail-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(280px, 0.34fr); gap: 20px; align-items: start; }
+.block-title { font-size: 16px; color: var(--cr-text); border-left: 3px solid var(--cr-primary); padding-left: 10px; margin-bottom: 14px; .cnt { color: var(--cr-text-muted); font-size: 14px; margin-left: 6px; } }
+.rich-text { color: var(--cr-text-soft); line-height: 1.8; white-space: pre-line; }
 .job-list { .job-item { display: flex; justify-content: space-between; align-items: center; padding: 14px; border-radius: 6px; cursor: pointer; transition: background .2s;
-    &:hover { background: #f5f7fa; }
-    .job-title { color: #303133; font-weight: 500; margin-bottom: 4px; }
-    .job-meta { color: #909399; font-size: 12px; }
-    .job-salary { color: #f56c6c; font-weight: 600; font-size: 16px; }
+    &:hover { background: var(--cr-surface-soft); }
+    .job-title { color: var(--cr-text); font-weight: 650; margin-bottom: 4px; }
+    .job-meta { color: var(--cr-text-muted); font-size: 12px; }
+    .job-salary { color: var(--cr-danger); font-weight: 750; font-size: 16px; white-space: nowrap; }
   }
 }
-.contact p { line-height: 2; font-size: 14px; color: #606266; b { color: #909399; } }
+.contact p { line-height: 2; font-size: 14px; color: var(--cr-text-soft); b { color: var(--cr-text-muted); } }
+@media (max-width: 900px) {
+  .head { align-items: flex-start; flex-direction: column; }
+  .detail-grid { grid-template-columns: 1fr; }
+}
+@media (max-width: 560px) {
+  .job-list .job-item { align-items: flex-start; flex-direction: column; gap: 8px; }
+}
 </style>

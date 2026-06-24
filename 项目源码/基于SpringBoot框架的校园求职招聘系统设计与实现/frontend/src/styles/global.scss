@@ -1,4 +1,49 @@
 /* 全局样式 */
+:root {
+  --cr-bg: #f4f7fb;
+  --cr-bg-grid: rgba(37, 99, 235, 0.045);
+  --cr-surface: #ffffff;
+  --cr-surface-soft: #f8fbff;
+  --cr-surface-muted: #eef4fb;
+  --cr-border: #dbe5f2;
+  --cr-border-soft: #e8eef7;
+  --cr-text: #172033;
+  --cr-text-soft: #5d6f88;
+  --cr-text-muted: #8a99ad;
+  --cr-primary: #2563eb;
+  --cr-primary-strong: #1d4ed8;
+  --cr-primary-soft: #eaf1ff;
+  --cr-accent: #0891b2;
+  --cr-accent-soft: #e6f8fb;
+  --cr-danger: #e45757;
+  --cr-warning: #f59e0b;
+  --cr-success: #16a36a;
+  --cr-sidebar: #15243b;
+  --cr-radius: 12px;
+  --cr-radius-sm: 8px;
+  --cr-shadow: 0 12px 28px rgba(22, 38, 68, 0.08);
+  --cr-shadow-soft: 0 6px 18px rgba(22, 38, 68, 0.06);
+
+  --el-color-primary: var(--cr-primary);
+  --el-color-primary-dark-2: var(--cr-primary-strong);
+  --el-color-primary-light-3: #6ea0ff;
+  --el-color-primary-light-5: #a9c6ff;
+  --el-color-primary-light-7: #d4e2ff;
+  --el-color-primary-light-8: #e3ecff;
+  --el-color-primary-light-9: var(--cr-primary-soft);
+  --el-color-success: var(--cr-success);
+  --el-color-warning: var(--cr-warning);
+  --el-color-danger: var(--cr-danger);
+  --el-border-radius-base: var(--cr-radius-sm);
+  --el-border-color: var(--cr-border);
+  --el-border-color-light: var(--cr-border-soft);
+  --el-text-color-primary: var(--cr-text);
+  --el-text-color-regular: var(--cr-text-soft);
+  --el-text-color-secondary: var(--cr-text-muted);
+  --el-fill-color-light: var(--cr-surface-soft);
+  --el-fill-color-lighter: var(--cr-surface-muted);
+}
+
 * {
   margin: 0;
   padding: 0;
@@ -8,7 +53,12 @@
 html,
 body {
   height: 100%;
-  background-color: #f5f7fa;
+  background:
+    linear-gradient(90deg, var(--cr-bg-grid) 1px, transparent 1px),
+    linear-gradient(0deg, var(--cr-bg-grid) 1px, transparent 1px),
+    var(--cr-bg);
+  background-size: 44px 44px;
+  color: var(--cr-text);
 }
 
 a {
@@ -36,32 +86,35 @@ li {
   align-items: center;
 }
 .page-container {
-  padding: 20px;
+  width: min(100%, 1600px);
+  margin: 0 auto;
+  padding: clamp(12px, 1.8vw, 24px);
 }
 .page-card {
-  background: #fff;
-  border-radius: 8px;
-  padding: 20px;
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.05);
+  background: rgba(255, 255, 255, 0.94);
+  border: 1px solid var(--cr-border-soft);
+  border-radius: var(--cr-radius);
+  padding: clamp(16px, 1.6vw, 22px);
+  box-shadow: var(--cr-shadow-soft);
 }
 .mb-10 { margin-bottom: 10px; }
 .mb-20 { margin-bottom: 20px; }
 .mt-20 { margin-top: 20px; }
-.text-primary { color: #409eff; }
-.text-success { color: #67c23a; }
-.text-danger { color: #f56c6c; }
-.text-warning { color: #e6a23c; }
-.text-info { color: #909399; }
+.text-primary { color: var(--cr-primary); }
+.text-success { color: var(--cr-success); }
+.text-danger { color: var(--cr-danger); }
+.text-warning { color: var(--cr-warning); }
+.text-info { color: var(--cr-text-muted); }
 
 /* 门户内容容器 */
 .portal-content {
-  width: min(1680px, calc(100% - 48px));
+  width: min(1500px, calc(100% - clamp(24px, 5vw, 72px)));
   margin: 0 auto;
 }
 
 @media (max-width: 768px) {
   .portal-content {
-    width: min(100% - 28px, 1680px);
+    width: min(100% - 24px, 1500px);
   }
 
   .page-card {
@@ -74,4 +127,53 @@ li {
   display: flex;
   justify-content: flex-end;
   margin-top: 20px;
+  overflow-x: auto;
+}
+
+.el-button {
+  font-weight: 600;
+}
+
+.el-button--primary {
+  --el-button-bg-color: var(--cr-primary);
+  --el-button-border-color: var(--cr-primary);
+  --el-button-hover-bg-color: var(--cr-primary-strong);
+  --el-button-hover-border-color: var(--cr-primary-strong);
+  --el-button-active-bg-color: #1e40af;
+  --el-button-active-border-color: #1e40af;
+}
+
+.el-input__wrapper,
+.el-select__wrapper,
+.el-textarea__inner {
+  border-radius: var(--cr-radius-sm);
+  box-shadow: inset 0 0 0 1px var(--cr-border);
+}
+
+.el-input__wrapper.is-focus,
+.el-select__wrapper.is-focused,
+.el-textarea__inner:focus {
+  box-shadow: inset 0 0 0 1px var(--cr-primary), 0 0 0 4px rgba(37, 99, 235, 0.12);
+}
+
+.el-table {
+  --el-table-border-color: var(--cr-border-soft);
+  --el-table-header-bg-color: var(--cr-surface-soft);
+  border-radius: var(--cr-radius-sm);
+  overflow: hidden;
+}
+
+.el-table th.el-table__cell {
+  color: var(--cr-text-soft);
+  font-weight: 700;
+}
+
+.el-tag {
+  border-radius: 999px;
+}
+
+@media (max-width: 640px) {
+  .pagination-wrap {
+    justify-content: flex-start;
+  }
 }

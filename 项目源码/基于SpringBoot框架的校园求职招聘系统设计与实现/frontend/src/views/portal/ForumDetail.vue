@@ -95,14 +95,15 @@ onMounted(load)
 
 <style scoped lang="scss">
 .layout { max-width: 900px; margin: 0 auto; }
-.post-head { text-align: center; h1 { margin: 14px 0; color: #303133; line-height: 1.4; } }
-.meta { display: flex; justify-content: center; gap: 20px; color: #909399; font-size: 13px; .el-icon { vertical-align: middle; } }
-.post-content { min-height: 180px; color: #303133; line-height: 1.9; font-size: 16px; white-space: pre-line; }
+.post-head { text-align: center; h1 { margin: 14px 0; color: var(--cr-text); line-height: 1.4; } }
+.meta { display: flex; justify-content: center; gap: 20px; color: var(--cr-text-muted); font-size: 13px; .el-icon { vertical-align: middle; } }
+.post-content { min-height: 180px; color: var(--cr-text); line-height: 1.9; font-size: 16px; white-space: pre-line; }
 .actions { margin-top: 24px; text-align: center; }
 .comment-title { font-size: 18px; font-weight: 600; margin-bottom: 14px; }
-.comment-editor { background: #f5f7fa; padding: 14px; border-radius: 8px; margin-bottom: 16px; }
+.comment-editor { background: var(--cr-surface-soft); padding: 14px; border-radius: 8px; margin-bottom: 16px; }
 .editor-footer { margin-top: 10px; text-align: right; }
-.comment-item { display: flex; gap: 12px; padding: 14px 0; border-bottom: 1px dashed #ebeef5; }
-.avatar { width: 38px; height: 38px; border-radius: 50%; background: #409eff; color: #fff; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
-.body { flex: 1; .name { color: #303133; font-weight: 500; margin-bottom: 6px; span { color: #c0c4cc; font-weight: normal; font-size: 12px; margin-left: 10px; } } .text { color: #606266; line-height: 1.6; } }
+.comment-item { display: flex; gap: 12px; padding: 14px 0; border-bottom: 1px dashed var(--cr-border-soft); }
+.avatar { width: 38px; height: 38px; border-radius: 50%; background: var(--cr-primary); color: #fff; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.body { flex: 1; .name { color: var(--cr-text); font-weight: 500; margin-bottom: 6px; span { color: var(--cr-text-muted); font-weight: normal; font-size: 12px; margin-left: 10px; } } .text { color: var(--cr-text-soft); line-height: 1.6; } }
 </style>
+

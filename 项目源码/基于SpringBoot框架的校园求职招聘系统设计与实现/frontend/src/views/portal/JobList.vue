@@ -163,31 +163,78 @@ watch(() => route.query, (nv) => {
 </script>
 
 <style scoped lang="scss">
-.search-bar { display: flex; align-items: center; }
-.filter-row { display: flex; padding: 8px 0; border-bottom: 1px dashed #ebeef5;
+.search-bar { display: flex; align-items: center; gap: 12px; }
+.search-bar :deep(.el-input) { margin-right: 0 !important; }
+.filter-row { display: flex; padding: 10px 0; border-bottom: 1px dashed var(--cr-border-soft);
   &:last-child { border-bottom: none; }
-  .label { width: 80px; color: #909399; flex-shrink: 0; padding-top: 6px; }
+  .label { width: 88px; color: var(--cr-text-muted); flex-shrink: 0; padding-top: 6px; font-weight: 650; }
   .options { flex: 1; display: flex; flex-wrap: wrap; gap: 8px; }
-  .opt { padding: 6px 14px; border-radius: 4px; cursor: pointer; font-size: 14px; color: #606266;
-    &:hover { color: #409eff; }
-    &.active { background: #409eff; color: #fff; }
+  .opt { padding: 6px 14px; border: 1px solid transparent; border-radius: 999px; cursor: pointer; font-size: 14px; color: var(--cr-text-soft); transition: all .2s ease;
+    &:hover { color: var(--cr-primary); background: var(--cr-primary-soft); }
+    &.active { background: var(--cr-primary); border-color: var(--cr-primary); color: #fff; box-shadow: 0 8px 16px rgba(37,99,235,.14); }
   }
 }
-.result-info { margin: 20px 0 10px; color: #606266; font-size: 14px; b { color: #f56c6c; margin: 0 4px; } }
-.job-row { background: #fff; border-radius: 6px; padding: 20px; margin-bottom: 12px; display: flex; cursor: pointer; transition: all .2s;
-  &:hover { box-shadow: 0 4px 16px rgba(0,0,0,.1); transform: translateY(-1px); }
-  .job-main { flex: 1; }
+.result-info { margin: 20px 0 10px; color: var(--cr-text-soft); font-size: 14px; b { color: var(--cr-danger); margin: 0 4px; } }
+.job-row { background: rgba(255,255,255,.96); border: 1px solid var(--cr-border-soft); border-radius: var(--cr-radius); padding: clamp(16px, 1.5vw, 22px); margin-bottom: 12px; display: grid; grid-template-columns: minmax(0, 1fr) minmax(180px, 0.28fr); gap: 18px; cursor: pointer; transition: border-color .2s ease, box-shadow .2s ease, transform .2s ease;
+  &:hover { border-color: rgba(37,99,235,.28); box-shadow: var(--cr-shadow); transform: translateY(-1px); }
+  .job-main { min-width: 0; }
   .job-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px;
-    .title { font-size: 17px; font-weight: 600; color: #303133; }
-    .salary { color: #f56c6c; font-size: 17px; font-weight: 600; }
+    .title { font-size: 17px; font-weight: 750; color: var(--cr-text); min-width: 0; }
+    .salary { color: var(--cr-danger); font-size: 17px; font-weight: 750; margin-left: 12px; white-space: nowrap; }
   }
-  .job-meta { display: flex; gap: 16px; color: #909399; font-size: 13px; margin-bottom: 10px;
+  .job-meta { display: flex; gap: 10px 16px; flex-wrap: wrap; color: var(--cr-text-muted); font-size: 13px; margin-bottom: 10px;
     .el-icon { vertical-align: middle; }
   }
   .job-tags { display: flex; gap: 6px; flex-wrap: wrap; }
-  .job-side { width: 220px; padding-left: 20px; border-left: 1px solid #f0f0f0; text-align: right;
-    .company { font-size: 14px; color: #303133; margin-bottom: 8px; }
-    .publish { color: #c0c4cc; font-size: 12px; }
+  .job-side { min-width: 0; padding-left: 18px; border-left: 1px solid var(--cr-border-soft); text-align: right;
+    .company { font-size: 14px; color: var(--cr-text); margin-bottom: 8px; font-weight: 650; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .publish { color: var(--cr-text-muted); font-size: 12px; }
+  }
+}
+
+@media (max-width: 820px) {
+  .job-row {
+    grid-template-columns: 1fr;
+  }
+
+  .job-row .job-side {
+    padding-left: 0;
+    padding-top: 12px;
+    border-left: 0;
+    border-top: 1px solid var(--cr-border-soft);
+    text-align: left;
+  }
+}
+
+@media (max-width: 640px) {
+  .search-bar {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .search-bar :deep(.el-button) {
+    width: 100%;
+  }
+
+  .filter-row {
+    display: block;
+  }
+
+  .filter-row .label {
+    display: block;
+    width: auto;
+    padding-top: 0;
+    margin-bottom: 8px;
+  }
+
+  .job-row .job-head {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .job-row .job-head .salary {
+    margin-left: 0;
   }
 }
 </style>

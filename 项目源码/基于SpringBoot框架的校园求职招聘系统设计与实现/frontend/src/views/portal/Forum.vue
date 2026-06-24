@@ -135,15 +135,16 @@ onMounted(load)
 </script>
 
 <style scoped lang="scss">
-.hero { display: flex; justify-content: space-between; align-items: center; background: linear-gradient(135deg, #eef6ff, #fff); h2 { color: #303133; .el-icon { vertical-align: middle; } } p { color: #909399; margin-top: 6px; } }
+.hero { display: flex; justify-content: space-between; align-items: center; background: linear-gradient(135deg, #eef6ff, #fff); h2 { color: var(--cr-text); .el-icon { vertical-align: middle; } } p { color: var(--cr-text-muted); margin-top: 6px; } }
 .toolbar { display: flex; justify-content: space-between; align-items: center; }
 .content { display: grid; grid-template-columns: 1fr 280px; gap: 20px; }
-.post-item { display: flex; gap: 14px; padding: 18px 0; border-bottom: 1px dashed #ebeef5; cursor: pointer; &:hover .post-title span:last-child { color: #409eff; } }
-.avatar { width: 44px; height: 44px; border-radius: 50%; background: linear-gradient(135deg, #409eff, #67c23a); color: #fff; display: flex; align-items: center; justify-content: center; font-weight: 600; flex-shrink: 0; }
+.post-item { display: flex; gap: 14px; padding: 18px 0; border-bottom: 1px dashed var(--cr-border-soft); cursor: pointer; &:hover .post-title span:last-child { color: var(--cr-primary); } }
+.avatar { width: 44px; height: 44px; border-radius: 50%; background: linear-gradient(135deg, var(--cr-primary), var(--cr-success)); color: #fff; display: flex; align-items: center; justify-content: center; font-weight: 600; flex-shrink: 0; }
 .post-body { flex: 1; min-width: 0; }
-.post-title { display: flex; align-items: center; gap: 8px; font-weight: 600; color: #303133; margin-bottom: 8px; }
-.post-content { color: #606266; line-height: 1.6; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; margin-bottom: 8px; }
-.post-meta { display: flex; gap: 16px; color: #909399; font-size: 12px; .el-icon { vertical-align: middle; } }
-.tips p { color: #606266; line-height: 1.8; font-size: 13px; }
+.post-title { display: flex; align-items: center; gap: 8px; font-weight: 600; color: var(--cr-text); margin-bottom: 8px; }
+.post-content { color: var(--cr-text-soft); line-height: 1.6; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; margin-bottom: 8px; }
+.post-meta { display: flex; gap: 16px; color: var(--cr-text-muted); font-size: 12px; .el-icon { vertical-align: middle; } }
+.tips p { color: var(--cr-text-soft); line-height: 1.8; font-size: 13px; }
 .quick { display: flex; flex-direction: column; gap: 10px; }
 </style>
+

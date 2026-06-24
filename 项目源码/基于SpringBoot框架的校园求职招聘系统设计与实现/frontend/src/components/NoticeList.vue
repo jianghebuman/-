@@ -73,8 +73,9 @@ onMounted(load)
 </script>
 
 <style scoped lang="scss">
-.header { display:flex; justify-content:space-between; align-items:center; h2{margin-bottom:6px;} p{color:#909399;} }
-.notice-item { display:flex; gap:14px; padding:18px 0; border-bottom:1px dashed #ebeef5; &.unread .title::after{content:'未读';font-size:12px;background:#f56c6c;color:#fff;border-radius:8px;padding:1px 6px;margin-left:8px;} }
-.icon { width:42px;height:42px;border-radius:50%;background:#909399;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:600;flex-shrink:0;&.apply{background:#67c23a}&.interview{background:#e6a23c}&.offer{background:#f56c6c}&.audit{background:#409eff} }
-.body{flex:1}.top{display:flex;gap:8px;align-items:center}.title{font-weight:600;color:#303133}.content{color:#606266;line-height:1.7;margin:8px 0}.meta{display:flex;justify-content:space-between;color:#c0c4cc;font-size:12px;}
+.header { display:flex; justify-content:space-between; align-items:center; h2{margin-bottom:6px;} p{color:var(--cr-text-muted);} }
+.notice-item { display:flex; gap:14px; padding:18px 0; border-bottom:1px dashed var(--cr-border-soft); &.unread .title::after{content:'未读';font-size:12px;background:var(--cr-danger);color:#fff;border-radius:8px;padding:1px 6px;margin-left:8px;} }
+.icon { width:42px;height:42px;border-radius:50%;background:var(--cr-text-muted);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:600;flex-shrink:0;&.apply{background:var(--cr-success)}&.interview{background:var(--cr-warning)}&.offer{background:var(--cr-danger)}&.audit{background:var(--cr-primary)} }
+.body{flex:1}.top{display:flex;gap:8px;align-items:center}.title{font-weight:600;color:var(--cr-text)}.content{color:var(--cr-text-soft);line-height:1.7;margin:8px 0}.meta{display:flex;justify-content:space-between;color:var(--cr-text-muted);font-size:12px;}
 </style>
+

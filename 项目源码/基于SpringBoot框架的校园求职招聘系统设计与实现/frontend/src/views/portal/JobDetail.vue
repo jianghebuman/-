@@ -31,8 +31,8 @@
         </div>
       </div>
 
-      <el-row :gutter="20" class="mt-20">
-        <el-col :span="17">
+      <div class="detail-grid mt-20">
+        <div>
           <!-- 岗位描述 -->
           <div class="page-card">
             <h3 class="block-title">岗位职责</h3>
@@ -44,8 +44,8 @@
             <h3 class="block-title mt-20">专业要求</h3>
             <div class="rich-text">{{ job.majorRequire || '专业不限' }}</div>
           </div>
-        </el-col>
-        <el-col :span="7">
+        </div>
+        <div>
           <!-- 企业信息 -->
           <div class="page-card ent-card" v-if="enterprise">
             <div class="ent-head">
@@ -61,8 +61,8 @@
             <p class="ent-intro" v-if="enterprise.intro">{{ enterprise.intro }}</p>
             <el-button text type="primary" @click="$router.push(`/enterprise/${enterprise.id}`)">查看企业主页 →</el-button>
           </div>
-        </el-col>
-      </el-row>
+        </div>
+      </div>
     </div>
 
     <!-- 投递确认弹窗 -->
@@ -173,20 +173,50 @@ onMounted(async () => {
 </script>
 
 <style scoped lang="scss">
-.head { display: flex; }
+.head { display: flex; gap: 20px; }
 .head-left { flex: 1; }
 .head-right { width: 240px; display: flex; flex-direction: column; gap: 10px; align-items: flex-end; }
-.title { color: #303133; margin-bottom: 8px; }
-.salary { color: #f56c6c; font-size: 26px; font-weight: 600; margin-bottom: 12px; }
+.title { color: var(--cr-text); margin-bottom: 8px; }
+.salary { color: var(--cr-danger); font-size: clamp(22px, 2vw, 28px); font-weight: 800; margin-bottom: 12px; }
 .meta { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 10px; }
 .welfare { display: flex; gap: 6px; flex-wrap: wrap; }
-.stats { font-size: 12px; color: #909399; margin-top: 6px; span { margin-left: 10px; } }
-.block-title { font-size: 16px; color: #303133; border-left: 3px solid #409eff; padding-left: 10px; }
-.rich-text { color: #606266; line-height: 1.8; white-space: pre-line; margin-top: 10px; }
+.stats { font-size: 12px; color: var(--cr-text-muted); margin-top: 6px; span { margin-left: 10px; } }
+.detail-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(280px, 0.34fr); gap: 20px; align-items: start; }
+.block-title { font-size: 16px; color: var(--cr-text); border-left: 3px solid var(--cr-primary); padding-left: 10px; }
+.rich-text { color: var(--cr-text-soft); line-height: 1.85; white-space: pre-line; margin-top: 10px; }
 .ent-card { .ent-head { display: flex; gap: 12px; }
-  .ent-info h3 { margin-bottom: 6px; font-size: 16px; }
-  .ent-info p { color: #909399; font-size: 13px; }
-  .ent-line { line-height: 1.8; font-size: 14px; color: #606266; b { color: #909399; }}
-  .ent-intro { color: #606266; line-height: 1.6; margin: 12px 0; font-size: 13px; }
+  .ent-info h3 { margin-bottom: 6px; font-size: 16px; color: var(--cr-text); }
+  .ent-info p { color: var(--cr-text-muted); font-size: 13px; }
+  .ent-line { line-height: 1.8; font-size: 14px; color: var(--cr-text-soft); b { color: var(--cr-text-muted); }}
+  .ent-intro { color: var(--cr-text-soft); line-height: 1.6; margin: 12px 0; font-size: 13px; }
+}
+
+@media (max-width: 900px) {
+  .head {
+    flex-direction: column;
+  }
+
+  .head-right {
+    width: 100%;
+    align-items: stretch;
+  }
+
+  .head-right :deep(.el-button) {
+    width: 100%;
+    margin-left: 0;
+  }
+
+  .stats {
+    text-align: left;
+  }
+
+  .stats span {
+    margin-left: 0;
+    margin-right: 12px;
+  }
+
+  .detail-grid {
+    grid-template-columns: 1fr;
+  }
 }
 </style>

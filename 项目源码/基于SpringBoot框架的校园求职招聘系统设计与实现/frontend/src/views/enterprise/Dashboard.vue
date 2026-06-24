@@ -57,10 +57,10 @@ let charts = []
 let resizeObserver
 
 const kpis = computed(() => [
-  { title: '发布职位', value: data.value.jobTotal || 0, icon: Briefcase, color: '#2f7df6' },
-  { title: '收到投递', value: data.value.applyTotal || 0, icon: Tickets, color: '#1f9d73' },
-  { title: '面试安排', value: data.value.interviewTotal || 0, icon: ChatLineRound, color: '#d98718' },
-  { title: '已发 Offer', value: data.value.offerTotal || 0, icon: Medal, color: '#d94c58' }
+  { title: '发布职位', value: data.value.jobTotal || 0, icon: Briefcase, color: '#2563eb' },
+  { title: '收到投递', value: data.value.applyTotal || 0, icon: Tickets, color: '#0891b2' },
+  { title: '面试安排', value: data.value.interviewTotal || 0, icon: ChatLineRound, color: '#7c3aed' },
+  { title: '已发 Offer', value: data.value.offerTotal || 0, icon: Medal, color: '#e45757' }
 ])
 
 const resizeCharts = () => charts.forEach((chart) => chart.resize())
@@ -134,10 +134,10 @@ const init = () => {
         name: '投递数',
         type: 'line',
         smooth: true,
-        areaStyle: { color: 'rgba(47, 125, 246, .14)' },
+        areaStyle: { color: 'rgba(37, 99, 235, .14)' },
         lineStyle: { width: 3 },
         data: nums,
-        color: '#2f7df6'
+        color: '#2563eb'
       }
     ]
   })
@@ -194,7 +194,7 @@ const init = () => {
       {
         type: 'bar',
         barMaxWidth: 34,
-        color: '#1f9d73',
+        color: '#0891b2',
         data: [
           data.value.jobTotal || 0,
           data.value.jobOnline || 0,
@@ -239,11 +239,12 @@ onBeforeUnmount(() => {
   border-radius: 12px;
   padding: 22px 24px;
   color: #fff;
-  background: linear-gradient(135deg, var(--c), #303133);
+  background:
+    linear-gradient(135deg, color-mix(in srgb, var(--c) 88%, white), #15243b);
   display: flex;
   justify-content: space-between;
   align-items: center;
-  box-shadow: 0 8px 20px rgba(20, 36, 60, 0.12);
+  box-shadow: var(--cr-shadow-soft);
   overflow: hidden;
 }
 
@@ -263,16 +264,17 @@ onBeforeUnmount(() => {
   min-width: 0;
   height: 100%;
   background: #fff;
-  border: 1px solid #edf0f5;
-  border-radius: 10px;
+  border: 1px solid var(--cr-border-soft);
+  border-radius: var(--cr-radius);
   padding: 18px;
-  box-shadow: 0 2px 12px rgba(20, 36, 60, 0.05);
+  box-shadow: var(--cr-shadow-soft);
 }
 
 .chart-title {
   font-weight: 600;
   margin-bottom: 8px;
-  border-left: 3px solid #2f7df6;
+  color: var(--cr-text);
+  border-left: 3px solid var(--cr-primary);
   padding-left: 10px;
   line-height: 1.2;
 }

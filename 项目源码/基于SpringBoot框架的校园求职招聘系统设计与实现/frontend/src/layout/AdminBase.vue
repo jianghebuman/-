@@ -5,7 +5,7 @@
         <el-icon size="22"><School /></el-icon>
         <span v-if="!effectiveCollapse">{{ title }}</span>
       </div>
-      <el-menu :default-active="$route.path" router :collapse="effectiveCollapse" background-color="#001529" text-color="#c9d1d9" active-text-color="#fff" class="menu">
+      <el-menu :default-active="$route.path" router :collapse="effectiveCollapse" text-color="#c9d1d9" active-text-color="#fff" class="menu">
         <template v-for="m in menus" :key="m.path">
           <el-menu-item :index="m.path">
             <el-icon><component :is="m.icon" /></el-icon>
@@ -65,7 +65,7 @@ const collapse = ref(false)
 const windowWidth = ref(window.innerWidth)
 const isCompact = computed(() => windowWidth.value < 768)
 const effectiveCollapse = computed(() => collapse.value || isCompact.value)
-const asideWidth = computed(() => (effectiveCollapse.value ? '64px' : '220px'))
+const asideWidth = computed(() => (effectiveCollapse.value ? '64px' : 'clamp(196px, 15vw, 232px)'))
 const userStore = useUserStore()
 const router = useRouter()
 const route = useRoute()
@@ -97,22 +97,36 @@ onBeforeUnmount(() => {
 </script>
 
 <style scoped lang="scss">
-.admin-layout { height: 100vh; min-width: 0; }
-.aside { background: #001529; transition: width .2s; overflow: hidden; flex-shrink: 0; }
-.logo { height: 60px; display: flex; align-items: center; gap: 10px; padding: 0 20px; color: #fff; font-weight: 600; border-bottom: 1px solid #1f2d3d; white-space: nowrap; }
+.admin-layout { min-height: 100dvh; height: 100dvh; min-width: 0; background: var(--cr-bg); }
+.aside {
+  background:
+    linear-gradient(180deg, rgba(37, 99, 235, 0.18), transparent 30%),
+    var(--cr-sidebar);
+  transition: width .2s;
+  overflow: hidden;
+  flex-shrink: 0;
+  border-right: 1px solid rgba(255, 255, 255, 0.08);
+}
+.logo { height: 62px; display: flex; align-items: center; gap: 10px; padding: 0 20px; color: #fff; font-weight: 700; border-bottom: 1px solid rgba(255,255,255,.1); white-space: nowrap; }
+.logo .el-icon { color: #7dd3fc; }
 .menu { border-right: none; }
-:deep(.el-menu) { background: #001529 !important; }
-:deep(.el-menu-item:hover) { background: #1890ff22 !important; }
-:deep(.el-menu-item.is-active) { background: #1890ff !important; }
-.topbar { background: #fff; box-shadow: 0 1px 4px rgba(0,0,0,.08); padding: 0 20px; height: 60px; min-width: 0; gap: 12px; }
+:deep(.el-menu) { background: transparent !important; }
+:deep(.el-menu-item) { margin: 4px 10px; border-radius: 10px; height: 44px; line-height: 44px; }
+:deep(.el-menu-item:hover) { background: rgba(255,255,255,.08) !important; color: #fff !important; }
+:deep(.el-menu-item.is-active) {
+  background: linear-gradient(90deg, var(--cr-primary), var(--cr-accent)) !important;
+  color: #fff !important;
+  box-shadow: 0 10px 18px rgba(37, 99, 235, 0.22);
+}
+.topbar { background: rgba(255,255,255,.92); border-bottom: 1px solid var(--cr-border-soft); box-shadow: 0 8px 20px rgba(22, 38, 68, .05); padding: 0 clamp(12px, 1.6vw, 22px); height: 62px; min-width: 0; gap: 12px; backdrop-filter: blur(12px); }
 .collapse-trigger { cursor: pointer; flex: 0 0 auto; }
 .topbar .flex { min-width: 0; }
 .topbar :deep(.el-breadcrumb) { min-width: 0; display: flex; align-items: center; flex-wrap: nowrap; }
 .topbar :deep(.el-breadcrumb__item) { min-width: 0; }
-.topbar :deep(.el-breadcrumb__inner) { display: inline-block; max-width: 160px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; vertical-align: middle; }
+.topbar :deep(.el-breadcrumb__inner) { display: inline-block; max-width: clamp(72px, 12vw, 180px); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; vertical-align: middle; }
 .user-info { min-width: 0; display: flex; align-items: center; gap: 6px; cursor: pointer; }
-.user-info span { max-width: 170px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.main { min-width: 0; background: #f0f2f5; padding: 16px; overflow-y: auto; overflow-x: hidden; }
+.user-info span { max-width: clamp(72px, 12vw, 170px); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.main { min-width: 0; background: transparent; padding: clamp(12px, 1.5vw, 20px); overflow-y: auto; overflow-x: hidden; }
 
 .is-compact {
   .logo {
@@ -134,6 +148,12 @@ onBeforeUnmount(() => {
 
   .main {
     padding: 12px;
+  }
+}
+
+@media (max-width: 520px) {
+  .topbar :deep(.el-breadcrumb) {
+    display: none;
   }
 }
 </style>

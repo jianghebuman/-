@@ -44,6 +44,7 @@ pnpm-debug.log*
 # Runtime logs
 **/logs/
 *.log
+项目源码/基于SpringBoot框架的校园求职招聘系统设计与实现/.run/
 
 # Local environment files
 .env

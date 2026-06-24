@@ -7,4 +7,38 @@
   </div></div>
 </template>
 <script setup>defineProps({title:String,desc:String,list:Array,total:Number,loading:Boolean,query:Object,showAdd:{type:Boolean,default:true},actionWidth:{type:Number,default:220}});const emit=defineEmits(['load','open']);const load=()=>emit('load');const open=()=>emit('open')</script>
-<style scoped>.header{display:flex;justify-content:space-between;align-items:center}.header h2{margin-bottom:6px}.header p{color:#909399}.toolbar{margin-bottom:16px}</style>
+<style scoped>
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+.header h2 {
+  margin-bottom: 6px;
+  color: var(--cr-text);
+  font-size: clamp(20px, 1.8vw, 24px);
+}
+.header p {
+  color: var(--cr-text-muted);
+  line-height: 1.6;
+}
+.toolbar {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+.toolbar :deep(.el-input),
+.toolbar :deep(.el-select) {
+  max-width: 100%;
+}
+@media (max-width: 640px) {
+  .header :deep(.el-button),
+  .toolbar :deep(.el-button) {
+    width: 100%;
+  }
+}
+</style>

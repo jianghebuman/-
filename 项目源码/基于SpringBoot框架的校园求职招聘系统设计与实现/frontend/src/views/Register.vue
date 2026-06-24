@@ -397,13 +397,13 @@ const registerEnterprise = () => {
 <style scoped lang="scss">
 .register-page {
   position: relative;
-  min-height: 100vh;
+  min-height: 100dvh;
   overflow-x: hidden;
-  color: #17231d;
+  color: #172033;
   background:
-    linear-gradient(90deg, rgba(23, 35, 29, 0.045) 1px, transparent 1px),
-    linear-gradient(0deg, rgba(23, 35, 29, 0.045) 1px, transparent 1px),
-    #edf2ee;
+    linear-gradient(90deg, rgba(37, 99, 235, 0.05) 1px, transparent 1px),
+    linear-gradient(0deg, rgba(37, 99, 235, 0.05) 1px, transparent 1px),
+    #f4f7fb;
   background-size: 42px 42px;
   font-family: "Inter", "PingFang SC", "Microsoft YaHei", sans-serif;
 }
@@ -414,8 +414,8 @@ const registerEnterprise = () => {
   content: "";
   pointer-events: none;
   background:
-    linear-gradient(115deg, rgba(238, 184, 82, 0.16), transparent 34%),
-    linear-gradient(180deg, transparent 0%, rgba(47, 83, 72, 0.1) 100%);
+    radial-gradient(circle at 16% 18%, rgba(8, 145, 178, 0.14), transparent 28%),
+    linear-gradient(180deg, transparent 0%, rgba(37, 99, 235, 0.08) 100%);
 }
 
 .register-topbar {
@@ -445,8 +445,8 @@ const registerEnterprise = () => {
   width: 36px;
   height: 36px;
   color: #f7efe0;
-  background: #263a33;
-  border: 1px solid rgba(23, 35, 29, 0.16);
+  background: #2563eb;
+  border: 1px solid rgba(37, 99, 235, 0.22);
   border-radius: 8px;
 
   svg {
@@ -457,16 +457,16 @@ const registerEnterprise = () => {
 
 .ghost-link {
   padding: 9px 12px;
-  color: #41554c;
+  color: #5d6f88;
   background: rgba(255, 255, 255, 0.58);
-  border: 1px solid rgba(23, 35, 29, 0.12);
+  border: 1px solid rgba(93, 111, 136, 0.18);
   border-radius: 8px;
   transition: color 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
 }
 
 .ghost-link:hover {
-  color: #17231d;
-  border-color: rgba(23, 35, 29, 0.26);
+  color: #172033;
+  border-color: rgba(37, 99, 235, 0.32);
   transform: translateY(-1px);
 }
 
@@ -475,7 +475,7 @@ const registerEnterprise = () => {
   z-index: 1;
   display: flex;
   justify-content: center;
-  min-height: calc(100vh - 88px);
+  min-height: calc(100dvh - 88px);
   padding: 24px 32px 48px;
 }
 
@@ -484,10 +484,10 @@ const registerEnterprise = () => {
   grid-template-columns: minmax(420px, 0.78fr) minmax(0, 1.34fr);
   width: min(1480px, 100%);
   overflow: hidden;
-  border: 1px solid rgba(23, 35, 29, 0.2);
+  border: 1px solid rgba(93, 111, 136, 0.18);
   border-radius: 18px;
-  background: #fffdf7;
-  box-shadow: 0 34px 70px rgba(35, 54, 45, 0.18);
+  background: #ffffff;
+  box-shadow: 0 34px 70px rgba(22, 38, 68, 0.16);
 }
 
 .register-brief {
@@ -496,11 +496,11 @@ const registerEnterprise = () => {
   flex-direction: column;
   min-height: 720px;
   padding: 42px;
-  color: #f8f2e6;
+  color: #eef6ff;
   background:
     linear-gradient(90deg, rgba(255, 255, 255, 0.08) 1px, transparent 1px),
     linear-gradient(0deg, rgba(255, 255, 255, 0.06) 1px, transparent 1px),
-    #223930;
+    #15243b;
   background-size: 32px 32px;
 }
 
@@ -512,7 +512,7 @@ const registerEnterprise = () => {
   span {
     width: 10px;
     height: 10px;
-    border: 1px solid rgba(248, 242, 230, 0.42);
+    border: 1px solid rgba(238, 246, 255, 0.42);
     border-radius: 50%;
   }
 }
@@ -521,8 +521,8 @@ const registerEnterprise = () => {
   width: max-content;
   padding: 7px 10px;
   margin-bottom: 18px;
-  color: #223930;
-  background: #eeb852;
+  color: #15243b;
+  background: #0891b2;
   border-radius: 6px;
   font-size: 12px;
   font-weight: 900;
@@ -537,7 +537,7 @@ const registerEnterprise = () => {
 
 .register-brief p {
   margin: 20px 0 0;
-  color: rgba(248, 242, 230, 0.76);
+  color: rgba(238, 246, 255, 0.76);
   font-size: 15px;
   line-height: 1.8;
 }
@@ -555,13 +555,13 @@ const registerEnterprise = () => {
   gap: 12px;
   align-items: start;
   padding: 14px 0;
-  border-top: 1px dashed rgba(248, 242, 230, 0.22);
+  border-top: 1px dashed rgba(238, 246, 255, 0.22);
 
   svg {
     width: 20px;
     height: 20px;
     margin-top: 1px;
-    color: #eeb852;
+    color: #0891b2;
   }
 
   b {
@@ -572,7 +572,7 @@ const registerEnterprise = () => {
   span {
     display: block;
     margin-top: 5px;
-    color: rgba(248, 242, 230, 0.66);
+    color: rgba(238, 246, 255, 0.66);
     font-size: 13px;
     line-height: 1.55;
   }
@@ -582,7 +582,7 @@ const registerEnterprise = () => {
   display: flex;
   flex-direction: column;
   padding: clamp(36px, 4vw, 56px);
-  background: #fffdf7;
+  background: #ffffff;
 }
 
 .role-switcher {
@@ -599,9 +599,9 @@ const registerEnterprise = () => {
   gap: 8px;
   min-height: 46px;
   padding: 0 14px;
-  color: #607168;
-  background: #f4f7f3;
-  border: 1px solid rgba(23, 35, 29, 0.1);
+  color: #5d6f88;
+  background: #f8fbff;
+  border: 1px solid rgba(93, 111, 136, 0.16);
   border-radius: 8px;
   cursor: pointer;
   font-size: 14px;
@@ -615,16 +615,16 @@ const registerEnterprise = () => {
 }
 
 .role-chip:hover {
-  color: #17231d;
-  border-color: rgba(23, 35, 29, 0.24);
+  color: #172033;
+  border-color: rgba(37, 99, 235, 0.28);
   transform: translateY(-1px);
 }
 
 .role-chip.active {
-  color: #fffaf0;
-  background: #243a32;
-  border-color: #243a32;
-  box-shadow: inset 0 -2px 0 rgba(238, 184, 82, 0.78);
+  color: #ffffff;
+  background: #2563eb;
+  border-color: #2563eb;
+  box-shadow: inset 0 -2px 0 rgba(8, 145, 178, 0.72);
 }
 
 .register-form {
@@ -637,7 +637,7 @@ const registerEnterprise = () => {
 
   :deep(.el-form-item__label) {
     margin-bottom: 7px;
-    color: #2d3a34;
+    color: #172033;
     font-weight: 850;
     line-height: 1.2;
   }
@@ -646,28 +646,28 @@ const registerEnterprise = () => {
   :deep(.el-select__wrapper) {
     min-height: 46px;
     border-radius: 8px;
-    background: #f8faf6;
-    box-shadow: inset 0 0 0 1px rgba(23, 35, 29, 0.12);
+    background: #f8fbff;
+    box-shadow: inset 0 0 0 1px rgba(93, 111, 136, 0.2);
     transition: box-shadow 0.2s ease, background 0.2s ease;
   }
 
   :deep(.el-input__wrapper.is-focus),
   :deep(.el-select__wrapper.is-focused) {
     background: #ffffff;
-    box-shadow: inset 0 0 0 1px #2f5f51, 0 0 0 4px rgba(47, 95, 81, 0.12);
+    box-shadow: inset 0 0 0 1px #2563eb, 0 0 0 4px rgba(37, 99, 235, 0.12);
   }
 
   :deep(.el-input__inner) {
-    color: #17231d;
+    color: #172033;
     font-weight: 650;
   }
 }
 
 .form-section {
   padding: 18px;
-  border: 1px solid rgba(23, 35, 29, 0.1);
+  border: 1px solid rgba(93, 111, 136, 0.16);
   border-radius: 8px;
-  background: #fbfcf7;
+  background: #f8fbff;
 }
 
 .section-heading {
@@ -677,16 +677,16 @@ const registerEnterprise = () => {
   gap: 14px;
   margin-bottom: 16px;
   padding-bottom: 12px;
-  border-bottom: 1px dashed rgba(23, 35, 29, 0.14);
+  border-bottom: 1px dashed rgba(93, 111, 136, 0.2);
 
   span {
-    color: #17231d;
+    color: #172033;
     font-size: 15px;
     font-weight: 900;
   }
 
   small {
-    color: #718078;
+    color: #8a99ad;
     font-size: 12px;
     line-height: 1.45;
     text-align: right;
@@ -710,7 +710,7 @@ const registerEnterprise = () => {
     align-items: flex-start;
     min-width: 0;
     height: auto;
-    color: #43564d;
+    color: #5d6f88;
     white-space: normal;
     font-weight: 750;
   }
@@ -729,11 +729,11 @@ const registerEnterprise = () => {
   width: 100%;
   min-height: 52px;
   padding: 0 16px 0 20px;
-  color: #fffaf0;
-  background: #17231d;
-  border: 1px solid #17231d;
+  color: #ffffff;
+  background: #172033;
+  border: 1px solid #172033;
   border-radius: 8px;
-  box-shadow: 0 12px 26px rgba(23, 35, 29, 0.22);
+  box-shadow: 0 12px 26px rgba(37, 99, 235, 0.24);
   cursor: pointer;
   font-size: 15px;
   font-weight: 900;
@@ -741,8 +741,8 @@ const registerEnterprise = () => {
 }
 
 .primary-action:hover:not(:disabled) {
-  background: #2d473c;
-  box-shadow: 0 16px 30px rgba(23, 35, 29, 0.26);
+  background: #1d4ed8;
+  box-shadow: 0 16px 30px rgba(37, 99, 235, 0.28);
   transform: translateY(-1px);
 }
 
@@ -758,16 +758,16 @@ const registerEnterprise = () => {
   gap: 14px;
   margin-top: 22px;
   padding-top: 18px;
-  border-top: 1px solid rgba(23, 35, 29, 0.1);
+  border-top: 1px solid rgba(93, 111, 136, 0.16);
   font-size: 14px;
 
   a {
-    color: #2f5f51;
+    color: #2563eb;
     font-weight: 850;
   }
 
   a:hover {
-    color: #17231d;
+    color: #172033;
   }
 }
 
@@ -833,3 +833,4 @@ const registerEnterprise = () => {
   }
 }
 </style>
+

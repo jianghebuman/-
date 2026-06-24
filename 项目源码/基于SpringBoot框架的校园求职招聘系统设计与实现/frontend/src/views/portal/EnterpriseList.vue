@@ -51,16 +51,23 @@ onMounted(load)
 </script>
 
 <style scoped lang="scss">
-.head h2 { color: #303133; .el-icon { vertical-align: middle; } }
-.head .sub { color: #909399; margin-top: 6px; }
-.grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
-.ent-card { background: #fff; border-radius: 8px; padding: 20px; display: flex; gap: 16px; cursor: pointer; transition: all .2s;
-  &:hover { box-shadow: 0 4px 16px rgba(0,0,0,.1); transform: translateY(-2px); }
+.head h2 { color: var(--cr-text); .el-icon { vertical-align: middle; color: var(--cr-primary); } }
+.head .sub { color: var(--cr-text-muted); margin-top: 6px; }
+.grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 340px), 1fr)); gap: 16px; }
+.ent-card { background: rgba(255,255,255,.96); border: 1px solid var(--cr-border-soft); border-radius: var(--cr-radius); padding: clamp(16px, 1.5vw, 22px); display: flex; gap: 16px; cursor: pointer; transition: border-color .2s ease, box-shadow .2s ease, transform .2s ease;
+  &:hover { border-color: rgba(37,99,235,.28); box-shadow: var(--cr-shadow); transform: translateY(-2px); }
   .logo { flex-shrink: 0; }
   .info { flex: 1; min-width: 0; }
-  .name { font-size: 17px; color: #303133; margin-bottom: 6px; }
-  .meta { font-size: 13px; color: #909399; margin-bottom: 4px; .sep { margin: 0 6px; } }
-  .city { font-size: 13px; color: #606266; margin-bottom: 8px; .el-icon { vertical-align: middle; } }
-  .intro { color: #606266; font-size: 13px; line-height: 1.6; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+  .name { font-size: 17px; color: var(--cr-text); margin-bottom: 6px; line-height: 1.4; }
+  .meta { font-size: 13px; color: var(--cr-text-muted); margin-bottom: 4px; .sep { margin: 0 6px; } }
+  .city { font-size: 13px; color: var(--cr-text-soft); margin-bottom: 8px; .el-icon { vertical-align: middle; color: var(--cr-primary); } }
+  .intro { color: var(--cr-text-soft); font-size: 13px; line-height: 1.6; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+}
+
+@media (max-width: 460px) {
+  .ent-card {
+    align-items: flex-start;
+    flex-direction: column;
+  }
 }
 </style>

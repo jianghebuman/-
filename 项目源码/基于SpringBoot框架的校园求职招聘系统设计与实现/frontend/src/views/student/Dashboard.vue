@@ -84,10 +84,10 @@ const applyText = (s) => statusText[s] || '未知'
 const applyType = (s) => s === 4 ? 'success' : s === 5 ? 'danger' : s === 2 ? 'warning' : 'info'
 const stepActive = computed(() => resume.value ? (offerCount.value > 0 ? 5 : interviewCount.value > 0 ? 4 : applyCount.value > 0 ? 3 : 2) : 1)
 const cards = computed(() => [
-  { title: '简历完整度', value: (resume.value?.completeRate || 0) + '%', icon: Document, bg: 'linear-gradient(135deg,#409eff,#66b1ff)' },
-  { title: '投递记录', value: applyCount.value, icon: Tickets, bg: 'linear-gradient(135deg,#67c23a,#95d475)' },
-  { title: '面试通知', value: interviewCount.value, icon: ChatLineRound, bg: 'linear-gradient(135deg,#e6a23c,#f3d19e)' },
-  { title: 'Offer', value: offerCount.value, icon: Medal, bg: 'linear-gradient(135deg,#f56c6c,#fab6b6)' }
+  { title: '简历完整度', value: (resume.value?.completeRate || 0) + '%', icon: Document, bg: 'linear-gradient(135deg,#2563eb,#0891b2)' },
+  { title: '投递记录', value: applyCount.value, icon: Tickets, bg: 'linear-gradient(135deg,#0f766e,#2563eb)' },
+  { title: '面试通知', value: interviewCount.value, icon: ChatLineRound, bg: 'linear-gradient(135deg,#7c3aed,#2563eb)' },
+  { title: 'Offer', value: offerCount.value, icon: Medal, bg: 'linear-gradient(135deg,#e45757,#2563eb)' }
 ])
 
 onMounted(async () => {
@@ -101,9 +101,16 @@ onMounted(async () => {
 </script>
 
 <style scoped lang="scss">
-.stat-card { height: 110px; border-radius: 10px; color: #fff; padding: 22px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 6px 16px rgba(0,0,0,.08); .num { font-size: 28px; font-weight: 700; } .title { margin-top: 8px; opacity: .95; } }
-.section-title { font-size: 16px; font-weight: 600; color: #303133; margin-bottom: 18px; border-left: 3px solid #409eff; padding-left: 10px; }
+.stat-card { height: 110px; border-radius: var(--cr-radius); color: #fff; padding: 22px; display: flex; justify-content: space-between; align-items: center; box-shadow: var(--cr-shadow-soft); .num { font-size: 28px; font-weight: 750; } .title { margin-top: 8px; opacity: .95; } }
+.section-title { font-size: 16px; font-weight: 700; color: var(--cr-text); margin-bottom: 18px; border-left: 3px solid var(--cr-primary); padding-left: 10px; }
 .quick-actions { text-align: center; margin-top: 28px; }
-.profile-card { text-align: center; h3 { margin: 12px 0 4px; } p { color: #909399; } }
-.resume-rate { text-align: left; span { display: block; color: #606266; margin-bottom: 10px; } }
+.profile-card { text-align: center; h3 { margin: 12px 0 4px; color: var(--cr-text); } p { color: var(--cr-text-muted); } }
+.resume-rate { text-align: left; span { display: block; color: var(--cr-text-soft); margin-bottom: 10px; } }
+
+@media (max-width: 900px) {
+  :deep(.el-col) {
+    max-width: 100%;
+    flex: 0 0 100%;
+  }
+}
 </style>
