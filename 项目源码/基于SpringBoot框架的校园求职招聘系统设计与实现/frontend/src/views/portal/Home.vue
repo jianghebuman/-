@@ -1,7 +1,7 @@
 <template>
   <div class="home portal-content">
     <!-- 轮播图 -->
-    <el-carousel height="clamp(12.5rem, 24vw, 22.5rem)" class="banner" v-if="home.banners?.length">
+    <el-carousel height="clamp(14rem, 28dvh, 34rem)" class="banner" v-if="home.banners?.length">
       <el-carousel-item v-for="b in home.banners" :key="b.id">
         <div class="banner-item" :style="{ backgroundImage: `url(${b.imageUrl})` }">
           <div class="banner-title">{{ b.title }}</div>
@@ -133,7 +133,7 @@ onMounted(async () => {
 .banner { border-radius: var(--cr-radius); overflow: hidden; border: 1px solid var(--cr-border-soft); box-shadow: var(--cr-shadow-soft); }
 .banner-item { width: 100%; height: 100%; background-size: cover; background-position: center; position: relative; }
 .banner-item::after { content: ""; position: absolute; inset: 0; background: linear-gradient(90deg, rgba(12,24,45,.72), rgba(12,24,45,.24) 52%, rgba(12,24,45,.08)); }
-.banner-title { position: absolute; z-index: 1; bottom: clamp(1rem, 2vw, 1.5rem); left: clamp(1rem, 3vw, 2rem); max-width: min(34rem, calc(100% - 2rem)); color: #fff; font-size: clamp(1.25rem, 2.3vw, 1.875rem); line-height: 1.25; font-weight: 750; text-shadow: 0 .125rem .5rem rgba(0,0,0,.42); }
+.banner-title { position: absolute; z-index: 1; bottom: clamp(1rem, 3dvh, 3rem); left: clamp(1rem, 4vw, 4rem); max-width: min(54rem, calc(100% - 2rem)); color: #fff; font-size: clamp(1.25rem, 2.3vw, 3rem); line-height: 1.18; font-weight: 750; text-shadow: 0 .125rem .5rem rgba(0,0,0,.42); }
 .search-bar { display: block; }
 .search-form { width: 100%; display: grid; grid-template-columns: minmax(7rem, .24fr) minmax(14rem, 1fr) auto; gap: clamp(.5rem, 1.2vw, .875rem); align-items: stretch; }
 .city-select,
@@ -169,7 +169,10 @@ onMounted(async () => {
 .list-card .clickable { cursor: pointer; }
 
 @media (min-width: 87.5rem) {
-  .banner { :deep(.el-carousel__container) { height: 22.5rem !important; } }
+  .banner { :deep(.el-carousel__container) { height: clamp(24rem, 30dvh, 34rem) !important; } }
+  .job-grid { grid-template-columns: repeat(auto-fit, minmax(min(100%, 23.5rem), 1fr)); gap: 1rem; }
+  .ent-grid { grid-template-columns: repeat(auto-fit, minmax(min(100%, 13rem), 1fr)); gap: 1rem; }
+  .info-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
   .ent-card { min-height: 9.5rem; }
 }
 

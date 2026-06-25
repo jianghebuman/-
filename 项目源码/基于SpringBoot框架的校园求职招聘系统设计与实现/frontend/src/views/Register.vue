@@ -24,6 +24,12 @@
           <span class="brief-kicker">账号注册</span>
           <h1>{{ activeCopy.title }}</h1>
           <p>{{ activeCopy.description }}</p>
+          <div class="brief-highlights" aria-label="注册完成后可使用的能力">
+            <div v-for="item in activeCopy.highlights" :key="item.label">
+              <b>{{ item.value }}</b>
+              <span>{{ item.label }}</span>
+            </div>
+          </div>
           <div class="brief-flow">
             <div v-for="item in activeCopy.flow" :key="item.title" class="flow-item">
               <component :is="item.icon" />
@@ -263,6 +269,11 @@ const copyMap = {
   STUDENT: {
     title: '把简历和投递记录放进同一个工作台。',
     description: '学生账号用于维护个人资料、在线简历、投递记录和面试安排。',
+    highlights: [
+      { value: '资料', label: '个人信息与求职意向' },
+      { value: '简历', label: '在线简历和附件管理' },
+      { value: '进度', label: '投递、面试、Offer 跟进' }
+    ],
     flow: [
       { icon: User, title: '建立个人账号', desc: '填写基础身份信息' },
       { icon: Tickets, title: '完善求职资料', desc: '维护简历与求职意向' },
@@ -272,6 +283,11 @@ const copyMap = {
   ENTERPRISE: {
     title: '企业入驻先核验，再开展校园招聘。',
     description: '参照招聘平台常见做法，企业注册需提交公司资质和招聘联系人信息。',
+    highlights: [
+      { value: '资质', label: '企业认证资料留档' },
+      { value: '岗位', label: '招聘岗位发布与刷新' },
+      { value: '候选', label: '简历筛选和面试邀约' }
+    ],
     flow: [
       { icon: Postcard, title: '登记企业资质', desc: '填写统一社会信用代码' },
       { icon: DocumentChecked, title: '提交认证材料', desc: '注册后上传营业执照' },
@@ -332,7 +348,6 @@ const creditCodeRule = [
   { required: true, message: '请输入统一社会信用代码', trigger: 'blur' },
   { pattern: /^[0-9A-Z]{18}$/, message: '请输入18位大写字母或数字', trigger: ['blur', 'change'] }
 ]
-
 const stuRules = {
   username: required('请输入账号'),
   password: passwordRule,
@@ -400,6 +415,7 @@ const registerEnterprise = () => {
 <style scoped lang="scss">
 .register-page {
   position: relative;
+  --auth-shell-width: min(150rem, calc(100% - clamp(1.5rem, 4vw, 6rem)));
   min-height: 100dvh;
   overflow-x: hidden;
   color: #172033;
@@ -427,9 +443,9 @@ const registerEnterprise = () => {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  width: min(1600px, calc(100% - clamp(24px, 3.5vw, 64px)));
+  width: var(--auth-shell-width);
   margin: 0 auto;
-  padding: clamp(18px, 2vw, 24px) 0 clamp(14px, 1.6vw, 18px);
+  padding: clamp(1rem, 2dvh, 1.5rem) 0 clamp(0.75rem, 1.6dvh, 1.125rem);
 }
 
 .brand-mark,
@@ -478,17 +494,18 @@ const registerEnterprise = () => {
   z-index: 1;
   display: flex;
   justify-content: center;
-  min-height: calc(100dvh - 88px);
-  padding: clamp(16px, 2vw, 24px) clamp(16px, 2vw, 32px) clamp(24px, 3vw, 48px);
+  min-height: calc(100dvh - clamp(4.75rem, 6dvh, 6.25rem));
+  padding: clamp(1rem, 2dvh, 1.5rem) 0 clamp(1.5rem, 3dvh, 3rem);
 }
 
 .register-shell {
   display: grid;
-  grid-template-columns: minmax(26rem, 0.78fr) minmax(0, 1.34fr);
-  width: min(1600px, 100%);
+  grid-template-columns: minmax(34rem, 0.92fr) minmax(42rem, 1.08fr);
+  width: var(--auth-shell-width);
+  min-height: clamp(36rem, 86dvh, 92rem);
   overflow: hidden;
   border: 1px solid rgba(93, 111, 136, 0.18);
-  border-radius: 18px;
+  border-radius: clamp(1rem, 1vw, 1.5rem);
   background: #ffffff;
   box-shadow: 0 34px 70px rgba(22, 38, 68, 0.16);
 }
@@ -497,8 +514,8 @@ const registerEnterprise = () => {
   position: relative;
   display: flex;
   flex-direction: column;
-  min-height: clamp(44rem, 76vh, 54rem);
-  padding: clamp(2rem, 3vw, 2.75rem);
+  min-height: 100%;
+  padding: clamp(2rem, 3.4vw, 5rem);
   color: #eef6ff;
   background:
     linear-gradient(90deg, rgba(255, 255, 255, 0.08) 1px, transparent 1px),
@@ -510,7 +527,7 @@ const registerEnterprise = () => {
 .window-strip {
   display: flex;
   gap: 8px;
-  margin-bottom: 48px;
+  margin-bottom: clamp(3rem, 7dvh, 7rem);
 
   span {
     width: 10px;
@@ -533,22 +550,56 @@ const registerEnterprise = () => {
 
 .register-brief h1 {
   margin: 0;
-  font-size: clamp(30px, 3.6vw, 44px);
+  width: min(44rem, 100%);
+  font-size: 2.75rem;
   line-height: 1.08;
   font-weight: 850;
 }
 
 .register-brief p {
+  width: min(38rem, 100%);
   margin: 20px 0 0;
   color: rgba(238, 246, 255, 0.76);
   font-size: 15px;
   line-height: 1.8;
 }
 
+.brief-highlights {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.75rem;
+  width: min(42rem, 100%);
+  margin-top: clamp(2rem, 5dvh, 4rem);
+
+  div {
+    min-height: 6.75rem;
+    padding: 1rem;
+    border: 1px solid rgba(238, 246, 255, 0.16);
+    border-radius: 0.75rem;
+    background: rgba(238, 246, 255, 0.06);
+  }
+
+  b {
+    display: block;
+    margin-bottom: 0.625rem;
+    color: #eef6ff;
+    font-size: 1.25rem;
+    font-weight: 900;
+  }
+
+  span {
+    display: block;
+    color: rgba(238, 246, 255, 0.68);
+    font-size: 0.8125rem;
+    line-height: 1.65;
+  }
+}
+
 .brief-flow {
   display: grid;
   gap: 14px;
-  margin-top: clamp(2.5rem, 8vh, 4.5rem);
+  width: min(40rem, 100%);
+  margin-top: auto;
   padding-top: 0;
 }
 
@@ -584,7 +635,8 @@ const registerEnterprise = () => {
 .register-panel {
   display: flex;
   flex-direction: column;
-  padding: clamp(2rem, 4vw, 3.5rem);
+  justify-content: center;
+  padding: clamp(2rem, 3.4vw, 5rem);
   background: #ffffff;
 }
 
@@ -775,9 +827,45 @@ const registerEnterprise = () => {
   }
 }
 
+@media (min-width: 1800px) {
+  .register-panel {
+    justify-content: flex-start;
+    padding-block: clamp(5rem, 9dvh, 9rem) clamp(4rem, 8dvh, 8rem);
+  }
+
+  .register-brief h1 {
+    font-size: 3.5rem;
+  }
+
+  .role-chip {
+    min-height: 3.5rem;
+    font-size: 0.9375rem;
+  }
+
+  .role-switcher {
+    gap: 0.75rem;
+    margin-bottom: 2rem;
+  }
+
+  .register-form {
+    gap: 1.5rem;
+
+    :deep(.el-input__wrapper),
+    :deep(.el-select__wrapper) {
+      min-height: 3.5rem;
+    }
+  }
+
+  .primary-action {
+    min-height: 4.25rem;
+    font-size: 1rem;
+  }
+}
+
 @media (max-width: 980px) {
   .register-shell {
     grid-template-columns: 1fr;
+    min-height: 0;
   }
 
   .register-brief {
@@ -793,11 +881,16 @@ const registerEnterprise = () => {
     margin-top: 34px;
     padding-top: 0;
   }
+
+  .brief-highlights {
+    grid-template-columns: 1fr;
+    margin-top: 28px;
+  }
 }
 
 @media (max-width: 640px) {
   .register-topbar {
-    width: min(100% - 20px, 1600px);
+    width: calc(100% - 1.25rem);
     padding-top: 16px;
   }
 
@@ -810,7 +903,8 @@ const registerEnterprise = () => {
   }
 
   .register-shell {
-    border-radius: 14px;
+    width: 100%;
+    border-radius: 0.875rem;
   }
 
   .register-brief,
@@ -831,11 +925,15 @@ const registerEnterprise = () => {
   }
 
   .register-brief h1 {
-    font-size: 28px;
+    font-size: 1.75rem;
+  }
+
+  .brief-highlights div {
+    min-height: 0;
   }
 
   .role-switcher {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-columns: 1fr;
     gap: 8px;
     margin-bottom: 20px;
   }
@@ -862,7 +960,7 @@ const registerEnterprise = () => {
     align-items: center;
     justify-content: space-between;
     flex-direction: row;
-    flex-wrap: nowrap;
+    flex-wrap: wrap;
     gap: 10px;
     font-size: 13px;
 

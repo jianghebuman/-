@@ -28,6 +28,21 @@
             学生查岗位，企业收简历，管理员处理审核。三个入口从这里分流。
           </p>
 
+          <div class="board-metrics" aria-label="平台能力概览">
+            <div>
+              <b>岗位检索</b>
+              <span>城市、薪资、学历条件快速筛选</span>
+            </div>
+            <div>
+              <b>简历流转</b>
+              <span>投递、邀约、面试状态统一跟进</span>
+            </div>
+            <div>
+              <b>审核管理</b>
+              <span>企业资质、岗位内容、资讯公告集中维护</span>
+            </div>
+          </div>
+
           <div class="entry-stack" aria-label="系统入口说明">
             <div class="entry-row">
               <span class="entry-code">学生</span>
@@ -104,6 +119,13 @@
             <router-link v-if="form.role !== 'ADMIN'" to="/register">创建{{ activeRole.label }}账号</router-link>
             <router-link to="/">先浏览招聘信息</router-link>
           </div>
+
+          <div class="auth-next">
+            <div class="next-heading">登录后继续处理</div>
+            <div class="next-grid">
+              <span v-for="item in activeRole.nextSteps" :key="item">{{ item }}</span>
+            </div>
+          </div>
         </section>
       </section>
     </main>
@@ -139,7 +161,8 @@ const roleOptions = [
     icon: School,
     title: '学生求职入口',
     description: '查看岗位、维护简历、跟进投递与面试安排。',
-    buttonText: '进入学生工作台'
+    buttonText: '进入学生工作台',
+    nextSteps: ['完善在线简历', '查看岗位收藏', '跟进投递进度', '确认面试安排']
   },
   {
     value: 'ENTERPRISE',
@@ -147,7 +170,8 @@ const roleOptions = [
     icon: OfficeBuilding,
     title: '企业招聘入口',
     description: '发布岗位、筛选简历、管理宣讲会与 Offer 流程。',
-    buttonText: '进入企业工作台'
+    buttonText: '进入企业工作台',
+    nextSteps: ['发布招聘岗位', '筛选候选简历', '安排面试邀约', '维护企业认证']
   },
   {
     value: 'ADMIN',
@@ -155,7 +179,8 @@ const roleOptions = [
     icon: DataAnalysis,
     title: '平台管理入口',
     description: '审核企业与岗位，维护资讯、招聘会和基础数据。',
-    buttonText: '进入管理后台'
+    buttonText: '进入管理后台',
+    nextSteps: ['审核企业资料', '处理岗位发布', '维护招聘资讯', '查看平台数据']
   }
 ]
 const activeRole = computed(() => roleOptions.find((item) => item.value === form.role) || roleOptions[0])
@@ -186,8 +211,9 @@ const onLogin = () => {
 <style scoped lang="scss">
 .login-container {
   position: relative;
+  --auth-shell-width: min(150rem, calc(100% - clamp(1.5rem, 4vw, 6rem)));
   min-height: 100dvh;
-  overflow: hidden;
+  overflow-x: hidden;
   color: #172033;
   background:
     linear-gradient(90deg, rgba(37, 99, 235, 0.05) 1px, transparent 1px),
@@ -213,9 +239,9 @@ const onLogin = () => {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  width: min(1600px, calc(100% - clamp(24px, 3.5vw, 64px)));
+  width: var(--auth-shell-width);
   margin: 0 auto;
-  padding: clamp(18px, 2vw, 24px) 0 clamp(14px, 1.6vw, 18px);
+  padding: clamp(1rem, 2dvh, 1.5rem) 0 clamp(0.75rem, 1.6dvh, 1.125rem);
 }
 
 .brand-mark,
@@ -265,18 +291,18 @@ const onLogin = () => {
   display: flex;
   align-items: center;
   justify-content: center;
-  min-height: calc(100dvh - 88px);
-  padding: clamp(16px, 2vw, 24px) clamp(16px, 2vw, 32px);
+  min-height: calc(100dvh - clamp(4.75rem, 6dvh, 6.25rem));
+  padding: clamp(1rem, 2dvh, 1.5rem) 0 clamp(1.5rem, 3dvh, 3rem);
 }
 
 .login-window {
   display: grid;
-  grid-template-columns: minmax(0, 1.08fr) minmax(28rem, 0.86fr);
-  width: min(1600px, 100%);
-  min-height: clamp(40rem, 72vh, 50rem);
+  grid-template-columns: minmax(34rem, 0.96fr) minmax(40rem, 1.04fr);
+  width: var(--auth-shell-width);
+  min-height: clamp(36rem, 86dvh, 92rem);
   overflow: hidden;
   border: 1px solid rgba(93, 111, 136, 0.18);
-  border-radius: 18px;
+  border-radius: clamp(1rem, 1vw, 1.5rem);
   background: #ffffff;
   box-shadow: 0 34px 70px rgba(22, 38, 68, 0.16);
 }
@@ -285,7 +311,7 @@ const onLogin = () => {
   position: relative;
   display: flex;
   flex-direction: column;
-  padding: clamp(2rem, 3vw, 2.75rem);
+  padding: clamp(2rem, 3.4vw, 5rem);
   color: #eef6ff;
   background:
     linear-gradient(90deg, rgba(255, 255, 255, 0.08) 1px, transparent 1px),
@@ -308,7 +334,7 @@ const onLogin = () => {
 .window-strip {
   display: flex;
   gap: 8px;
-  margin-bottom: 46px;
+  margin-bottom: clamp(2.875rem, 7dvh, 7rem);
 
   span {
     width: 10px;
@@ -331,27 +357,56 @@ const onLogin = () => {
 }
 
 .career-board h1 {
-  width: min(520px, 100%);
-  font-size: clamp(34px, 4.5vw, 52px);
+  width: min(44rem, 100%);
+  font-size: 3.25rem;
   line-height: 1.04;
   font-weight: 850;
   margin: 0;
 }
 
 .board-copy {
-  width: min(470px, 100%);
-  margin: 20px 0 0;
+  width: min(38rem, 100%);
+  margin: 1.25rem 0 0;
   color: rgba(238, 246, 255, 0.76);
-  font-size: 16px;
+  font-size: 1rem;
   line-height: 1.8;
+}
+
+.board-metrics {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.75rem;
+  width: min(58rem, 100%);
+  margin-top: clamp(2rem, 5dvh, 4.5rem);
+
+  div {
+    min-height: 7rem;
+    padding: 1rem;
+    border: 1px solid rgba(238, 246, 255, 0.16);
+    border-radius: 0.75rem;
+    background: rgba(238, 246, 255, 0.06);
+  }
+
+  b {
+    display: block;
+    margin-bottom: 0.625rem;
+    font-size: 0.9375rem;
+  }
+
+  span {
+    display: block;
+    color: rgba(238, 246, 255, 0.68);
+    font-size: 0.8125rem;
+    line-height: 1.65;
+  }
 }
 
 .entry-stack {
   display: grid;
   gap: 12px;
-  width: min(460px, 100%);
+  width: min(40rem, 100%);
   margin-top: auto;
-  padding-top: 42px;
+  padding-top: clamp(2.625rem, 8dvh, 8rem);
 }
 
 .entry-row {
@@ -390,7 +445,7 @@ const onLogin = () => {
   display: flex;
   flex-direction: column;
   justify-content: center;
-  padding: clamp(2rem, 3vw, 3.5rem);
+  padding: clamp(2rem, 3.4vw, 5rem);
   background: #ffffff;
 }
 
@@ -563,9 +618,92 @@ const onLogin = () => {
   }
 }
 
+.auth-next {
+  margin-top: clamp(1.75rem, 4dvh, 3.5rem);
+  padding-top: clamp(1.25rem, 2.5dvh, 2rem);
+  border-top: 1px dashed rgba(93, 111, 136, 0.22);
+}
+
+.next-heading {
+  margin-bottom: 0.875rem;
+  color: #172033;
+  font-size: 0.9375rem;
+  font-weight: 900;
+}
+
+.next-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.75rem;
+
+  span {
+    min-width: 0;
+    padding: 0.75rem 0.875rem;
+    color: #5d6f88;
+    background: #f8fbff;
+    border: 1px solid rgba(93, 111, 136, 0.16);
+    border-radius: 0.5rem;
+    font-size: 0.875rem;
+    font-weight: 750;
+  }
+}
+
 @keyframes spin {
   to {
     transform: rotate(360deg);
+  }
+}
+
+@media (min-width: 1800px) {
+  .auth-panel {
+    justify-content: flex-start;
+    padding-block: clamp(5rem, 10dvh, 10rem) clamp(4rem, 8dvh, 8rem);
+  }
+
+  .auth-heading {
+    margin-bottom: 2rem;
+  }
+
+  .career-board h1 {
+    font-size: 4rem;
+  }
+
+  .auth-heading h2 {
+    font-size: 2.25rem;
+  }
+
+  .auth-heading p,
+  .auth-links {
+    font-size: 1rem;
+  }
+
+  .role-chip {
+    min-height: 3.5rem;
+    font-size: 0.9375rem;
+  }
+
+  .role-switcher {
+    gap: 0.75rem;
+    margin-bottom: 2rem;
+  }
+
+  .auth-form {
+    :deep(.el-form-item) {
+      margin-bottom: 1.5rem;
+    }
+
+    :deep(.el-input__wrapper) {
+      min-height: 3.75rem;
+    }
+  }
+
+  .primary-action {
+    min-height: 4.25rem;
+    font-size: 1rem;
+  }
+
+  .auth-links {
+    margin-top: 1.5rem;
   }
 }
 
@@ -597,7 +735,7 @@ const onLogin = () => {
   }
 
   .career-board h1 {
-    font-size: 36px;
+    font-size: 2.25rem;
   }
 
   .entry-stack {
@@ -605,14 +743,23 @@ const onLogin = () => {
     padding-top: 12px;
   }
 
+  .board-metrics {
+    grid-template-columns: 1fr;
+    margin-top: 28px;
+  }
+
   .auth-panel {
     padding: 32px 28px;
+  }
+
+  .auth-next {
+    margin-top: 24px;
   }
 }
 
 @media (max-width: 560px) {
   .login-topbar {
-    width: min(100% - 20px, 1600px);
+    width: calc(100% - 1.25rem);
     padding-top: 16px;
   }
 
@@ -625,7 +772,8 @@ const onLogin = () => {
   }
 
   .login-window {
-    border-radius: 14px;
+    width: 100%;
+    border-radius: 0.875rem;
   }
 
   .career-board {
@@ -637,11 +785,11 @@ const onLogin = () => {
   }
 
   .career-board h1 {
-    font-size: 28px;
+    font-size: 1.75rem;
   }
 
   .board-copy {
-    font-size: 14px;
+    font-size: 0.875rem;
   }
 
   .window-strip {
@@ -652,12 +800,16 @@ const onLogin = () => {
     grid-template-columns: 62px minmax(0, 1fr);
   }
 
+  .board-metrics div {
+    min-height: 0;
+  }
+
   .auth-panel {
     padding: 26px 20px;
   }
 
   .role-switcher {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-columns: 1fr;
     gap: 6px;
     margin-bottom: 20px;
   }
@@ -671,9 +823,13 @@ const onLogin = () => {
     align-items: center;
     justify-content: space-between;
     flex-direction: row;
-    flex-wrap: nowrap;
+    flex-wrap: wrap;
     gap: 10px;
     font-size: 13px;
+  }
+
+  .next-grid {
+    grid-template-columns: 1fr;
   }
 }
 </style>
