@@ -102,7 +102,7 @@
                 <el-form-item label="年级">
                   <el-input v-model="stuForm.grade" placeholder="如 2023级" size="large" />
                 </el-form-item>
-                <el-form-item label="手机号">
+                <el-form-item label="手机号" prop="phone">
                   <el-input v-model="stuForm.phone" :prefix-icon="Phone" placeholder="用于接收面试联系" size="large" />
                 </el-form-item>
                 <el-form-item label="邮箱" class="wide-field">
@@ -318,7 +318,6 @@ const passwordRule = [
   { min: 6, message: '密码至少 6 位', trigger: 'blur' }
 ]
 const emailRule = [
-  { required: true, message: '请输入企业邮箱', trigger: 'blur' },
   { type: 'email', message: '请输入有效的企业邮箱', trigger: ['blur', 'change'] }
 ]
 const phoneRule = [
@@ -337,7 +336,11 @@ const creditCodeRule = [
 const stuRules = {
   username: required('请输入账号'),
   password: passwordRule,
-  realName: required('请输入姓名')
+  realName: required('请输入姓名'),
+  phone: [
+    { required: true, message: '请输入手机号', trigger: 'blur' },
+    { pattern: /^1[3-9]\d{9}$/, message: '请输入有效的手机号', trigger: 'blur' }
+  ]
 }
 
 const entRules = {
@@ -424,9 +427,9 @@ const registerEnterprise = () => {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  width: min(1480px, calc(100% - 64px));
+  width: min(1600px, calc(100% - clamp(24px, 3.5vw, 64px)));
   margin: 0 auto;
-  padding: 24px 0 18px;
+  padding: clamp(18px, 2vw, 24px) 0 clamp(14px, 1.6vw, 18px);
 }
 
 .brand-mark,
@@ -476,13 +479,13 @@ const registerEnterprise = () => {
   display: flex;
   justify-content: center;
   min-height: calc(100dvh - 88px);
-  padding: 24px 32px 48px;
+  padding: clamp(16px, 2vw, 24px) clamp(16px, 2vw, 32px) clamp(24px, 3vw, 48px);
 }
 
 .register-shell {
   display: grid;
-  grid-template-columns: minmax(420px, 0.78fr) minmax(0, 1.34fr);
-  width: min(1480px, 100%);
+  grid-template-columns: minmax(26rem, 0.78fr) minmax(0, 1.34fr);
+  width: min(1600px, 100%);
   overflow: hidden;
   border: 1px solid rgba(93, 111, 136, 0.18);
   border-radius: 18px;
@@ -494,8 +497,8 @@ const registerEnterprise = () => {
   position: relative;
   display: flex;
   flex-direction: column;
-  min-height: 720px;
-  padding: 42px;
+  min-height: clamp(44rem, 76vh, 54rem);
+  padding: clamp(2rem, 3vw, 2.75rem);
   color: #eef6ff;
   background:
     linear-gradient(90deg, rgba(255, 255, 255, 0.08) 1px, transparent 1px),
@@ -545,8 +548,8 @@ const registerEnterprise = () => {
 .brief-flow {
   display: grid;
   gap: 14px;
-  margin-top: auto;
-  padding-top: 42px;
+  margin-top: clamp(2.5rem, 8vh, 4.5rem);
+  padding-top: 0;
 }
 
 .flow-item {
@@ -581,7 +584,7 @@ const registerEnterprise = () => {
 .register-panel {
   display: flex;
   flex-direction: column;
-  padding: clamp(36px, 4vw, 56px);
+  padding: clamp(2rem, 4vw, 3.5rem);
   background: #ffffff;
 }
 
@@ -755,6 +758,7 @@ const registerEnterprise = () => {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  flex-wrap: nowrap;
   gap: 14px;
   margin-top: 22px;
   padding-top: 18px;
@@ -778,6 +782,11 @@ const registerEnterprise = () => {
 
   .register-brief {
     min-height: 0;
+    order: 2;
+  }
+
+  .register-panel {
+    order: 1;
   }
 
   .brief-flow {
@@ -788,7 +797,7 @@ const registerEnterprise = () => {
 
 @media (max-width: 640px) {
   .register-topbar {
-    width: min(100% - 28px, 1480px);
+    width: min(100% - 20px, 1600px);
     padding-top: 16px;
   }
 
@@ -809,6 +818,14 @@ const registerEnterprise = () => {
     padding: 22px;
   }
 
+  .register-brief {
+    order: 2;
+  }
+
+  .register-panel {
+    order: 1;
+  }
+
   .window-strip {
     margin-bottom: 28px;
   }
@@ -817,19 +834,41 @@ const registerEnterprise = () => {
     font-size: 28px;
   }
 
-  .role-switcher,
+  .role-switcher {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+    margin-bottom: 20px;
+  }
+
+  .role-chip {
+    min-height: 44px;
+    padding: 0 10px;
+  }
+
   .form-grid {
     grid-template-columns: 1fr;
   }
 
-  .section-heading,
-  .panel-footer {
+  .section-heading {
     align-items: flex-start;
     flex-direction: column;
   }
 
   .section-heading small {
     text-align: left;
+  }
+
+  .panel-footer {
+    align-items: center;
+    justify-content: space-between;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    gap: 10px;
+    font-size: 13px;
+
+    a {
+      white-space: nowrap;
+    }
   }
 }
 </style>

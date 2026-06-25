@@ -22,10 +22,10 @@
             <div class="stat-item"><span class="num">{{ f.jobCount || 0 }}</span><span class="label">提供岗位</span></div>
             <div class="stat-item"><span class="num">{{ f.signCount || 0 }}</span><span class="label">报名人数</span></div>
           </div>
-          <el-button type="primary" style="width: 100%" @click="onSign(f)">立即报名</el-button>
+          <el-button type="primary" class="w-full" @click="onSign(f)">立即报名</el-button>
         </div>
       </div>
-      <el-empty v-if="!loading && list.length === 0" description="暂无招聘会" style="grid-column: 1 / -1;" />
+      <el-empty v-if="!loading && list.length === 0" description="暂无招聘会" class="grid-empty" />
     </div>
 
     <div class="pagination-wrap">
@@ -61,21 +61,21 @@ onMounted(load)
 
 <style scoped lang="scss">
 .head h2 { color: var(--cr-text); .el-icon { vertical-align: middle; color: var(--cr-primary); } }
-.head .sub { color: var(--cr-text-muted); margin-top: 6px; }
-.grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 360px), 1fr)); gap: 20px; }
-.fair-card { background: #fff; border: 1px solid var(--cr-border-soft); border-radius: var(--cr-radius); overflow: hidden; box-shadow: var(--cr-shadow-soft);
-  .cover { height: 140px; background-size: cover; background-position: center; position: relative;
-    .cover-mask { position: absolute; inset: 0; background: linear-gradient(180deg, transparent, rgba(0,0,0,.6)); padding: 16px; display: flex; align-items: flex-end;
+.head .sub { color: var(--cr-text-muted); margin-top: .375rem; }
+.grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 22.5rem), 1fr)); gap: clamp(1rem, 2vw, 1.25rem); }
+.fair-card { background: #fff; border: 0.0625rem solid var(--cr-border-soft); border-radius: var(--cr-radius); overflow: hidden; box-shadow: var(--cr-shadow-soft);
+  .cover { aspect-ratio: 16 / 6; min-block-size: clamp(8rem, 18vw, 10rem); background-size: cover; background-position: center; position: relative;
+    .cover-mask { position: absolute; inset: 0; background: linear-gradient(180deg, transparent, rgba(0,0,0,.6)); padding: 1rem; display: flex; align-items: flex-end;
       .title { color: #fff; margin: 0; }
     }
   }
-  .body { padding: 16px; }
-  .info-row { color: var(--cr-text-soft); font-size: 13px; line-height: 1.8; .el-icon { vertical-align: middle; margin-right: 4px; color: var(--cr-primary); } }
-  .content { color: var(--cr-text-muted); font-size: 13px; margin: 10px 0; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
-  .stats { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; padding: 12px; background: var(--cr-surface-soft); border-radius: var(--cr-radius-sm); margin-bottom: 12px;
+  .body { padding: 1rem; }
+  .info-row { color: var(--cr-text-soft); font-size: .8125rem; line-height: 1.8; .el-icon { vertical-align: middle; margin-right: .25rem; color: var(--cr-primary); } }
+  .content { color: var(--cr-text-muted); font-size: .8125rem; margin: .625rem 0; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+  .stats { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .5rem; padding: .75rem; background: var(--cr-surface-soft); border-radius: var(--cr-radius-sm); margin-bottom: .75rem;
     .stat-item { flex: 1; text-align: center;
-      .num { display: block; color: var(--cr-danger); font-size: 20px; font-weight: 750; }
-      .label { color: var(--cr-text-muted); font-size: 12px; }
+      .num { display: block; color: var(--cr-danger); font-size: clamp(1.125rem, 2vw, 1.25rem); font-weight: 750; }
+      .label { color: var(--cr-text-muted); font-size: .75rem; }
     }
   }
 }

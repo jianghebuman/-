@@ -44,7 +44,6 @@ public class EnterpriseRegisterDTO {
     @Pattern(regexp = "^1[3-9]\\d{9}$|^0\\d{2,3}-?\\d{7,8}$", message = "请输入有效的手机号或固定电话")
     private String contactPhone;
 
-    @NotBlank(message = "企业邮箱不能为空")
     @Email(message = "请输入有效的企业邮箱")
     private String email;
 

@@ -1,12 +1,12 @@
 <template>
   <div class="job-list portal-content">
     <!-- 顶部搜索条 -->
-    <div class="search-bar page-card">
-      <el-input v-model="query.keyword" placeholder="搜索岗位名称、关键技能" size="large" clearable @keyup.enter="onSearch" style="flex: 1; margin-right: 12px;">
+    <form class="search-bar page-card" @submit.prevent="onSearch">
+      <el-input v-model="query.keyword" placeholder="搜索岗位名称、关键技能" size="large" clearable class="search-input">
         <template #prefix><el-icon><Search /></el-icon></template>
       </el-input>
-      <el-button type="primary" size="large" @click="onSearch">搜索职位</el-button>
-    </div>
+      <el-button type="primary" size="large" native-type="submit">搜索职位</el-button>
+    </form>
 
     <!-- 筛选区 -->
     <div class="filter page-card mt-20">
@@ -163,53 +163,53 @@ watch(() => route.query, (nv) => {
 </script>
 
 <style scoped lang="scss">
-.search-bar { display: flex; align-items: center; gap: 12px; }
-.search-bar :deep(.el-input) { margin-right: 0 !important; }
-.filter-row { display: flex; padding: 10px 0; border-bottom: 1px dashed var(--cr-border-soft);
+.search-bar { display: grid; grid-template-columns: minmax(14rem, 1fr) auto; align-items: center; gap: clamp(.5rem, 1.2vw, .875rem); }
+.search-input { min-width: 0; }
+.filter-row { display: grid; grid-template-columns: minmax(5.5rem, max-content) minmax(0, 1fr); gap: .75rem; padding: .625rem 0; border-bottom: 0.0625rem dashed var(--cr-border-soft);
   &:last-child { border-bottom: none; }
-  .label { width: 88px; color: var(--cr-text-muted); flex-shrink: 0; padding-top: 6px; font-weight: 650; }
-  .options { flex: 1; display: flex; flex-wrap: wrap; gap: 8px; }
-  .opt { padding: 6px 14px; border: 1px solid transparent; border-radius: 999px; cursor: pointer; font-size: 14px; color: var(--cr-text-soft); transition: all .2s ease;
+  .label { color: var(--cr-text-muted); padding-top: .375rem; font-weight: 650; }
+  .options { min-width: 0; display: flex; flex-wrap: wrap; gap: .5rem; }
+  .opt { padding: .375rem .875rem; border: 0.0625rem solid transparent; border-radius: 999rem; cursor: pointer; font-size: .875rem; color: var(--cr-text-soft); transition: all .2s ease;
     &:hover { color: var(--cr-primary); background: var(--cr-primary-soft); }
-    &.active { background: var(--cr-primary); border-color: var(--cr-primary); color: #fff; box-shadow: 0 8px 16px rgba(37,99,235,.14); }
+    &.active { background: var(--cr-primary); border-color: var(--cr-primary); color: #fff; box-shadow: 0 .5rem 1rem rgba(37,99,235,.14); }
   }
 }
-.result-info { margin: 20px 0 10px; color: var(--cr-text-soft); font-size: 14px; b { color: var(--cr-danger); margin: 0 4px; } }
-.job-row { background: rgba(255,255,255,.96); border: 1px solid var(--cr-border-soft); border-radius: var(--cr-radius); padding: clamp(16px, 1.5vw, 22px); margin-bottom: 12px; display: grid; grid-template-columns: minmax(0, 1fr) minmax(180px, 0.28fr); gap: 18px; cursor: pointer; transition: border-color .2s ease, box-shadow .2s ease, transform .2s ease;
-  &:hover { border-color: rgba(37,99,235,.28); box-shadow: var(--cr-shadow); transform: translateY(-1px); }
+.result-info { margin: 1.25rem 0 .625rem; color: var(--cr-text-soft); font-size: .875rem; b { color: var(--cr-danger); margin: 0 .25rem; } }
+.job-row { background: rgba(255,255,255,.96); border: 0.0625rem solid var(--cr-border-soft); border-radius: var(--cr-radius); padding: clamp(1rem, 1.5vw, 1.375rem); margin-bottom: .75rem; display: grid; grid-template-columns: minmax(0, 1fr) minmax(11.25rem, 0.28fr); gap: 1.125rem; cursor: pointer; transition: border-color .2s ease, box-shadow .2s ease, transform .2s ease;
+  &:hover { border-color: rgba(37,99,235,.28); box-shadow: var(--cr-shadow); transform: translateY(-.0625rem); }
   .job-main { min-width: 0; }
-  .job-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px;
-    .title { font-size: 17px; font-weight: 750; color: var(--cr-text); min-width: 0; }
-    .salary { color: var(--cr-danger); font-size: 17px; font-weight: 750; margin-left: 12px; white-space: nowrap; }
+  .job-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: .625rem;
+    .title { font-size: 1.0625rem; font-weight: 750; color: var(--cr-text); min-width: 0; }
+    .salary { color: var(--cr-danger); font-size: 1.0625rem; font-weight: 750; margin-left: .75rem; white-space: nowrap; }
   }
-  .job-meta { display: flex; gap: 10px 16px; flex-wrap: wrap; color: var(--cr-text-muted); font-size: 13px; margin-bottom: 10px;
+  .job-meta { display: flex; gap: .625rem 1rem; flex-wrap: wrap; color: var(--cr-text-muted); font-size: .8125rem; margin-bottom: .625rem;
     .el-icon { vertical-align: middle; }
   }
-  .job-tags { display: flex; gap: 6px; flex-wrap: wrap; }
-  .job-side { min-width: 0; padding-left: 18px; border-left: 1px solid var(--cr-border-soft); text-align: right;
-    .company { font-size: 14px; color: var(--cr-text); margin-bottom: 8px; font-weight: 650; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-    .publish { color: var(--cr-text-muted); font-size: 12px; }
+  .job-tags { display: flex; gap: .375rem; flex-wrap: wrap; }
+  .job-side { min-width: 0; padding-left: 1.125rem; border-left: 0.0625rem solid var(--cr-border-soft); text-align: right;
+    .company { font-size: .875rem; color: var(--cr-text); margin-bottom: .5rem; font-weight: 650; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .publish { color: var(--cr-text-muted); font-size: .75rem; }
   }
 }
 
-@media (max-width: 820px) {
+@media (max-width: 51.25rem) {
   .job-row {
     grid-template-columns: 1fr;
   }
 
   .job-row .job-side {
     padding-left: 0;
-    padding-top: 12px;
+    padding-top: .75rem;
     border-left: 0;
-    border-top: 1px solid var(--cr-border-soft);
+    border-top: 0.0625rem solid var(--cr-border-soft);
     text-align: left;
   }
 }
 
-@media (max-width: 640px) {
+@media (max-width: 40rem) {
   .search-bar {
     align-items: stretch;
-    flex-direction: column;
+    grid-template-columns: 1fr;
   }
 
   .search-bar :deep(.el-button) {
@@ -217,20 +217,18 @@ watch(() => route.query, (nv) => {
   }
 
   .filter-row {
-    display: block;
+    grid-template-columns: 1fr;
+    gap: .5rem;
   }
 
   .filter-row .label {
-    display: block;
-    width: auto;
     padding-top: 0;
-    margin-bottom: 8px;
   }
 
   .job-row .job-head {
     align-items: flex-start;
     flex-direction: column;
-    gap: 6px;
+    gap: .375rem;
   }
 
   .job-row .job-head .salary {

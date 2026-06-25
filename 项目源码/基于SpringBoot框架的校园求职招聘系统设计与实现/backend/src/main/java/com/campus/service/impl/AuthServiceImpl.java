@@ -6,9 +6,9 @@ import com.campus.entity.AdminUser;
 import com.campus.entity.Enterprise;
 import com.campus.entity.Student;
 import com.campus.service.*;
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.campus.vo.LoginVO;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -106,9 +106,6 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public void studentRegister(StudentRegisterDTO dto) {
-        if (studentService.getByUsername(dto.getUsername()) != null) {
-            throw new BusinessException("账号已存在");
-        }
         Student s = new Student();
         s.setUsername(dto.getUsername());
         s.setPassword(passwordEncoder.encode(dto.getPassword()));
@@ -121,19 +118,15 @@ public class AuthServiceImpl implements AuthService {
         s.setEmail(dto.getEmail());
         s.setEducation("本科");
         s.setStatus(1);
-        studentService.save(s);
+        try {
+            studentService.save(s);
+        } catch (DuplicateKeyException e) {
+            throw new BusinessException("账号已存在");
+        }
     }
 
     @Override
     public void enterpriseRegister(EnterpriseRegisterDTO dto) {
-        if (enterpriseService.getByUsername(dto.getUsername()) != null) {
-            throw new BusinessException("账号已存在");
-        }
-        long creditCodeCount = enterpriseService.count(new LambdaQueryWrapper<Enterprise>()
-                .eq(Enterprise::getCreditCode, dto.getCreditCode()));
-        if (creditCodeCount > 0) {
-            throw new BusinessException("该统一社会信用代码已注册");
-        }
         Enterprise e = new Enterprise();
         e.setUsername(dto.getUsername());
         e.setPassword(passwordEncoder.encode(dto.getPassword()));
@@ -148,7 +141,15 @@ public class AuthServiceImpl implements AuthService {
         e.setWebsite(dto.getWebsite());
         e.setAuditStatus(0);
         e.setStatus(1);
-        enterpriseService.save(e);
+        try {
+            enterpriseService.save(e);
+        } catch (DuplicateKeyException ex) {
+            String msg = ex.getMessage() == null ? "" : ex.getMessage();
+            if (msg.contains("uk_enterprise_credit_code")) {
+                throw new BusinessException("该统一社会信用代码已注册");
+            }
+            throw new BusinessException("账号已存在");
+        }
     }
 
     @Override

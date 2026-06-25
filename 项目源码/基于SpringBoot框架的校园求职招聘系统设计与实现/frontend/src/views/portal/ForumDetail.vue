@@ -33,7 +33,7 @@
               <div class="text">{{ c.content }}</div>
             </div>
           </div>
-          <el-empty v-if="comments.length === 0" description="暂无评论，快来抢沙发" :image-size="80" />
+          <el-empty v-if="comments.length === 0" description="暂无评论，快来抢沙发" />
         </div>
       </div>
     </div>
@@ -94,16 +94,22 @@ onMounted(load)
 </script>
 
 <style scoped lang="scss">
-.layout { max-width: 900px; margin: 0 auto; }
-.post-head { text-align: center; h1 { margin: 14px 0; color: var(--cr-text); line-height: 1.4; } }
-.meta { display: flex; justify-content: center; gap: 20px; color: var(--cr-text-muted); font-size: 13px; .el-icon { vertical-align: middle; } }
-.post-content { min-height: 180px; color: var(--cr-text); line-height: 1.9; font-size: 16px; white-space: pre-line; }
-.actions { margin-top: 24px; text-align: center; }
-.comment-title { font-size: 18px; font-weight: 600; margin-bottom: 14px; }
-.comment-editor { background: var(--cr-surface-soft); padding: 14px; border-radius: 8px; margin-bottom: 16px; }
-.editor-footer { margin-top: 10px; text-align: right; }
-.comment-item { display: flex; gap: 12px; padding: 14px 0; border-bottom: 1px dashed var(--cr-border-soft); }
-.avatar { width: 38px; height: 38px; border-radius: 50%; background: var(--cr-primary); color: #fff; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
-.body { flex: 1; .name { color: var(--cr-text); font-weight: 500; margin-bottom: 6px; span { color: var(--cr-text-muted); font-weight: normal; font-size: 12px; margin-left: 10px; } } .text { color: var(--cr-text-soft); line-height: 1.6; } }
+.layout { max-width: 56.25rem; margin: 0 auto; }
+.post-head { text-align: center; h1 { margin: .875rem 0; color: var(--cr-text); line-height: 1.4; } }
+.meta { display: flex; justify-content: center; gap: .75rem 1.25rem; flex-wrap: wrap; color: var(--cr-text-muted); font-size: .8125rem; .el-icon { vertical-align: middle; } }
+.post-content { min-height: 11.25rem; color: var(--cr-text); line-height: 1.9; font-size: 1rem; white-space: pre-line; }
+.actions { margin-top: 1.5rem; text-align: center; }
+.comment-title { font-size: 1.125rem; font-weight: 600; margin-bottom: .875rem; }
+.comment-editor { background: var(--cr-surface-soft); padding: .875rem; border-radius: var(--cr-radius-sm); margin-bottom: 1rem; }
+.editor-footer { margin-top: .625rem; text-align: right; }
+.comment-item { display: flex; gap: .75rem; padding: .875rem 0; border-bottom: 0.0625rem dashed var(--cr-border-soft); }
+.avatar { width: clamp(2rem, 4.5vw, 2.375rem); height: clamp(2rem, 4.5vw, 2.375rem); border-radius: 50%; background: var(--cr-primary); color: #fff; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.body { flex: 1; min-width: 0; .name { color: var(--cr-text); font-weight: 500; margin-bottom: .375rem; span { color: var(--cr-text-muted); font-weight: normal; font-size: .75rem; margin-left: .625rem; } } .text { color: var(--cr-text-soft); line-height: 1.6; } }
+
+@media (max-width: 35rem) {
+  .actions { display: grid; gap: .625rem; }
+  .actions :deep(.el-button) { width: 100%; margin-left: 0; }
+  .body .name span { display: block; margin-left: 0; margin-top: .25rem; }
+}
 </style>
 

@@ -49,7 +49,7 @@
           <!-- 企业信息 -->
           <div class="page-card ent-card" v-if="enterprise">
             <div class="ent-head">
-              <el-avatar :size="60" :src="enterprise.logo" shape="square"><el-icon><OfficeBuilding /></el-icon></el-avatar>
+              <el-avatar class="ent-avatar" :src="enterprise.logo" shape="square"><el-icon><OfficeBuilding /></el-icon></el-avatar>
               <div class="ent-info">
                 <h3>{{ enterprise.companyName }}</h3>
                 <p>{{ enterprise.industry }} · {{ enterprise.scale }}</p>
@@ -66,10 +66,10 @@
     </div>
 
     <!-- 投递确认弹窗 -->
-    <el-dialog v-model="applyDialog" title="投递岗位" width="500px">
-      <el-form label-width="80px">
+    <el-dialog v-model="applyDialog" title="投递岗位" width="min(92vw, 31.25rem)">
+      <el-form label-width="5rem">
         <el-form-item label="选择简历">
-          <el-select v-model="applyForm.resumeId" placeholder="使用在线简历" style="width: 100%">
+          <el-select v-model="applyForm.resumeId" placeholder="使用在线简历" class="w-full">
             <el-option :value="null" label="使用在线简历" />
             <el-option v-for="r in resumes" :key="r.id" :value="r.id" :label="r.fileName" />
           </el-select>
@@ -173,25 +173,26 @@ onMounted(async () => {
 </script>
 
 <style scoped lang="scss">
-.head { display: flex; gap: 20px; }
+.head { display: flex; gap: clamp(1rem, 2vw, 1.25rem); }
 .head-left { flex: 1; }
-.head-right { width: 240px; display: flex; flex-direction: column; gap: 10px; align-items: flex-end; }
-.title { color: var(--cr-text); margin-bottom: 8px; }
-.salary { color: var(--cr-danger); font-size: clamp(22px, 2vw, 28px); font-weight: 800; margin-bottom: 12px; }
-.meta { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 10px; }
-.welfare { display: flex; gap: 6px; flex-wrap: wrap; }
-.stats { font-size: 12px; color: var(--cr-text-muted); margin-top: 6px; span { margin-left: 10px; } }
-.detail-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(280px, 0.34fr); gap: 20px; align-items: start; }
-.block-title { font-size: 16px; color: var(--cr-text); border-left: 3px solid var(--cr-primary); padding-left: 10px; }
-.rich-text { color: var(--cr-text-soft); line-height: 1.85; white-space: pre-line; margin-top: 10px; }
-.ent-card { .ent-head { display: flex; gap: 12px; }
-  .ent-info h3 { margin-bottom: 6px; font-size: 16px; color: var(--cr-text); }
-  .ent-info p { color: var(--cr-text-muted); font-size: 13px; }
-  .ent-line { line-height: 1.8; font-size: 14px; color: var(--cr-text-soft); b { color: var(--cr-text-muted); }}
-  .ent-intro { color: var(--cr-text-soft); line-height: 1.6; margin: 12px 0; font-size: 13px; }
+.head-right { flex: 0 1 15rem; display: flex; flex-direction: column; gap: .625rem; align-items: flex-end; }
+.title { color: var(--cr-text); margin-bottom: .5rem; }
+.salary { color: var(--cr-danger); font-size: clamp(1.375rem, 2vw, 1.75rem); font-weight: 800; margin-bottom: .75rem; }
+.meta { display: flex; gap: .5rem; flex-wrap: wrap; margin-bottom: .625rem; }
+.welfare { display: flex; gap: .375rem; flex-wrap: wrap; }
+.stats { font-size: .75rem; color: var(--cr-text-muted); margin-top: .375rem; span { margin-left: .625rem; } }
+.detail-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(17.5rem, 0.34fr); gap: clamp(1rem, 2vw, 1.25rem); align-items: start; }
+.block-title { font-size: 1rem; color: var(--cr-text); border-left: .1875rem solid var(--cr-primary); padding-left: .625rem; }
+.rich-text { color: var(--cr-text-soft); line-height: 1.85; white-space: pre-line; margin-top: .625rem; }
+.ent-card { .ent-head { display: flex; gap: .75rem; }
+  .ent-avatar { --el-avatar-size: clamp(3rem, 5vw, 3.75rem); flex-shrink: 0; }
+  .ent-info h3 { margin-bottom: .375rem; font-size: 1rem; color: var(--cr-text); }
+  .ent-info p { color: var(--cr-text-muted); font-size: .8125rem; }
+  .ent-line { line-height: 1.8; font-size: .875rem; color: var(--cr-text-soft); b { color: var(--cr-text-muted); }}
+  .ent-intro { color: var(--cr-text-soft); line-height: 1.6; margin: .75rem 0; font-size: .8125rem; }
 }
 
-@media (max-width: 900px) {
+@media (max-width: 56.25rem) {
   .head {
     flex-direction: column;
   }
@@ -212,7 +213,7 @@ onMounted(async () => {
 
   .stats span {
     margin-left: 0;
-    margin-right: 12px;
+    margin-right: .75rem;
   }
 
   .detail-grid {

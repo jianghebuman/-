@@ -63,37 +63,36 @@ onMounted(load)
 
 <style scoped lang="scss">
 .head h2 { color: var(--cr-text); .el-icon { vertical-align: middle; color: var(--cr-primary); } }
-.head .sub { color: var(--cr-text-muted); margin-top: 6px; }
-.talk-item { background: #fff; border: 1px solid var(--cr-border-soft); border-radius: var(--cr-radius); padding: clamp(16px, 1.5vw, 20px); margin-bottom: 16px; display: grid; grid-template-columns: 80px minmax(0, 1fr); gap: 20px; box-shadow: var(--cr-shadow-soft);
-  .date { width: 80px; flex-shrink: 0; background: linear-gradient(135deg, var(--cr-primary), var(--cr-accent)); border-radius: var(--cr-radius-sm); color: #fff; text-align: center; padding: 14px 0;
-    .day { font-size: 30px; font-weight: 600; line-height: 1; }
-    .month { font-size: 14px; margin-top: 6px; }
+.head .sub { color: var(--cr-text-muted); margin-top: .375rem; }
+.talk-item { background: #fff; border: 0.0625rem solid var(--cr-border-soft); border-radius: var(--cr-radius); padding: clamp(1rem, 1.5vw, 1.25rem); margin-bottom: 1rem; display: grid; grid-template-columns: minmax(4.5rem, 5rem) minmax(0, 1fr); gap: clamp(.875rem, 2vw, 1.25rem); box-shadow: var(--cr-shadow-soft);
+  .date { background: linear-gradient(135deg, var(--cr-primary), var(--cr-accent)); border-radius: var(--cr-radius-sm); color: #fff; text-align: center; padding: .875rem 0;
+    .day { font-size: clamp(1.625rem, 4vw, 1.875rem); font-weight: 600; line-height: 1; }
+    .month { font-size: .875rem; margin-top: .375rem; }
   }
   .body { min-width: 0; }
-  .title { color: var(--cr-text); margin-bottom: 10px; line-height: 1.4; }
-  .meta { display: flex; flex-wrap: wrap; gap: 8px 16px; color: var(--cr-text-muted); font-size: 13px; margin-bottom: 10px; .el-icon { vertical-align: middle; color: var(--cr-primary); } }
-  .content { color: var(--cr-text-soft); line-height: 1.7; margin-bottom: 14px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+  .title { color: var(--cr-text); margin-bottom: .625rem; line-height: 1.4; }
+  .meta { display: flex; flex-wrap: wrap; gap: .5rem 1rem; color: var(--cr-text-muted); font-size: .8125rem; margin-bottom: .625rem; .el-icon { vertical-align: middle; color: var(--cr-primary); } }
+  .content { color: var(--cr-text-soft); line-height: 1.7; margin-bottom: .875rem; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
   .footer { display: flex; justify-content: space-between; align-items: center; }
 }
 
-@media (max-width: 560px) {
+@media (max-width: 35rem) {
   .talk-item {
     grid-template-columns: 1fr;
-    gap: 14px;
+    gap: .875rem;
   }
 
   .talk-item .date {
-    width: 100%;
     display: flex;
     align-items: baseline;
     justify-content: center;
-    gap: 8px;
+    gap: .5rem;
   }
 
   .talk-item .footer {
     align-items: stretch;
     flex-direction: column;
-    gap: 10px;
+    gap: .625rem;
   }
 }
 </style>

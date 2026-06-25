@@ -15,7 +15,7 @@
         <el-radio-button label="经验分享">经验分享</el-radio-button>
         <el-radio-button label="offer捷报">Offer捷报</el-radio-button>
       </el-radio-group>
-      <el-input v-model="query.keyword" placeholder="搜索帖子标题" clearable style="width: 260px" @keyup.enter="reload">
+      <el-input v-model="query.keyword" placeholder="搜索帖子标题" clearable class="toolbar-search" @keyup.enter="reload">
         <template #append><el-button @click="reload"><el-icon><Search /></el-icon></el-button></template>
       </el-input>
     </div>
@@ -60,10 +60,10 @@
       </div>
     </div>
 
-    <el-dialog v-model="dialog" title="发布帖子" width="620px">
-      <el-form :model="form" label-width="80px">
+    <el-dialog v-model="dialog" title="发布帖子" width="min(92vw, 38.75rem)">
+      <el-form :model="form" label-width="5rem">
         <el-form-item label="版块">
-          <el-select v-model="form.category" style="width: 100%">
+          <el-select v-model="form.category" class="w-full">
             <el-option label="求职交流" value="求职交流" />
             <el-option label="经验分享" value="经验分享" />
             <el-option label="Offer捷报" value="offer捷报" />
@@ -135,16 +135,29 @@ onMounted(load)
 </script>
 
 <style scoped lang="scss">
-.hero { display: flex; justify-content: space-between; align-items: center; background: linear-gradient(135deg, #eef6ff, #fff); h2 { color: var(--cr-text); .el-icon { vertical-align: middle; } } p { color: var(--cr-text-muted); margin-top: 6px; } }
-.toolbar { display: flex; justify-content: space-between; align-items: center; }
-.content { display: grid; grid-template-columns: 1fr 280px; gap: 20px; }
-.post-item { display: flex; gap: 14px; padding: 18px 0; border-bottom: 1px dashed var(--cr-border-soft); cursor: pointer; &:hover .post-title span:last-child { color: var(--cr-primary); } }
-.avatar { width: 44px; height: 44px; border-radius: 50%; background: linear-gradient(135deg, var(--cr-primary), var(--cr-success)); color: #fff; display: flex; align-items: center; justify-content: center; font-weight: 600; flex-shrink: 0; }
+.hero { display: flex; justify-content: space-between; align-items: center; gap: 1rem; background: linear-gradient(135deg, #eef6ff, #fff); h2 { color: var(--cr-text); .el-icon { vertical-align: middle; } } p { color: var(--cr-text-muted); margin-top: .375rem; } }
+.toolbar { display: grid; grid-template-columns: minmax(0, 1fr) minmax(14rem, .28fr); gap: clamp(.75rem, 2vw, 1rem); align-items: center; }
+.toolbar :deep(.el-radio-group) { min-width: 0; overflow-x: auto; }
+.toolbar-search { min-width: 0; }
+.content { display: grid; grid-template-columns: minmax(0, 1fr) minmax(15rem, 17.5rem); gap: clamp(1rem, 2vw, 1.25rem); }
+.post-item { display: flex; gap: .875rem; padding: 1.125rem 0; border-bottom: 0.0625rem dashed var(--cr-border-soft); cursor: pointer; &:hover .post-title span:last-child { color: var(--cr-primary); } }
+.avatar { width: clamp(2.25rem, 5vw, 2.75rem); height: clamp(2.25rem, 5vw, 2.75rem); border-radius: 50%; background: linear-gradient(135deg, var(--cr-primary), var(--cr-success)); color: #fff; display: flex; align-items: center; justify-content: center; font-weight: 600; flex-shrink: 0; }
 .post-body { flex: 1; min-width: 0; }
-.post-title { display: flex; align-items: center; gap: 8px; font-weight: 600; color: var(--cr-text); margin-bottom: 8px; }
-.post-content { color: var(--cr-text-soft); line-height: 1.6; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; margin-bottom: 8px; }
-.post-meta { display: flex; gap: 16px; color: var(--cr-text-muted); font-size: 12px; .el-icon { vertical-align: middle; } }
-.tips p { color: var(--cr-text-soft); line-height: 1.8; font-size: 13px; }
-.quick { display: flex; flex-direction: column; gap: 10px; }
+.post-title { display: flex; align-items: center; gap: .5rem; font-weight: 600; color: var(--cr-text); margin-bottom: .5rem; }
+.post-content { color: var(--cr-text-soft); line-height: 1.6; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; margin-bottom: .5rem; }
+.post-meta { display: flex; gap: 1rem; flex-wrap: wrap; color: var(--cr-text-muted); font-size: .75rem; .el-icon { vertical-align: middle; } }
+.tips p { color: var(--cr-text-soft); line-height: 1.8; font-size: .8125rem; }
+.quick { display: flex; flex-direction: column; gap: .625rem; }
+
+@media (max-width: 56.25rem) {
+  .content,
+  .toolbar { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 40rem) {
+  .hero { align-items: stretch; flex-direction: column; }
+  .hero :deep(.el-button) { width: 100%; }
+  .post-title { align-items: flex-start; flex-direction: column; }
+}
 </style>
 

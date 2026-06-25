@@ -16,7 +16,7 @@
           <div class="cover" v-if="n.cover" :style="{ backgroundImage: `url(${n.cover})` }"></div>
           <div class="body">
             <h3 class="title">
-              <el-tag size="small" type="danger" v-if="n.isTop" effect="dark" style="margin-right: 8px;">置顶</el-tag>
+              <el-tag size="small" type="danger" v-if="n.isTop" effect="dark" class="top-tag">置顶</el-tag>
               {{ n.title }}
             </h3>
             <p class="summary">{{ n.summary }}</p>
@@ -92,31 +92,32 @@ onMounted(async () => {
 
 <style scoped lang="scss">
 .head h2 { color: var(--cr-text); .el-icon { vertical-align: middle; color: var(--cr-primary); } }
-.head .sub { color: var(--cr-text-muted); margin-top: 6px; }
-.layout { display: grid; grid-template-columns: minmax(0, 1fr) minmax(240px, 280px); gap: 20px; }
-.news-row { display: flex; gap: 16px; padding: 16px 0; border-bottom: 1px dashed #ebeef5; cursor: pointer;
+.head .sub { color: var(--cr-text-muted); margin-top: .375rem; }
+.layout { display: grid; grid-template-columns: minmax(0, 1fr) minmax(15rem, 17.5rem); gap: clamp(1rem, 2vw, 1.25rem); }
+.news-row { display: flex; gap: 1rem; padding: 1rem 0; border-bottom: 0.0625rem dashed #ebeef5; cursor: pointer;
   &:hover .title { color: var(--cr-primary); }
-  .cover { width: clamp(110px, 16vw, 160px); height: 100px; background-size: cover; background-position: center; border-radius: var(--cr-radius-sm); flex-shrink: 0; }
+  .cover { width: clamp(7rem, 16vw, 10rem); aspect-ratio: 8 / 5; background-size: cover; background-position: center; border-radius: var(--cr-radius-sm); flex-shrink: 0; }
   .body { flex: 1; min-width: 0; }
-  .title { font-size: 16px; color: var(--cr-text); margin-bottom: 8px; display: flex; align-items: center; line-height: 1.45; }
-  .summary { color: var(--cr-text-soft); font-size: 13px; line-height: 1.6; margin-bottom: 10px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
-  .meta { display: flex; gap: 8px 16px; flex-wrap: wrap; color: var(--cr-text-muted); font-size: 12px; .el-icon { vertical-align: middle; } }
+  .title { font-size: 1rem; color: var(--cr-text); margin-bottom: .5rem; display: flex; align-items: center; flex-wrap: wrap; gap: .375rem; line-height: 1.45; }
+  .top-tag { margin-right: .125rem; }
+  .summary { color: var(--cr-text-soft); font-size: .8125rem; line-height: 1.6; margin-bottom: .625rem; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+  .meta { display: flex; gap: .5rem 1rem; flex-wrap: wrap; color: var(--cr-text-muted); font-size: .75rem; .el-icon { vertical-align: middle; } }
 }
-.block-title { font-size: 15px; color: var(--cr-text); border-left: 3px solid var(--cr-primary); padding-left: 8px; margin-bottom: 12px; }
+.block-title { font-size: .9375rem; color: var(--cr-text); border-left: .1875rem solid var(--cr-primary); padding-left: .5rem; margin-bottom: .75rem; }
 .hot-list { padding-left: 0;
-  li { display: flex; align-items: center; gap: 8px; padding: 8px 0; border-bottom: 1px dashed #ebeef5; font-size: 13px; cursor: pointer;
+  li { display: flex; align-items: center; gap: .5rem; padding: .5rem 0; border-bottom: 0.0625rem dashed #ebeef5; font-size: .8125rem; cursor: pointer;
     &:hover .title { color: var(--cr-primary); }
-    .rank { width: 20px; height: 20px; background: #c0c4cc; color: #fff; text-align: center; line-height: 20px; border-radius: 4px; font-size: 12px;
+    .rank { width: 1.25rem; height: 1.25rem; background: #c0c4cc; color: #fff; text-align: center; line-height: 1.25rem; border-radius: .25rem; font-size: .75rem;
       &.top { background: var(--cr-danger); }
     }
     .title { flex: 1; color: var(--cr-text); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   }
 }
-@media (max-width: 900px) {
+@media (max-width: 56.25rem) {
   .layout { grid-template-columns: 1fr; }
 }
-@media (max-width: 560px) {
+@media (max-width: 35rem) {
   .news-row { flex-direction: column; }
-  .news-row .cover { width: 100%; height: 160px; }
+  .news-row .cover { width: 100%; aspect-ratio: 16 / 9; }
 }
 </style>

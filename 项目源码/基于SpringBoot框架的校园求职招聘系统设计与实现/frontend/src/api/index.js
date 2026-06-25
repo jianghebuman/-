@@ -3,8 +3,8 @@ import request from '@/utils/request'
 // ==================== 认证 ====================
 export const authApi = {
   login: (data) => request.post('/auth/login', data),
-  registerStudent: (data) => request.post('/auth/register/student', data),
-  registerEnterprise: (data) => request.post('/auth/register/enterprise', data),
+  registerStudent: (data) => request.post('/auth/register/student', data, { timeout: 30000 }),
+  registerEnterprise: (data) => request.post('/auth/register/enterprise', data, { timeout: 30000 }),
   logout: () => request.post('/auth/logout'),
   changePassword: (data) => request.post('/account/password', data),
   info: () => request.get('/account/info')

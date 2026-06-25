@@ -1,9 +1,9 @@
 <template>
   <div class="portal-layout">
     <el-header class="portal-header">
-      <div class="portal-content flex-between" style="height: 100%;">
+      <div class="portal-content header-inner">
         <div class="logo" @click="$router.push('/')">
-          <el-icon size="28"><School /></el-icon>
+          <el-icon class="logo-icon"><School /></el-icon>
           <span>校园求职招聘系统</span>
         </div>
         <el-menu mode="horizontal" :default-active="$route.path" router class="nav" :ellipsis="false">
@@ -19,7 +19,7 @@
           <template v-if="userStore.isLogin">
             <el-dropdown trigger="click" @command="onCommand">
               <button class="user-link" type="button">
-                <el-avatar :size="28" :src="userStore.avatar"><el-icon><User /></el-icon></el-avatar>
+                <el-avatar class="user-avatar" :src="userStore.avatar"><el-icon><User /></el-icon></el-avatar>
                 <span>{{ userStore.name || userStore.username }}</span>
               </button>
               <template #dropdown>
@@ -78,52 +78,57 @@ const onCommand = (cmd) => {
   top: 0;
   z-index: 20;
   height: auto;
-  min-height: 68px;
+  min-height: 4.25rem;
   padding: 0;
   background: rgba(255, 255, 255, 0.88);
-  border-bottom: 1px solid var(--cr-border-soft);
-  box-shadow: 0 8px 24px rgba(22, 38, 68, 0.06);
-  backdrop-filter: blur(14px);
+  border-bottom: 0.0625rem solid var(--cr-border-soft);
+  box-shadow: 0 0.5rem 1.5rem rgba(22, 38, 68, 0.06);
+  backdrop-filter: blur(0.875rem);
 }
-.portal-header .portal-content {
-  gap: clamp(12px, 2vw, 28px);
-  min-height: 68px;
-  padding: 8px 0;
+.header-inner {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: clamp(0.75rem, 2vw, 1.75rem);
+  min-height: 4.25rem;
+  padding: 0.5rem 0;
 }
-.logo { display: flex; align-items: center; gap: 8px; cursor: pointer; font-size: 18px; font-weight: 700; color: var(--cr-text); min-width: max-content; }
+.logo { display: flex; align-items: center; gap: 0.5rem; cursor: pointer; font-size: 1.125rem; font-weight: 700; color: var(--cr-text); min-width: max-content; }
+.logo-icon { font-size: clamp(1.5rem, 2.2vw, 1.75rem); }
 .logo .el-icon { color: var(--cr-primary); }
 .nav { flex: 1; border-bottom: none; margin-left: 0; min-width: 0; overflow-x: auto; }
 .nav :deep(.el-menu--horizontal) { border-bottom: 0; }
-.nav :deep(.el-menu-item) { min-width: auto; padding: 0 clamp(10px, 1.5vw, 20px); justify-content: center; color: var(--cr-text-soft); font-weight: 650; }
+.nav :deep(.el-menu-item) { min-width: auto; padding: 0 clamp(0.625rem, 1.5vw, 1.25rem); justify-content: center; color: var(--cr-text-soft); font-weight: 650; }
 .nav :deep(.el-menu-item.is-active) { color: var(--cr-primary); border-bottom-color: var(--cr-primary); }
-.user-area { display: flex; align-items: center; gap: 10px; min-width: max-content; justify-content: flex-end; }
-.user-link { appearance: none; border: 0; background: transparent; padding: 6px 8px; display: flex; align-items: center; gap: 6px; cursor: pointer; color: var(--cr-text); font: inherit; border-radius: 8px; outline: none; }
+.user-area { display: flex; align-items: center; gap: 0.625rem; min-width: max-content; justify-content: flex-end; }
+.user-avatar { --el-avatar-size: clamp(1.5rem, 2.4vw, 1.75rem); }
+.user-link { appearance: none; border: 0; background: transparent; padding: 0.375rem 0.5rem; display: flex; align-items: center; gap: 0.375rem; cursor: pointer; color: var(--cr-text); font: inherit; border-radius: var(--cr-radius-sm); outline: none; }
 .user-link:hover { background: var(--cr-surface-soft); }
-.user-link:focus-visible { box-shadow: 0 0 0 3px rgba(37,99,235,.18); }
-.user-link span:last-child { max-width: 130px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.user-link:focus-visible { box-shadow: 0 0 0 0.1875rem rgba(37,99,235,.18); }
+.user-link span:last-child { max-width: 8rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 :deep(.el-tooltip__trigger:focus-visible) { outline: none; }
 :deep(.el-tooltip__trigger:focus) { outline: none; }
-.portal-main { flex: 1; background: transparent; padding: clamp(14px, 2vw, 26px) 0; }
-.portal-footer { background: #172033; color: #b9c5d6; text-align: center; padding: 22px; height: auto; font-size: 13px; line-height: 1.8; }
+.portal-main { flex: 1; background: transparent; padding: clamp(0.875rem, 2vw, 1.625rem) 0; }
+.portal-footer { background: #172033; color: #b9c5d6; text-align: center; padding: 1.375rem; height: auto; font-size: 0.8125rem; line-height: 1.8; }
 
-@media (min-width: 1400px) {
-  .nav :deep(.el-menu-item) { padding: 0 24px; }
+@media (min-width: 87.5rem) {
+  .nav :deep(.el-menu-item) { padding: 0 1.5rem; }
 }
 
-@media (max-width: 1100px) {
-  .portal-header .portal-content {
+@media (max-width: 68.75rem) {
+  .header-inner {
     flex-wrap: wrap;
     justify-content: flex-start;
   }
-  .logo { font-size: 17px; }
+  .logo { font-size: 1.0625rem; }
   .nav { order: 3; flex-basis: 100%; }
-  .nav :deep(.el-menu-item) { padding: 0 14px; }
+  .nav :deep(.el-menu-item) { padding: 0 0.875rem; }
   .user-area { margin-left: auto; }
 }
 
-@media (max-width: 640px) {
+@media (max-width: 40rem) {
   .logo span { max-width: 52vw; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-  .portal-header .portal-content { gap: 8px 12px; }
-  .user-area :deep(.el-button) { padding: 8px 10px; }
+  .header-inner { gap: 0.5rem 0.75rem; }
+  .user-area :deep(.el-button) { padding: 0.5rem 0.625rem; }
 }
 </style>

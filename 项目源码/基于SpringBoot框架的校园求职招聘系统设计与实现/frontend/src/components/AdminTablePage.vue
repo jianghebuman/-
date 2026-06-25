@@ -12,13 +12,13 @@
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  gap: 14px;
+  gap: 0.875rem;
   flex-wrap: wrap;
 }
 .header h2 {
-  margin-bottom: 6px;
+  margin-bottom: 0.375rem;
   color: var(--cr-text);
-  font-size: clamp(20px, 1.8vw, 24px);
+  font-size: clamp(1.25rem, 1.8vw, 1.5rem);
 }
 .header p {
   color: var(--cr-text-muted);
@@ -28,16 +28,21 @@
   display: flex;
   align-items: center;
   flex-wrap: wrap;
-  gap: 10px;
-  margin-bottom: 16px;
+  gap: 0.625rem;
+  margin-bottom: 1rem;
 }
 .toolbar :deep(.el-input),
 .toolbar :deep(.el-select) {
+  flex: 1 1 clamp(10rem, 28vw, 16rem);
+  min-width: min(100%, 10rem);
+  width: auto !important;
   max-width: 100%;
 }
-@media (max-width: 640px) {
+@media (max-width: 40rem) {
   .header :deep(.el-button),
-  .toolbar :deep(.el-button) {
+  .toolbar :deep(.el-button),
+  .toolbar :deep(.el-input),
+  .toolbar :deep(.el-select) {
     width: 100%;
   }
 }

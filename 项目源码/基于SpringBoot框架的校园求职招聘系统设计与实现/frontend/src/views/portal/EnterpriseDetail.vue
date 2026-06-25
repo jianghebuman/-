@@ -3,7 +3,7 @@
     <div v-if="enterprise">
       <!-- 企业头部 -->
       <div class="page-card head">
-        <el-avatar :size="100" :src="enterprise.logo" shape="square" class="logo"><el-icon size="40"><OfficeBuilding /></el-icon></el-avatar>
+        <el-avatar :src="enterprise.logo" shape="square" class="logo"><el-icon class="logo-icon"><OfficeBuilding /></el-icon></el-avatar>
         <div class="info">
           <h2 class="name">
             {{ enterprise.companyName }}
@@ -40,7 +40,7 @@
                 </div>
                 <div class="job-salary">{{ j.salaryMin }}-{{ j.salaryMax }}K</div>
               </div>
-              <el-empty v-if="jobs.length === 0" description="暂无在招职位" :image-size="80" />
+              <el-empty v-if="jobs.length === 0" description="暂无在招职位" />
             </div>
           </div>
         </div>
@@ -82,28 +82,30 @@ onMounted(async () => {
 </script>
 
 <style scoped lang="scss">
-.head { display: flex; gap: 20px; align-items: center; }
-.logo { flex-shrink: 0; }
-.info { flex: 1; }
-.name { color: var(--cr-text); display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
-.meta { color: var(--cr-text-soft); margin-top: 10px; .el-icon { vertical-align: middle; margin-right: 2px; color: var(--cr-primary); } .sep { margin: 0 10px; color: var(--cr-border); } }
-.welfare { margin-top: 12px; display: flex; gap: 6px; flex-wrap: wrap; }
-.detail-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(280px, 0.34fr); gap: 20px; align-items: start; }
-.block-title { font-size: 16px; color: var(--cr-text); border-left: 3px solid var(--cr-primary); padding-left: 10px; margin-bottom: 14px; .cnt { color: var(--cr-text-muted); font-size: 14px; margin-left: 6px; } }
+.head { display: flex; gap: clamp(1rem, 2vw, 1.25rem); align-items: center; }
+.logo { --el-avatar-size: clamp(4rem, 9vw, 6.25rem); flex-shrink: 0; }
+.logo-icon { font-size: clamp(2rem, 4vw, 2.5rem); }
+.info { flex: 1; min-width: 0; }
+.name { color: var(--cr-text); display: flex; align-items: center; gap: .625rem; flex-wrap: wrap; }
+.meta { color: var(--cr-text-soft); margin-top: .625rem; .el-icon { vertical-align: middle; margin-right: .125rem; color: var(--cr-primary); } .sep { margin: 0 .625rem; color: var(--cr-border); } }
+.welfare { margin-top: .75rem; display: flex; gap: .375rem; flex-wrap: wrap; }
+.detail-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(17.5rem, 0.34fr); gap: clamp(1rem, 2vw, 1.25rem); align-items: start; }
+.block-title { font-size: 1rem; color: var(--cr-text); border-left: .1875rem solid var(--cr-primary); padding-left: .625rem; margin-bottom: .875rem; .cnt { color: var(--cr-text-muted); font-size: .875rem; margin-left: .375rem; } }
 .rich-text { color: var(--cr-text-soft); line-height: 1.8; white-space: pre-line; }
-.job-list { .job-item { display: flex; justify-content: space-between; align-items: center; padding: 14px; border-radius: 6px; cursor: pointer; transition: background .2s;
+.job-list { .job-item { display: flex; justify-content: space-between; align-items: center; gap: 1rem; padding: .875rem; border-radius: .375rem; cursor: pointer; transition: background .2s;
     &:hover { background: var(--cr-surface-soft); }
-    .job-title { color: var(--cr-text); font-weight: 650; margin-bottom: 4px; }
-    .job-meta { color: var(--cr-text-muted); font-size: 12px; }
-    .job-salary { color: var(--cr-danger); font-weight: 750; font-size: 16px; white-space: nowrap; }
+    .job-left { min-width: 0; }
+    .job-title { color: var(--cr-text); font-weight: 650; margin-bottom: .25rem; }
+    .job-meta { color: var(--cr-text-muted); font-size: .75rem; }
+    .job-salary { color: var(--cr-danger); font-weight: 750; font-size: 1rem; white-space: nowrap; }
   }
 }
-.contact p { line-height: 2; font-size: 14px; color: var(--cr-text-soft); b { color: var(--cr-text-muted); } }
-@media (max-width: 900px) {
+.contact p { line-height: 2; font-size: .875rem; color: var(--cr-text-soft); b { color: var(--cr-text-muted); } }
+@media (max-width: 56.25rem) {
   .head { align-items: flex-start; flex-direction: column; }
   .detail-grid { grid-template-columns: 1fr; }
 }
-@media (max-width: 560px) {
-  .job-list .job-item { align-items: flex-start; flex-direction: column; gap: 8px; }
+@media (max-width: 35rem) {
+  .job-list .job-item { align-items: flex-start; flex-direction: column; gap: .5rem; }
 }
 </style>

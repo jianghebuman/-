@@ -1,7 +1,7 @@
 <template>
   <div class="home portal-content">
     <!-- 轮播图 -->
-    <el-carousel height="320px" class="banner" v-if="home.banners?.length">
+    <el-carousel height="clamp(13.75rem, 24vw, 22.5rem)" class="banner" v-if="home.banners?.length">
       <el-carousel-item v-for="b in home.banners" :key="b.id">
         <div class="banner-item" :style="{ backgroundImage: `url(${b.imageUrl})` }">
           <div class="banner-title">{{ b.title }}</div>
@@ -11,17 +11,23 @@
 
     <!-- 快速搜索 -->
     <div class="search-bar page-card mt-20">
-      <el-input v-model="kw" placeholder="搜索岗位、企业、技能关键词" size="large" style="flex: 1;" @keyup.enter="goSearch">
-        <template #prepend>
-          <el-select v-model="city" placeholder="城市" style="width: 110px">
-            <el-option label="全部城市" value="" />
-            <el-option v-for="c in cities" :key="c.dictValue" :label="c.dictLabel" :value="c.dictValue" />
-          </el-select>
-        </template>
-        <template #append>
-          <el-button type="primary" @click="goSearch"><el-icon><Search /></el-icon>&nbsp;搜索</el-button>
-        </template>
-      </el-input>
+      <form class="search-form" @submit.prevent="goSearch">
+        <el-select v-model="city" placeholder="城市" size="large" class="city-select">
+          <el-option label="全部城市" value="" />
+          <el-option v-for="c in cities" :key="c.dictValue" :label="c.dictLabel" :value="c.dictValue" />
+        </el-select>
+        <el-input
+          v-model="kw"
+          placeholder="搜索岗位、企业、技能关键词"
+          size="large"
+          clearable
+          class="keyword-input"
+        />
+        <el-button type="primary" native-type="submit" size="large" class="search-button">
+          <el-icon><Search /></el-icon>
+          <span>搜索</span>
+        </el-button>
+      </form>
     </div>
 
     <!-- 热门岗位 -->
@@ -51,7 +57,7 @@
       <div class="ent-grid">
         <div v-for="e in home.recommendEnterprises" :key="e.id">
           <div class="ent-card" @click="$router.push(`/enterprise/${e.id}`)">
-            <el-avatar :size="64" :src="e.logo" shape="square"><el-icon><OfficeBuilding /></el-icon></el-avatar>
+            <el-avatar class="ent-avatar" :src="e.logo" shape="square"><el-icon><OfficeBuilding /></el-icon></el-avatar>
             <p class="name">{{ e.companyName }}</p>
             <p class="meta">{{ e.industry }} · {{ e.scale }}</p>
           </div>
@@ -59,46 +65,40 @@
       </div>
     </div>
 
-    <el-row :gutter="20" class="mt-20">
+    <div class="info-grid mt-20">
       <!-- 宣讲会 -->
-      <el-col :xs="24" :lg="8">
-        <div class="page-card list-card">
-          <div class="section-title flex-between"><span>校园宣讲会</span><router-link to="/talks" class="more">更多 ></router-link></div>
-          <ul>
-            <li v-for="t in home.talks" :key="t.id">
-              <span class="dot"></span>
-              <span class="title">{{ t.title }}</span>
-              <span class="time">{{ formatDate(t.talkTime) }}</span>
-            </li>
-          </ul>
-        </div>
-      </el-col>
+      <div class="page-card list-card">
+        <div class="section-title flex-between"><span>校园宣讲会</span><router-link to="/talks" class="more">更多 ></router-link></div>
+        <ul>
+          <li v-for="t in home.talks" :key="t.id">
+            <span class="dot"></span>
+            <span class="title">{{ t.title }}</span>
+            <span class="time">{{ formatDate(t.talkTime) }}</span>
+          </li>
+        </ul>
+      </div>
       <!-- 招聘会 -->
-      <el-col :xs="24" :lg="8">
-        <div class="page-card list-card">
-          <div class="section-title flex-between"><span>大型招聘会</span><router-link to="/fairs" class="more">更多 ></router-link></div>
-          <ul>
-            <li v-for="f in home.fairs" :key="f.id">
-              <span class="dot"></span>
-              <span class="title">{{ f.title }}</span>
-              <span class="time">{{ formatDate(f.fairTime) }}</span>
-            </li>
-          </ul>
-        </div>
-      </el-col>
+      <div class="page-card list-card">
+        <div class="section-title flex-between"><span>大型招聘会</span><router-link to="/fairs" class="more">更多 ></router-link></div>
+        <ul>
+          <li v-for="f in home.fairs" :key="f.id">
+            <span class="dot"></span>
+            <span class="title">{{ f.title }}</span>
+            <span class="time">{{ formatDate(f.fairTime) }}</span>
+          </li>
+        </ul>
+      </div>
       <!-- 公告资讯 -->
-      <el-col :xs="24" :lg="8">
-        <div class="page-card list-card">
-          <div class="section-title flex-between"><span>就业资讯</span><router-link to="/news" class="more">更多 ></router-link></div>
-          <ul>
-            <li v-for="n in home.announcements" :key="n.id" @click="$router.push(`/news/${n.id}`)" style="cursor: pointer;">
-              <span class="dot"></span>
-              <span class="title">{{ n.title }}</span>
-            </li>
-          </ul>
-        </div>
-      </el-col>
-    </el-row>
+      <div class="page-card list-card">
+        <div class="section-title flex-between"><span>就业资讯</span><router-link to="/news" class="more">更多 ></router-link></div>
+        <ul>
+          <li v-for="n in home.announcements" :key="n.id" class="clickable" @click="$router.push(`/news/${n.id}`)">
+            <span class="dot"></span>
+            <span class="title">{{ n.title }}</span>
+          </li>
+        </ul>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -132,45 +132,54 @@ onMounted(async () => {
 <style scoped lang="scss">
 .banner { border-radius: var(--cr-radius); overflow: hidden; border: 1px solid var(--cr-border-soft); box-shadow: var(--cr-shadow-soft); }
 .banner-item { width: 100%; height: 100%; background-size: cover; background-position: center; position: relative; }
-.banner-title { position: absolute; bottom: 20px; left: 30px; color: #fff; font-size: 24px; font-weight: 600; text-shadow: 0 2px 8px rgba(0,0,0,.5); }
-.search-bar { display: flex; }
-.section-title { font-size: 18px; font-weight: 750; margin-bottom: 16px; color: var(--cr-text); .el-icon { vertical-align: middle; margin-right: 4px; color: var(--cr-primary); } }
-.more { color: var(--cr-text-muted); font-size: 14px; font-weight: 600; }
+.banner-title { position: absolute; bottom: clamp(1rem, 2vw, 1.5rem); left: clamp(1rem, 3vw, 2rem); color: #fff; font-size: clamp(1.25rem, 2.3vw, 1.75rem); font-weight: 600; text-shadow: 0 .125rem .5rem rgba(0,0,0,.5); }
+.search-bar { display: block; }
+.search-form { width: 100%; display: grid; grid-template-columns: minmax(7rem, .24fr) minmax(14rem, 1fr) auto; gap: clamp(.5rem, 1.2vw, .875rem); align-items: stretch; }
+.city-select,
+.keyword-input,
+.search-button { min-width: 0; }
+.search-button { min-inline-size: clamp(6rem, 9vw, 8rem); }
+.search-button span { white-space: nowrap; }
+.section-title { font-size: clamp(1rem, 1.4vw, 1.125rem); font-weight: 750; margin-bottom: 1rem; color: var(--cr-text); gap: .75rem; .el-icon { vertical-align: middle; margin-right: .25rem; color: var(--cr-primary); } }
+.more { color: var(--cr-text-muted); font-size: .875rem; font-weight: 600; white-space: nowrap; }
 .more:hover { color: var(--cr-primary); }
-.job-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr)); gap: 14px; }
-.ent-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 150px), 1fr)); gap: 14px; }
-.job-card { height: 100%; background: var(--cr-surface-soft); border: 1px solid var(--cr-border-soft); border-radius: var(--cr-radius-sm); padding: 16px; cursor: pointer; transition: border-color .2s ease, box-shadow .2s ease, transform .2s ease;
-  &:hover { border-color: rgba(37,99,235,.26); box-shadow: var(--cr-shadow-soft); transform: translateY(-2px); }
-  h4 { color: var(--cr-text); margin-bottom: 8px; font-size: 15px; line-height: 1.4; }
-  .salary { color: var(--cr-danger); font-size: 16px; font-weight: 750; margin-bottom: 6px; }
-  .meta { color: var(--cr-text-muted); font-size: 12px; margin-bottom: 6px; }
-  .company { color: var(--cr-text-soft); font-size: 13px; }
+.job-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 14rem), 1fr)); gap: .875rem; }
+.ent-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 9.5rem), 1fr)); gap: .875rem; }
+.info-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 20rem), 1fr)); gap: clamp(.875rem, 1.6vw, 1.25rem); }
+.job-card { height: 100%; background: var(--cr-surface-soft); border: 0.0625rem solid var(--cr-border-soft); border-radius: var(--cr-radius-sm); padding: 1rem; cursor: pointer; transition: border-color .2s ease, box-shadow .2s ease, transform .2s ease;
+  &:hover { border-color: rgba(37,99,235,.26); box-shadow: var(--cr-shadow-soft); transform: translateY(-.125rem); }
+  h4 { color: var(--cr-text); margin-bottom: .5rem; font-size: .9375rem; line-height: 1.4; }
+  .salary { color: var(--cr-danger); font-size: 1rem; font-weight: 750; margin-bottom: .375rem; }
+  .meta { color: var(--cr-text-muted); font-size: .75rem; margin-bottom: .375rem; }
+  .company { color: var(--cr-text-soft); font-size: .8125rem; }
 }
-.ent-card { height: 100%; text-align: center; padding: 16px 8px; cursor: pointer; border-radius: var(--cr-radius-sm); transition: background .2s, transform .2s;
-  &:hover { background: var(--cr-surface-soft); transform: translateY(-1px); }
-  .name { margin-top: 8px; font-size: 14px; color: var(--cr-text); line-height: 1.4; }
-  .meta { font-size: 12px; color: var(--cr-text-muted); margin-top: 4px; }
+.ent-card { height: 100%; text-align: center; padding: 1rem .5rem; cursor: pointer; border-radius: var(--cr-radius-sm); transition: background .2s, transform .2s;
+  &:hover { background: var(--cr-surface-soft); transform: translateY(-.0625rem); }
+  .ent-avatar { --el-avatar-size: clamp(3rem, 5vw, 4rem); }
+  .name { margin-top: .5rem; font-size: .875rem; color: var(--cr-text); line-height: 1.4; }
+  .meta { font-size: .75rem; color: var(--cr-text-muted); margin-top: .25rem; }
 }
-.list-card ul li { display: flex; align-items: center; padding: 10px 0; border-bottom: 1px dashed #ebeef5; font-size: 14px;
-  .dot { width: 4px; height: 4px; background: var(--cr-primary); border-radius: 50%; margin-right: 8px; }
+.list-card ul li { display: flex; align-items: center; padding: .625rem 0; border-bottom: 1px dashed #ebeef5; font-size: .875rem;
+  .dot { width: .25rem; height: .25rem; background: var(--cr-primary); border-radius: 50%; margin-right: .5rem; flex: 0 0 auto; }
   .title { flex: 1; color: var(--cr-text); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-  .time { color: var(--cr-text-muted); font-size: 12px; }
+  .time { color: var(--cr-text-muted); font-size: .75rem; margin-left: .75rem; white-space: nowrap; }
   &:last-child { border-bottom: none; }
 }
+.list-card .clickable { cursor: pointer; }
 
-@media (min-width: 1400px) {
-  .banner { :deep(.el-carousel__container) { height: 360px !important; } }
-  .ent-card { min-height: 150px; }
+@media (min-width: 87.5rem) {
+  .banner { :deep(.el-carousel__container) { height: 22.5rem !important; } }
+  .ent-card { min-height: 9.5rem; }
 }
 
-@media (max-width: 768px) {
-  .banner { :deep(.el-carousel__container) { height: 220px !important; } }
-  .banner-title { left: 18px; bottom: 16px; font-size: 20px; }
-  .search-bar { padding: 14px; }
-  .search-bar :deep(.el-input-group__prepend) { padding: 0 8px; }
-  .search-bar :deep(.el-input-group__append) { padding: 0; }
-  .search-bar :deep(.el-button) { padding: 0 12px; }
-  .section-title { font-size: 16px; }
-  .list-card { margin-bottom: 16px; }
+@media (max-width: 48rem) {
+  .banner { :deep(.el-carousel__container) { height: clamp(11rem, 42vw, 14rem) !important; } }
+  .search-form { grid-template-columns: minmax(7rem, .42fr) minmax(0, 1fr); }
+  .search-button { grid-column: 1 / -1; width: 100%; min-inline-size: 0; }
+}
+
+@media (max-width: 30rem) {
+  .search-form { grid-template-columns: 1fr; }
+  .section-title { align-items: flex-start; }
 }
 </style>

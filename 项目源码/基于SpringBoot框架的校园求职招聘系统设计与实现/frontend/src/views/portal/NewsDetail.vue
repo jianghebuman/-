@@ -40,11 +40,11 @@ onMounted(async () => {
 </script>
 
 <style scoped lang="scss">
-.article { max-width: 900px; margin: 0 auto; padding: 40px 60px; }
-.title { text-align: center; color: #303133; margin-bottom: 16px; line-height: 1.4; }
-.meta { display: flex; justify-content: center; gap: 20px; color: #909399; font-size: 13px; .el-icon { vertical-align: middle; margin-right: 2px; } }
-.content { color: #303133; font-size: 16px; line-height: 1.9; min-height: 200px;
-  :deep(p) { margin-bottom: 12px; }
+.article { max-width: 56.25rem; margin: 0 auto; padding: clamp(1.25rem, 4vw, 3.75rem); }
+.title { text-align: center; color: #303133; margin-bottom: 1rem; line-height: 1.4; }
+.meta { display: flex; justify-content: center; gap: .75rem 1.25rem; flex-wrap: wrap; color: #909399; font-size: .8125rem; .el-icon { vertical-align: middle; margin-right: .125rem; } }
+.content { color: #303133; font-size: 1rem; line-height: 1.9; min-height: 12.5rem;
+  :deep(p) { margin-bottom: .75rem; }
   :deep(img) { max-width: 100%; }
 }
 .actions { text-align: center; }

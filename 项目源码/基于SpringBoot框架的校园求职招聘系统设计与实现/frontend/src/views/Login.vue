@@ -213,9 +213,9 @@ const onLogin = () => {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  width: min(1480px, calc(100% - 64px));
+  width: min(1600px, calc(100% - clamp(24px, 3.5vw, 64px)));
   margin: 0 auto;
-  padding: 24px 0 18px;
+  padding: clamp(18px, 2vw, 24px) 0 clamp(14px, 1.6vw, 18px);
 }
 
 .brand-mark,
@@ -266,14 +266,14 @@ const onLogin = () => {
   align-items: center;
   justify-content: center;
   min-height: calc(100dvh - 88px);
-  padding: 24px 32px;
+  padding: clamp(16px, 2vw, 24px) clamp(16px, 2vw, 32px);
 }
 
 .login-window {
   display: grid;
-  grid-template-columns: minmax(0, 1.08fr) minmax(440px, 0.86fr);
-  width: min(1480px, 100%);
-  min-height: 650px;
+  grid-template-columns: minmax(0, 1.08fr) minmax(28rem, 0.86fr);
+  width: min(1600px, 100%);
+  min-height: clamp(40rem, 72vh, 50rem);
   overflow: hidden;
   border: 1px solid rgba(93, 111, 136, 0.18);
   border-radius: 18px;
@@ -285,7 +285,7 @@ const onLogin = () => {
   position: relative;
   display: flex;
   flex-direction: column;
-  padding: 42px;
+  padding: clamp(2rem, 3vw, 2.75rem);
   color: #eef6ff;
   background:
     linear-gradient(90deg, rgba(255, 255, 255, 0.08) 1px, transparent 1px),
@@ -390,7 +390,7 @@ const onLogin = () => {
   display: flex;
   flex-direction: column;
   justify-content: center;
-  padding: 56px;
+  padding: clamp(2rem, 3vw, 3.5rem);
   background: #ffffff;
 }
 
@@ -547,6 +547,7 @@ const onLogin = () => {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  flex-wrap: nowrap;
   gap: 14px;
   margin-top: 18px;
   font-size: 14px;
@@ -554,6 +555,7 @@ const onLogin = () => {
   a {
     color: #2563eb;
     font-weight: 800;
+    white-space: nowrap;
   }
 
   a:hover {
@@ -576,6 +578,14 @@ const onLogin = () => {
   .login-window {
     grid-template-columns: 1fr;
     min-height: 0;
+  }
+
+  .career-board {
+    order: 2;
+  }
+
+  .auth-panel {
+    order: 1;
   }
 
   .career-board {
@@ -602,7 +612,7 @@ const onLogin = () => {
 
 @media (max-width: 560px) {
   .login-topbar {
-    width: min(100% - 28px, 1480px);
+    width: min(100% - 20px, 1600px);
     padding-top: 16px;
   }
 
@@ -616,14 +626,6 @@ const onLogin = () => {
 
   .login-window {
     border-radius: 14px;
-  }
-
-  .career-board {
-    order: 2;
-  }
-
-  .auth-panel {
-    order: 1;
   }
 
   .career-board {
@@ -655,12 +657,23 @@ const onLogin = () => {
   }
 
   .role-switcher {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 6px;
+    margin-bottom: 20px;
+  }
+
+  .role-chip {
+    min-height: 40px;
+    padding: 0 8px;
   }
 
   .auth-links {
-    align-items: flex-start;
-    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    gap: 10px;
+    font-size: 13px;
   }
 }
 </style>
