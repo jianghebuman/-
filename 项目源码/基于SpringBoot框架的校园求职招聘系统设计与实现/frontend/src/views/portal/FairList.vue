@@ -38,16 +38,31 @@
 <script setup>
 import { ref, reactive, onMounted } from 'vue'
 import { ElMessage } from 'element-plus'
+import { useRouter } from 'vue-router'
 import { Calendar, Clock, Location, Trophy } from '@element-plus/icons-vue'
-import { publicApi } from '@/api'
+import { activityApi, noticeApi, publicApi } from '@/api'
+import { useUserStore } from '@/store/user'
 
+const router = useRouter()
+const userStore = useUserStore()
 const query = reactive({ pageNum: 1, pageSize: 6 })
 const list = ref([])
 const total = ref(0)
 const loading = ref(false)
 
 const formatDateTime = (d) => d ? d.replace('T', ' ').substring(0, 16) : ''
-const onSign = () => ElMessage.success('报名成功，请准时参加')
+const onSign = async (fair) => {
+  if (!userStore.isLogin) {
+    ElMessage.warning('请先登录')
+    router.push('/login')
+    return
+  }
+  const res = await activityApi.sign(2, fair.id)
+  ElMessage.success(res.message || '报名成功，请准时参加')
+  const unreadRes = await noticeApi.unread()
+  userStore.setUnreadCounts(Number(unreadRes.data || 0), userStore.unreadChatCount)
+  load()
+}
 
 const load = async () => {
   loading.value = true

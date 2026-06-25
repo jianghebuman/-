@@ -9,7 +9,9 @@ export const useUserStore = defineStore('user', {
     name: localStorage.getItem('name') || '',
     role: localStorage.getItem('role') || '',
     avatar: localStorage.getItem('avatar') || '',
-    auditStatus: localStorage.getItem('auditStatus') || ''
+    auditStatus: localStorage.getItem('auditStatus') || '',
+    unreadNoticeCount: 0,
+    unreadChatCount: 0
   }),
   getters: {
     isLogin: (state) => !!state.token
@@ -35,6 +37,10 @@ export const useUserStore = defineStore('user', {
       this.avatar = avatar
       localStorage.setItem('avatar', avatar)
     },
+    setUnreadCounts(noticeCount, chatCount) {
+      this.unreadNoticeCount = noticeCount
+      this.unreadChatCount = chatCount
+    },
     logout() {
       this.token = ''
       this.userId = ''
@@ -43,6 +49,8 @@ export const useUserStore = defineStore('user', {
       this.role = ''
       this.avatar = ''
       this.auditStatus = ''
+      this.unreadNoticeCount = 0
+      this.unreadChatCount = 0
       localStorage.clear()
     }
   }

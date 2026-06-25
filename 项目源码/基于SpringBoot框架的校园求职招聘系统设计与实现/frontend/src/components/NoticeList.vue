@@ -53,8 +53,8 @@ const list = ref([])
 const total = ref(0)
 const unread = ref(0)
 const loading = ref(false)
-const typeText = (t) => ({ SYSTEM: '系统', APPLY: '投递', INTERVIEW: '面试', OFFER: 'Offer', AUDIT: '审核' }[t] || '系统')
-const tagType = (t) => ({ APPLY: 'success', INTERVIEW: 'warning', OFFER: 'danger', AUDIT: 'primary' }[t] || 'info')
+const typeText = (t) => ({ SYSTEM: '系统', APPLY: '投递', INTERVIEW: '面试', OFFER: 'Offer', AUDIT: '审核', ACTIVITY: '活动', CHAT: '沟通' }[t] || '系统')
+const tagType = (t) => ({ APPLY: 'success', INTERVIEW: 'warning', OFFER: 'danger', AUDIT: 'primary', ACTIVITY: 'success', CHAT: 'warning' }[t] || 'info')
 const loadUnread = async () => { unread.value = Number((await noticeApi.unread()).data || 0) }
 const load = async () => {
   loading.value = true
@@ -75,7 +75,7 @@ onMounted(load)
 <style scoped lang="scss">
 .header { display:flex; justify-content:space-between; align-items:center; h2{margin-bottom:6px;} p{color:var(--cr-text-muted);} }
 .notice-item { display:flex; gap:14px; padding:18px 0; border-bottom:1px dashed var(--cr-border-soft); &.unread .title::after{content:'未读';font-size:12px;background:var(--cr-danger);color:#fff;border-radius:8px;padding:1px 6px;margin-left:8px;} }
-.icon { width:42px;height:42px;border-radius:50%;background:var(--cr-text-muted);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:600;flex-shrink:0;&.apply{background:var(--cr-success)}&.interview{background:var(--cr-warning)}&.offer{background:var(--cr-danger)}&.audit{background:var(--cr-primary)} }
+.icon { width:42px;height:42px;border-radius:50%;background:var(--cr-text-muted);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:600;flex-shrink:0;&.apply,&.activity{background:var(--cr-success)}&.interview,&.chat{background:var(--cr-warning)}&.offer{background:var(--cr-danger)}&.audit{background:var(--cr-primary)} }
 .body{flex:1}.top{display:flex;gap:8px;align-items:center}.title{font-weight:600;color:var(--cr-text)}.content{color:var(--cr-text-soft);line-height:1.7;margin:8px 0}.meta{display:flex;justify-content:space-between;color:var(--cr-text-muted);font-size:12px;}
 </style>
 

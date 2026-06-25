@@ -20,7 +20,9 @@ const routes = [
       { path: 'news', name: 'NewsList', component: () => import('@/views/portal/NewsList.vue'), meta: { title: '就业资讯' } },
       { path: 'news/:id', name: 'NewsDetail', component: () => import('@/views/portal/NewsDetail.vue'), meta: { title: '资讯详情' } },
       { path: 'forum', name: 'Forum', component: () => import('@/views/portal/Forum.vue'), meta: { title: '求职社区' } },
-      { path: 'forum/:id', name: 'ForumDetail', component: () => import('@/views/portal/ForumDetail.vue'), meta: { title: '帖子详情' } }
+      { path: 'forum/:id', name: 'ForumDetail', component: () => import('@/views/portal/ForumDetail.vue'), meta: { title: '帖子详情' } },
+      { path: 'notice', name: 'PortalNotice', component: () => import('@/components/NoticeList.vue'), meta: { title: '通知', requiresAuth: true, roles: ['STUDENT', 'ENTERPRISE'] } },
+      { path: 'chat', name: 'PortalChat', component: () => import('@/views/common/Chat.vue'), meta: { title: '在线沟通', requiresAuth: true, roles: ['STUDENT', 'ENTERPRISE'] } }
     ]
   },
   // 登录 / 注册
@@ -109,13 +111,21 @@ const router = createRouter({
 router.beforeEach((to, from, next) => {
   document.title = to.meta.title ? to.meta.title + ' - 校园求职招聘系统' : '校园求职招聘系统'
   const userStore = useUserStore()
-  if (to.meta.requiresAuth) {
+  const requiresAuth = to.matched.some(record => record.meta.requiresAuth)
+  const role = to.matched.find(record => record.meta.role)?.meta.role
+  const roles = to.matched.find(record => record.meta.roles)?.meta.roles
+  if (requiresAuth) {
     if (!userStore.isLogin) {
       ElMessage.warning('请先登录')
       next('/login')
       return
     }
-    if (to.meta.role && to.meta.role !== userStore.role) {
+    if (role && role !== userStore.role) {
+      ElMessage.error('无权访问该页面')
+      next('/')
+      return
+    }
+    if (roles && !roles.includes(userStore.role)) {
       ElMessage.error('无权访问该页面')
       next('/')
       return

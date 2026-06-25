@@ -49,6 +49,11 @@ export const chatApi = {
   read: (peerRole, peerId) => request.post('/chat/messages/read', null, { params: { peerRole, peerId } })
 }
 
+// ==================== 活动报名 ====================
+export const activityApi = {
+  sign: (activityType, activityId) => request.post('/activity/sign', null, { params: { activityType, activityId } })
+}
+
 // ==================== 学生端 ====================
 export const studentApi = {
   profile: () => request.get('/student/profile'),

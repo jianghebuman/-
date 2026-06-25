@@ -11,6 +11,7 @@ import com.campus.mapper.ChatMessageMapper;
 import com.campus.mapper.EnterpriseMapper;
 import com.campus.mapper.StudentMapper;
 import com.campus.service.ChatMessageService;
+import com.campus.service.SystemNoticeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -28,6 +29,9 @@ public class ChatMessageServiceImpl extends ServiceImpl<ChatMessageMapper, ChatM
 
     @Autowired
     private EnterpriseMapper enterpriseMapper;
+
+    @Autowired
+    private SystemNoticeService systemNoticeService;
 
     @Override
     public ChatMessage send(ChatMessage message) {
@@ -56,6 +60,10 @@ public class ChatMessageServiceImpl extends ServiceImpl<ChatMessageMapper, ChatM
         message.setContent(content);
         message.setIsRead(0);
         this.save(message);
+        String senderName = peerName(fromRole, fromUserId);
+        String preview = content.length() > 40 ? content.substring(0, 40) + "..." : content;
+        systemNoticeService.send(message.getToUserId(), message.getToRole(), "收到新的在线沟通消息",
+                senderName + " 给您发送了消息：" + preview, "CHAT");
         return message;
     }
 

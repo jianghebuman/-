@@ -6,7 +6,7 @@
           <el-icon class="logo-icon"><School /></el-icon>
           <span>校园求职招聘系统</span>
         </div>
-        <el-menu mode="horizontal" :default-active="$route.path" router class="nav" :ellipsis="false">
+        <el-menu mode="horizontal" :default-active="$route.path" class="nav" :ellipsis="false" @select="handleNav">
           <el-menu-item index="/">首页</el-menu-item>
           <el-menu-item index="/jobs">职位</el-menu-item>
           <el-menu-item index="/enterprises">企业</el-menu-item>
@@ -15,6 +15,12 @@
           <el-menu-item index="/fairs">招聘会</el-menu-item>
           <el-menu-item index="/news">资讯</el-menu-item>
           <el-menu-item index="/forum">社区</el-menu-item>
+          <el-menu-item :index="noticePath">
+            <el-badge :value="unreadCount" :hidden="!unreadCount" class="nav-badge">通知</el-badge>
+          </el-menu-item>
+          <el-menu-item :index="chatPath">
+            <el-badge :value="chatUnreadCount" :hidden="!chatUnreadCount" class="nav-badge">在线沟通</el-badge>
+          </el-menu-item>
         </el-menu>
         <div class="user-area">
           <template v-if="userStore.isLogin">
@@ -51,13 +57,50 @@
 </template>
 
 <script setup>
+import { computed, onBeforeUnmount, onMounted, watch } from 'vue'
 import { useRouter } from 'vue-router'
-import { ElMessageBox } from 'element-plus'
+import { ElMessage, ElMessageBox } from 'element-plus'
 import { School, User } from '@element-plus/icons-vue'
 import { useUserStore } from '@/store/user'
+import { chatApi, noticeApi } from '@/api'
 
 const router = useRouter()
 const userStore = useUserStore()
+const unreadCount = computed(() => Number(userStore.unreadNoticeCount || 0))
+const chatUnreadCount = computed(() => Number(userStore.unreadChatCount || 0))
+let badgeTimer
+
+const noticePath = '/notice'
+const chatPath = '/chat'
+
+const handleNav = (path) => {
+  if (path === noticePath || path === chatPath) {
+    if (!userStore.isLogin) {
+      ElMessage.warning('请先登录')
+      router.push('/login')
+      return
+    }
+    if (!['STUDENT', 'ENTERPRISE'].includes(userStore.role)) {
+      ElMessage.error('无权访问该页面')
+      return
+    }
+  }
+  router.push(path)
+}
+
+const refreshBadges = async () => {
+  if (!userStore.isLogin || userStore.role === 'ADMIN') {
+    userStore.setUnreadCounts(0, 0)
+    return
+  }
+  try {
+    const [noticeRes, chatRes] = await Promise.all([noticeApi.unread(), chatApi.conversations()])
+    const chatTotal = (chatRes.data || []).reduce((sum, item) => sum + Number(item.unread || 0), 0)
+    userStore.setUnreadCounts(Number(noticeRes.data || 0), chatTotal)
+  } catch (e) {
+    userStore.setUnreadCounts(0, 0)
+  }
+}
 
 const onCommand = (cmd) => {
   if (cmd === 'logout') {
@@ -70,6 +113,13 @@ const onCommand = (cmd) => {
     else router.push('/admin')
   }
 }
+
+onMounted(() => {
+  refreshBadges()
+  badgeTimer = window.setInterval(refreshBadges, 30000)
+})
+onBeforeUnmount(() => window.clearInterval(badgeTimer))
+watch(() => userStore.token, refreshBadges)
 </script>
 
 <style scoped lang="scss">
@@ -103,6 +153,7 @@ const onCommand = (cmd) => {
 .nav :deep(.el-menu--horizontal) { border-bottom: 0; }
 .nav :deep(.el-menu-item) { min-width: auto; padding: 0 clamp(0.625rem, 1.5vw, 1.25rem); justify-content: center; color: var(--cr-text-soft); font-weight: 650; }
 .nav :deep(.el-menu-item.is-active) { color: var(--cr-primary); border-bottom-color: var(--cr-primary); }
+.nav-badge :deep(.el-badge__content) { transform: translate(70%, -45%); }
 .user-area { display: flex; align-items: center; gap: 0.625rem; min-width: max-content; justify-content: flex-end; }
 .user-avatar { --el-avatar-size: clamp(1.5rem, 2.4vw, 1.75rem); }
 .user-link { appearance: none; border: 0; background: transparent; padding: 0.375rem 0.5rem; display: flex; align-items: center; gap: 0.375rem; cursor: pointer; color: var(--cr-text); font: inherit; border-radius: var(--cr-radius-sm); outline: none; }
