@@ -30,6 +30,15 @@
               <span>{{ item.label }}</span>
             </div>
           </div>
+          <div class="brief-checklist" aria-label="注册前准备">
+            <div class="checklist-heading">
+              <span>{{ activeCopy.checklist.title }}</span>
+              <small>{{ activeCopy.checklist.caption }}</small>
+            </div>
+            <ul>
+              <li v-for="item in activeCopy.checklist.items" :key="item">{{ item }}</li>
+            </ul>
+          </div>
           <div class="brief-flow">
             <div v-for="item in activeCopy.flow" :key="item.title" class="flow-item">
               <component :is="item.icon" />
@@ -274,6 +283,11 @@ const copyMap = {
       { value: '简历', label: '在线简历和附件管理' },
       { value: '进度', label: '投递、面试、Offer 跟进' }
     ],
+    checklist: {
+      title: '学生注册准备',
+      caption: '建议一次填准',
+      items: ['常用手机号与邮箱', '学院、专业、年级信息', '后续可继续完善在线简历']
+    },
     flow: [
       { icon: User, title: '建立个人账号', desc: '填写基础身份信息' },
       { icon: Tickets, title: '完善求职资料', desc: '维护简历与求职意向' },
@@ -288,6 +302,11 @@ const copyMap = {
       { value: '岗位', label: '招聘岗位发布与刷新' },
       { value: '候选', label: '简历筛选和面试邀约' }
     ],
+    checklist: {
+      title: '入驻前准备',
+      caption: '用于管理员核验',
+      items: ['营业执照登记名称与统一社会信用代码', '招聘负责人姓名、电话和企业邮箱', '注册后在企业工作台补充认证附件']
+    },
     flow: [
       { icon: Postcard, title: '登记企业资质', desc: '填写统一社会信用代码' },
       { icon: DocumentChecked, title: '提交认证材料', desc: '注册后上传营业执照' },
@@ -493,6 +512,7 @@ const registerEnterprise = () => {
   position: relative;
   z-index: 1;
   display: flex;
+  align-items: flex-start;
   justify-content: center;
   min-height: calc(100dvh - clamp(4.75rem, 6dvh, 6.25rem));
   padding: clamp(1rem, 2dvh, 1.5rem) 0 clamp(1.5rem, 3dvh, 3rem);
@@ -569,7 +589,7 @@ const registerEnterprise = () => {
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 0.75rem;
   width: min(42rem, 100%);
-  margin-top: clamp(2rem, 5dvh, 4rem);
+  margin-top: clamp(2rem, 4dvh, 3.5rem);
 
   div {
     min-height: 6.75rem;
@@ -595,11 +615,68 @@ const registerEnterprise = () => {
   }
 }
 
+.brief-checklist {
+  width: min(42rem, 100%);
+  margin-top: clamp(1.25rem, 3dvh, 2.5rem);
+  padding: 1.125rem;
+  border: 1px solid rgba(238, 246, 255, 0.14);
+  border-radius: 0.75rem;
+  background: rgba(8, 145, 178, 0.08);
+  box-shadow: inset 3px 0 0 rgba(8, 145, 178, 0.86);
+}
+
+.checklist-heading {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px dashed rgba(238, 246, 255, 0.18);
+
+  span {
+    font-size: 0.9375rem;
+    font-weight: 900;
+  }
+
+  small {
+    color: rgba(238, 246, 255, 0.58);
+    font-size: 0.75rem;
+    font-weight: 800;
+    white-space: nowrap;
+  }
+}
+
+.brief-checklist ul {
+  display: grid;
+  gap: 0.75rem;
+  margin-top: 0.875rem;
+}
+
+.brief-checklist li {
+  position: relative;
+  padding-left: 1.125rem;
+  color: rgba(238, 246, 255, 0.72);
+  font-size: 0.8125rem;
+  line-height: 1.6;
+}
+
+.brief-checklist li::before {
+  position: absolute;
+  top: 0.62em;
+  left: 0;
+  width: 0.375rem;
+  height: 0.375rem;
+  content: "";
+  background: #0891b2;
+  border-radius: 50%;
+  box-shadow: 0 0 0 0.25rem rgba(8, 145, 178, 0.14);
+}
+
 .brief-flow {
   display: grid;
   gap: 14px;
   width: min(40rem, 100%);
-  margin-top: auto;
+  margin-top: clamp(1.5rem, 4dvh, 3.25rem);
   padding-top: 0;
 }
 
@@ -828,37 +905,72 @@ const registerEnterprise = () => {
 }
 
 @media (min-width: 1800px) {
+  .register-shell {
+    min-height: clamp(36rem, 78dvh, 78rem);
+  }
+
+  .register-topbar {
+    padding: 1rem 0 0.75rem;
+  }
+
+  .register-stage {
+    min-height: calc(100dvh - 4.5rem);
+    padding: 0.75rem 0 1.25rem;
+  }
+
   .register-panel {
     justify-content: flex-start;
-    padding-block: clamp(5rem, 9dvh, 9rem) clamp(4rem, 8dvh, 8rem);
+    padding-block: clamp(3rem, 4.5dvh, 4.5rem) clamp(2.5rem, 4dvh, 4rem);
   }
 
   .register-brief h1 {
-    font-size: 3.5rem;
+    font-size: 3.25rem;
   }
 
   .role-chip {
-    min-height: 3.5rem;
+    min-height: 3.25rem;
     font-size: 0.9375rem;
   }
 
   .role-switcher {
     gap: 0.75rem;
-    margin-bottom: 2rem;
+    margin-bottom: 1.25rem;
   }
 
   .register-form {
-    gap: 1.5rem;
+    gap: 1rem;
 
     :deep(.el-input__wrapper),
     :deep(.el-select__wrapper) {
-      min-height: 3.5rem;
+      min-height: 3.125rem;
     }
   }
 
+  .form-section {
+    padding: 1rem 1.125rem;
+  }
+
+  .section-heading {
+    margin-bottom: 0.875rem;
+    padding-bottom: 0.625rem;
+  }
+
+  .form-grid {
+    gap: 0.875rem 1rem;
+  }
+
+  .agree-field {
+    padding-top: 0;
+  }
+
   .primary-action {
-    min-height: 4.25rem;
+    min-height: 3.5rem;
     font-size: 1rem;
+  }
+
+  .panel-footer {
+    margin-top: 1rem;
+    padding-top: 1rem;
   }
 }
 
@@ -885,6 +997,10 @@ const registerEnterprise = () => {
   .brief-highlights {
     grid-template-columns: 1fr;
     margin-top: 28px;
+  }
+
+  .brief-checklist {
+    margin-top: 20px;
   }
 }
 

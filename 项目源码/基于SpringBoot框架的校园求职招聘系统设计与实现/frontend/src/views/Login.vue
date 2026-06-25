@@ -43,6 +43,16 @@
             </div>
           </div>
 
+          <div class="board-focus" aria-label="当前入口办理事项">
+            <div class="focus-heading">
+              <span>{{ activeRole.focusTitle }}</span>
+              <small>{{ activeRole.focusCaption }}</small>
+            </div>
+            <ul>
+              <li v-for="item in activeRole.focusItems" :key="item">{{ item }}</li>
+            </ul>
+          </div>
+
           <div class="entry-stack" aria-label="系统入口说明">
             <div class="entry-row">
               <span class="entry-code">学生</span>
@@ -162,6 +172,9 @@ const roleOptions = [
     title: '学生求职入口',
     description: '查看岗位、维护简历、跟进投递与面试安排。',
     buttonText: '进入学生工作台',
+    focusTitle: '学生登录后',
+    focusCaption: '个人求职闭环',
+    focusItems: ['补全求职意向与在线简历', '收藏合适岗位并发起投递', '查看面试通知和录用反馈'],
     nextSteps: ['完善在线简历', '查看岗位收藏', '跟进投递进度', '确认面试安排']
   },
   {
@@ -171,6 +184,9 @@ const roleOptions = [
     title: '企业招聘入口',
     description: '发布岗位、筛选简历、管理宣讲会与 Offer 流程。',
     buttonText: '进入企业工作台',
+    focusTitle: '企业登录后',
+    focusCaption: '招聘执行台',
+    focusItems: ['维护企业认证与招聘资料', '发布岗位并查看投递简历', '发起面试邀约和录用通知'],
     nextSteps: ['发布招聘岗位', '筛选候选简历', '安排面试邀约', '维护企业认证']
   },
   {
@@ -180,6 +196,9 @@ const roleOptions = [
     title: '平台管理入口',
     description: '审核企业与岗位，维护资讯、招聘会和基础数据。',
     buttonText: '进入管理后台',
+    focusTitle: '管理员登录后',
+    focusCaption: '平台运营处理',
+    focusItems: ['审核企业资质和岗位内容', '维护招聘会、宣讲会与资讯', '查看用户、投递和系统日志数据'],
     nextSteps: ['审核企业资料', '处理岗位发布', '维护招聘资讯', '查看平台数据']
   }
 ]
@@ -401,12 +420,69 @@ const onLogin = () => {
   }
 }
 
+.board-focus {
+  width: min(42rem, 100%);
+  margin-top: clamp(1.25rem, 3dvh, 2.5rem);
+  padding: 1.125rem;
+  border: 1px solid rgba(238, 246, 255, 0.14);
+  border-radius: 0.75rem;
+  background: rgba(8, 145, 178, 0.08);
+  box-shadow: inset 3px 0 0 rgba(8, 145, 178, 0.86);
+}
+
+.focus-heading {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px dashed rgba(238, 246, 255, 0.18);
+
+  span {
+    font-size: 0.9375rem;
+    font-weight: 900;
+  }
+
+  small {
+    color: rgba(238, 246, 255, 0.58);
+    font-size: 0.75rem;
+    font-weight: 800;
+    white-space: nowrap;
+  }
+}
+
+.board-focus ul {
+  display: grid;
+  gap: 0.75rem;
+  margin-top: 0.875rem;
+}
+
+.board-focus li {
+  position: relative;
+  padding-left: 1.125rem;
+  color: rgba(238, 246, 255, 0.72);
+  font-size: 0.8125rem;
+  line-height: 1.6;
+}
+
+.board-focus li::before {
+  position: absolute;
+  top: 0.62em;
+  left: 0;
+  width: 0.375rem;
+  height: 0.375rem;
+  content: "";
+  background: #0891b2;
+  border-radius: 50%;
+  box-shadow: 0 0 0 0.25rem rgba(8, 145, 178, 0.14);
+}
+
 .entry-stack {
   display: grid;
   gap: 12px;
   width: min(40rem, 100%);
-  margin-top: auto;
-  padding-top: clamp(2.625rem, 8dvh, 8rem);
+  margin-top: clamp(1.5rem, 4dvh, 3.25rem);
+  padding-top: 0;
 }
 
 .entry-row {
@@ -655,9 +731,13 @@ const onLogin = () => {
 }
 
 @media (min-width: 1800px) {
+  .login-window {
+    min-height: clamp(36rem, 76dvh, 76rem);
+  }
+
   .auth-panel {
-    justify-content: flex-start;
-    padding-block: clamp(5rem, 10dvh, 10rem) clamp(4rem, 8dvh, 8rem);
+    justify-content: center;
+    padding-block: clamp(3rem, 6dvh, 6rem);
   }
 
   .auth-heading {
@@ -746,6 +826,10 @@ const onLogin = () => {
   .board-metrics {
     grid-template-columns: 1fr;
     margin-top: 28px;
+  }
+
+  .board-focus {
+    margin-top: 20px;
   }
 
   .auth-panel {
