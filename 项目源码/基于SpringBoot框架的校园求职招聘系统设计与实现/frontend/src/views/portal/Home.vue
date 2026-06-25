@@ -70,7 +70,7 @@
       <div class="page-card list-card">
         <div class="section-title flex-between"><span>校园宣讲会</span><router-link to="/talks" class="more">更多 ></router-link></div>
         <ul>
-          <li v-for="t in home.talks" :key="t.id" class="clickable" @click="$router.push('/talks')">
+          <li v-for="t in home.talks" :key="t.id" class="clickable" @click="$router.push(`/talk/${t.id}`)">
             <span class="dot"></span>
             <span class="title">{{ t.title }}</span>
             <span class="time">{{ formatDate(t.talkTime) }}</span>
@@ -81,7 +81,7 @@
       <div class="page-card list-card">
         <div class="section-title flex-between"><span>大型招聘会</span><router-link to="/fairs" class="more">更多 ></router-link></div>
         <ul>
-          <li v-for="f in home.fairs" :key="f.id" class="clickable" @click="$router.push('/fairs')">
+          <li v-for="f in home.fairs" :key="f.id" class="clickable" @click="$router.push(`/fair/${f.id}`)">
             <span class="dot"></span>
             <span class="title">{{ f.title }}</span>
             <span class="time">{{ formatDate(f.fairTime) }}</span>

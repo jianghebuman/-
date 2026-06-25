@@ -277,6 +277,16 @@ public class PublicController {
         return Result.success(PageResult.of(page.getTotal(), page.getRecords()));
     }
 
+    /** 宣讲会详情 */
+    @GetMapping("/talks/{id}")
+    public Result<CampusTalk> talkDetail(@PathVariable Long id) {
+        CampusTalk talk = campusTalkMapper.selectById(id);
+        if (talk == null || !Integer.valueOf(1).equals(talk.getStatus())) {
+            return Result.error("宣讲会不存在");
+        }
+        return Result.success(talk);
+    }
+
     /** 招聘会分页：仅显示 status=1，按举办时间倒序 */
     @GetMapping("/fairs")
     public Result<PageResult<JobFair>> fairs(
@@ -287,6 +297,16 @@ public class PublicController {
                 .orderByDesc(JobFair::getFairTime);
         Page<JobFair> page = jobFairMapper.selectPage(new Page<>(pageNum, pageSize), wrapper);
         return Result.success(PageResult.of(page.getTotal(), page.getRecords()));
+    }
+
+    /** 招聘会详情 */
+    @GetMapping("/fairs/{id}")
+    public Result<JobFair> fairDetail(@PathVariable Long id) {
+        JobFair fair = jobFairMapper.selectById(id);
+        if (fair == null || !Integer.valueOf(1).equals(fair.getStatus())) {
+            return Result.error("招聘会不存在");
+        }
+        return Result.success(fair);
     }
 
     /** 论坛帖子分页：审核通过(auditStatus=1) 且 正常(status=1) */
