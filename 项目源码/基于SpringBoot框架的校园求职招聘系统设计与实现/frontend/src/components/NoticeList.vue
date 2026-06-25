@@ -15,7 +15,7 @@
         <el-tab-pane label="已读" :name="1" />
       </el-tabs>
       <div v-loading="loading">
-        <div class="notice-item" v-for="n in list" :key="n.id" :class="{ unread: n.isRead === 0 }">
+        <div class="notice-item" v-for="n in list" :key="n.id" :class="{ unread: n.isRead === 0 }" @click="openDetail(n)">
           <div class="icon" :class="n.noticeType?.toLowerCase() || 'system'">{{ typeText(n.noticeType).substring(0, 1) }}</div>
           <div class="body">
             <div class="top">
@@ -25,7 +25,10 @@
             <p class="content">{{ n.content }}</p>
             <div class="meta">
               <span>{{ n.createTime }}</span>
-              <el-button v-if="n.isRead === 0" text type="primary" @click="read(n.id)">标记已读</el-button>
+              <div class="ops">
+                <el-button text type="primary" @click.stop="openDetail(n)">查看详情</el-button>
+                <el-button v-if="n.isRead === 0" text type="primary" @click.stop="read(n.id)">标记已读</el-button>
+              </div>
             </div>
           </div>
         </div>
@@ -36,6 +39,22 @@
           layout="total, prev, pager, next" background @current-change="load" />
       </div>
     </div>
+
+    <el-dialog v-model="detailVisible" width="min(42rem, 92vw)" class="notice-detail-dialog">
+      <template #header>
+        <div class="detail-header">
+          <span>{{ currentNotice?.title }}</span>
+          <el-tag v-if="currentNotice" size="small" :type="tagType(currentNotice.noticeType)">{{ typeText(currentNotice.noticeType) }}</el-tag>
+        </div>
+      </template>
+      <div v-if="currentNotice" class="detail-body">
+        <div class="detail-meta">
+          <span>{{ currentNotice.createTime }}</span>
+          <span>{{ currentNotice.isRead === 0 ? '未读' : '已读' }}</span>
+        </div>
+        <div class="detail-content">{{ currentNotice.content }}</div>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
@@ -55,6 +74,8 @@ const list = ref([])
 const total = ref(0)
 const unread = ref(0)
 const loading = ref(false)
+const detailVisible = ref(false)
+const currentNotice = ref(null)
 const typeText = (t) => ({ SYSTEM: '系统', APPLY: '投递', INTERVIEW: '面试', OFFER: 'Offer', AUDIT: '审核', ACTIVITY: '活动', CHAT: '沟通' }[t] || '系统')
 const tagType = (t) => ({ APPLY: 'success', INTERVIEW: 'warning', OFFER: 'danger', AUDIT: 'primary', ACTIVITY: 'success', CHAT: 'warning' }[t] || 'info')
 const loadUnread = async () => {
@@ -74,13 +95,24 @@ const load = async () => {
 const reload = () => { query.pageNum = 1; load() }
 const read = async (id) => { await noticeApi.read(id); ElMessage.success('已标记为已读'); load() }
 const readAll = async () => { await noticeApi.readAll(); ElMessage.success('已全部标记为已读'); load() }
+const openDetail = async (notice) => {
+  currentNotice.value = notice
+  detailVisible.value = true
+  if (notice.isRead === 0) {
+    await noticeApi.read(notice.id)
+    notice.isRead = 1
+    currentNotice.value = { ...notice }
+    await loadUnread()
+  }
+}
 onMounted(load)
 </script>
 
 <style scoped lang="scss">
 .header { display:flex; justify-content:space-between; align-items:center; h2{margin-bottom:6px;} p{color:var(--cr-text-muted);} }
-.notice-item { display:flex; gap:14px; padding:18px 0; border-bottom:1px dashed var(--cr-border-soft); &.unread .title::after{content:'未读';font-size:12px;background:var(--cr-danger);color:#fff;border-radius:8px;padding:1px 6px;margin-left:8px;} }
+.notice-item { display:flex; gap:14px; padding:18px 0; border-bottom:1px dashed var(--cr-border-soft); cursor:pointer; transition:background .2s; &:hover{background:var(--cr-surface-soft)} &.unread .title::after{content:'未读';font-size:12px;background:var(--cr-danger);color:#fff;border-radius:8px;padding:1px 6px;margin-left:8px;} }
 .icon { width:42px;height:42px;border-radius:50%;background:var(--cr-text-muted);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:600;flex-shrink:0;&.apply,&.activity{background:var(--cr-success)}&.interview,&.chat{background:var(--cr-warning)}&.offer{background:var(--cr-danger)}&.audit{background:var(--cr-primary)} }
-.body{flex:1}.top{display:flex;gap:8px;align-items:center}.title{font-weight:600;color:var(--cr-text)}.content{color:var(--cr-text-soft);line-height:1.7;margin:8px 0}.meta{display:flex;justify-content:space-between;color:var(--cr-text-muted);font-size:12px;}
+.body{flex:1;min-width:0}.top{display:flex;gap:8px;align-items:center}.title{font-weight:600;color:var(--cr-text)}.content{color:var(--cr-text-soft);line-height:1.7;margin:8px 0}.meta{display:flex;justify-content:space-between;align-items:center;gap:12px;color:var(--cr-text-muted);font-size:12px;}.ops{display:flex;gap:4px;flex-shrink:0}
+.detail-header{display:flex;align-items:center;gap:10px;padding-right:24px;font-weight:600;color:var(--cr-text);line-height:1.5}.detail-meta{display:flex;justify-content:space-between;gap:12px;color:var(--cr-text-muted);font-size:13px;margin-bottom:16px}.detail-content{color:var(--cr-text);font-size:15px;line-height:1.9;white-space:pre-line;background:var(--cr-surface-soft);border-radius:var(--cr-radius-sm);padding:18px;}
 </style>
 
