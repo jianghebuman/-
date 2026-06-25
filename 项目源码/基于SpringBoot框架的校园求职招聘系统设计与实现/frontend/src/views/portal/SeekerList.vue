@@ -62,30 +62,34 @@
       </transition>
     </div>
 
-    <div class="seeker-grid mt-20" v-loading="loading">
-      <div class="seeker-card" v-for="item in list" :key="item.post.id" @click="$router.push(`/seeker/${item.post.id}`)">
-        <div class="card-top">
-          <el-avatar :src="item.student?.avatar"><el-icon><User /></el-icon></el-avatar>
-          <div>
-            <h3>{{ item.post.title }}</h3>
-            <p>{{ item.student?.realName || '求职者' }} · {{ item.student?.college || '学院未填' }}</p>
+    <div class="page-card page-flex-card mt-20">
+      <div class="page-flex-scroll">
+        <div class="seeker-grid" v-loading="loading">
+          <div class="seeker-card" v-for="item in list" :key="item.post.id" @click="$router.push(`/seeker/${item.post.id}`)">
+            <div class="card-top">
+              <el-avatar :src="item.student?.avatar"><el-icon><User /></el-icon></el-avatar>
+              <div>
+                <h3>{{ item.post.title }}</h3>
+                <p>{{ item.student?.realName || '求职者' }} · {{ item.student?.college || '学院未填' }}</p>
+              </div>
+            </div>
+            <div class="tags">
+              <el-tag>{{ item.post.expectPost || '岗位不限' }}</el-tag>
+              <el-tag type="success">{{ item.post.expectCity || '城市不限' }}</el-tag>
+              <el-tag type="warning">{{ item.post.expectSalary || '薪资面议' }}</el-tag>
+            </div>
+            <p class="intro">{{ item.post.intro || '暂无介绍' }}</p>
+            <div class="card-foot">
+              <span>浏览 {{ item.post.viewCount || 0 }}</span>
+              <el-button text type="primary">查看详情</el-button>
+            </div>
           </div>
-        </div>
-        <div class="tags">
-          <el-tag>{{ item.post.expectPost || '岗位不限' }}</el-tag>
-          <el-tag type="success">{{ item.post.expectCity || '城市不限' }}</el-tag>
-          <el-tag type="warning">{{ item.post.expectSalary || '薪资面议' }}</el-tag>
-        </div>
-        <p class="intro">{{ item.post.intro || '暂无介绍' }}</p>
-        <div class="card-foot">
-          <span>浏览 {{ item.post.viewCount || 0 }}</span>
-          <el-button text type="primary">查看详情</el-button>
+          <el-empty v-if="!loading && list.length === 0" class="grid-empty" description="暂无求职信息" />
         </div>
       </div>
-      <el-empty v-if="!loading && list.length === 0" class="grid-empty" description="暂无求职信息" />
-    </div>
-    <div class="pagination-wrap">
-      <el-pagination v-model:current-page="query.pageNum" v-model:page-size="query.pageSize" :total="total" background layout="total,prev,pager,next" @current-change="load" />
+      <div class="pagination-wrap">
+        <el-pagination v-model:current-page="query.pageNum" v-model:page-size="query.pageSize" :total="total" background layout="total,prev,pager,next" @current-change="load" />
+      </div>
     </div>
   </div>
 </template>

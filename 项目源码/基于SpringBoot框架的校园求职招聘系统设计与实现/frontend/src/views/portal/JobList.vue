@@ -55,41 +55,43 @@
     <div class="result-info">共找到 <b>{{ total }}</b> 个职位</div>
 
     <!-- 职位列表 -->
-    <div class="job-list-wrap" v-loading="loading">
-      <div class="job-row" v-for="j in jobs" :key="j.id" @click="$router.push(`/job/${j.id}`)">
-        <div class="job-main">
-          <div class="job-head">
-            <span class="title">{{ j.title }}</span>
-            <span class="salary">{{ j.salaryMin }}-{{ j.salaryMax }}K</span>
+    <div class="page-card page-flex-card mt-20">
+      <div class="page-flex-scroll">
+        <div class="job-list-wrap" v-loading="loading">
+          <div class="job-row" v-for="j in jobs" :key="j.id" @click="$router.push(`/job/${j.id}`)">
+            <div class="job-main">
+              <div class="job-head">
+                <span class="title">{{ j.title }}</span>
+                <span class="salary">{{ j.salaryMin }}-{{ j.salaryMax }}K</span>
+              </div>
+              <div class="job-meta">
+                <span><el-icon><Location /></el-icon> {{ j.city || '不限' }}</span>
+                <span><el-icon><User /></el-icon> {{ j.education || '不限学历' }}</span>
+                <span><el-icon><Briefcase /></el-icon> {{ j.jobType === 1 ? '全职' : '实习' }}</span>
+                <span v-if="j.recruitNum">招聘 {{ j.recruitNum }} 人</span>
+              </div>
+              <div class="job-tags" v-if="j.welfare">
+                <el-tag v-for="w in j.welfare.split(',').slice(0, 5)" :key="w" size="small" type="info" effect="plain">{{ w }}</el-tag>
+              </div>
+            </div>
+            <div class="job-side">
+              <div class="company">{{ j.companyName || '名企招聘' }}</div>
+              <div class="publish">发布于 {{ relativeTime(j.publishTime) }}</div>
+            </div>
           </div>
-          <div class="job-meta">
-            <span><el-icon><Location /></el-icon> {{ j.city || '不限' }}</span>
-            <span><el-icon><User /></el-icon> {{ j.education || '不限学历' }}</span>
-            <span><el-icon><Briefcase /></el-icon> {{ j.jobType === 1 ? '全职' : '实习' }}</span>
-            <span v-if="j.recruitNum">招聘 {{ j.recruitNum }} 人</span>
-          </div>
-          <div class="job-tags" v-if="j.welfare">
-            <el-tag v-for="w in j.welfare.split(',').slice(0, 5)" :key="w" size="small" type="info" effect="plain">{{ w }}</el-tag>
-          </div>
-        </div>
-        <div class="job-side">
-          <div class="company">{{ j.companyName || '名企招聘' }}</div>
-          <div class="publish">发布于 {{ relativeTime(j.publishTime) }}</div>
+          <el-empty v-if="!loading && jobs.length === 0" description="暂无符合条件的职位" />
         </div>
       </div>
-      <el-empty v-if="!loading && jobs.length === 0" description="暂无符合条件的职位" />
-    </div>
-
-    <!-- 分页 -->
-    <div class="pagination-wrap">
-      <el-pagination
-        v-model:current-page="query.pageNum"
-        v-model:page-size="query.pageSize"
-        :total="total"
-        layout="total, prev, pager, next, jumper"
-        background
-        @current-change="loadList"
-      />
+      <div class="pagination-wrap">
+        <el-pagination
+          v-model:current-page="query.pageNum"
+          v-model:page-size="query.pageSize"
+          :total="total"
+          layout="total, prev, pager, next, jumper"
+          background
+          @current-change="loadList"
+        />
+      </div>
     </div>
   </div>
 </template>

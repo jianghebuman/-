@@ -21,25 +21,27 @@
     </div>
 
     <div class="content mt-20">
-      <div class="main-list page-card" v-loading="loading">
-        <div class="post-item" v-for="p in posts" :key="p.id" @click="$router.push(`/forum/${p.id}`)">
-          <div class="avatar">{{ (p.authorName || '同学').substring(0, 1) }}</div>
-          <div class="post-body">
-            <div class="post-title">
-              <el-tag size="small" :type="tagType(p.category)" effect="plain">{{ p.category || '求职交流' }}</el-tag>
-              <span>{{ p.title }}</span>
-            </div>
-            <p class="post-content">{{ p.content }}</p>
-            <div class="post-meta">
-              <span><el-icon><User /></el-icon> {{ p.authorName || '匿名同学' }}</span>
-              <span><el-icon><Clock /></el-icon> {{ formatTime(p.createTime) }}</span>
-              <span><el-icon><View /></el-icon> {{ p.viewCount || 0 }}</span>
-              <span><el-icon><Pointer /></el-icon> {{ p.likeCount || 0 }}</span>
-              <span><el-icon><ChatLineRound /></el-icon> {{ p.commentCount || 0 }}</span>
+      <div class="main-list page-card page-flex-card" v-loading="loading">
+        <div class="page-flex-scroll">
+          <div class="post-item" v-for="p in posts" :key="p.id" @click="$router.push(`/forum/${p.id}`)">
+            <div class="avatar">{{ (p.authorName || '同学').substring(0, 1) }}</div>
+            <div class="post-body">
+              <div class="post-title">
+                <el-tag size="small" :type="tagType(p.category)" effect="plain">{{ p.category || '求职交流' }}</el-tag>
+                <span>{{ p.title }}</span>
+              </div>
+              <p class="post-content">{{ p.content }}</p>
+              <div class="post-meta">
+                <span><el-icon><User /></el-icon> {{ p.authorName || '匿名同学' }}</span>
+                <span><el-icon><Clock /></el-icon> {{ formatTime(p.createTime) }}</span>
+                <span><el-icon><View /></el-icon> {{ p.viewCount || 0 }}</span>
+                <span><el-icon><Pointer /></el-icon> {{ p.likeCount || 0 }}</span>
+                <span><el-icon><ChatLineRound /></el-icon> {{ p.commentCount || 0 }}</span>
+              </div>
             </div>
           </div>
+          <el-empty v-if="!loading && posts.length === 0" description="暂无帖子，来发布第一条交流吧" />
         </div>
-        <el-empty v-if="!loading && posts.length === 0" description="暂无帖子，来发布第一条交流吧" />
         <div class="pagination-wrap">
           <el-pagination v-model:current-page="query.pageNum" v-model:page-size="query.pageSize" :total="total"
             layout="total, prev, pager, next" background @current-change="load" />
@@ -69,10 +71,10 @@
         <div class="page-card side-card mt-20">
           <h3 class="side-title">快捷入口</h3>
           <div class="quick-links">
-            <el-button class="quick-link" plain @click="$router.push('/news')">就业资讯</el-button>
-            <el-button class="quick-link" plain @click="$router.push('/talks')">宣讲会</el-button>
-            <el-button class="quick-link" plain @click="$router.push('/fairs')">招聘会</el-button>
-            <el-button class="quick-link" plain @click="$router.push('/notice')">消息中心</el-button>
+            <el-button class="quick-link portal-quick-link" plain @click="$router.push('/news')">就业资讯</el-button>
+            <el-button class="quick-link portal-quick-link" plain @click="$router.push('/talks')">宣讲会</el-button>
+            <el-button class="quick-link portal-quick-link" plain @click="$router.push('/fairs')">招聘会</el-button>
+            <el-button class="quick-link portal-quick-link" plain @click="$router.push('/notice')">消息中心</el-button>
           </div>
         </div>
       </div>
@@ -159,7 +161,10 @@ onMounted(load)
 .toolbar { display: grid; grid-template-columns: minmax(0, 1fr) minmax(14rem, .28fr); gap: clamp(.75rem, 2vw, 1rem); align-items: center; }
 .toolbar :deep(.el-radio-group) { min-width: 0; overflow-x: auto; }
 .toolbar-search { min-width: 0; }
-.content { display: grid; grid-template-columns: minmax(0, 1fr) minmax(15rem, 17.5rem); gap: clamp(1rem, 2vw, 1.25rem); }
+.content { display: grid; grid-template-columns: minmax(0, 1fr) minmax(15rem, 17.5rem); gap: clamp(1rem, 2vw, 1.25rem); align-items: stretch; }
+.main-list { min-height: 0; }
+.side { display: grid; grid-template-rows: auto auto minmax(0, 1fr); gap: clamp(1rem, 2vw, 1.25rem); min-height: 0; height: 100%; }
+.side > .page-card { min-height: 0; }
 .post-item { display: flex; gap: .875rem; padding: 1.125rem 0; border-bottom: 0.0625rem dashed var(--cr-border-soft); cursor: pointer; &:hover .post-title span:last-child { color: var(--cr-primary); } }
 .avatar { width: clamp(2.25rem, 5vw, 2.75rem); height: clamp(2.25rem, 5vw, 2.75rem); border-radius: 50%; background: linear-gradient(135deg, var(--cr-primary), var(--cr-success)); color: #fff; display: flex; align-items: center; justify-content: center; font-weight: 600; flex-shrink: 0; }
 .post-body { flex: 1; min-width: 0; }
@@ -175,12 +180,13 @@ onMounted(load)
 .side-post-body { min-width: 0; }
 .side-post-title { color: var(--cr-text); font-size: .875rem; line-height: 1.45; margin: 0; }
 .side-post-meta { color: var(--cr-text-muted); font-size: .75rem; margin-top: .25rem; }
-.quick-links { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .625rem; }
-.quick-link { height: 2.5rem; }
+.quick-links { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .625rem; align-content: start; }
+.quick-link { justify-content: flex-start; padding-inline: .75rem; }
 
 @media (max-width: 56.25rem) {
   .content,
   .toolbar { grid-template-columns: 1fr; }
+  .side { grid-template-rows: auto; }
 }
 
 @media (max-width: 40rem) {

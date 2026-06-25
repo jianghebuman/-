@@ -7,27 +7,29 @@
 
     <div class="layout mt-20">
       <!-- 左侧资讯列表 -->
-      <div class="page-card main">
+      <div class="page-card main page-flex-card">
         <el-tabs v-model="activeCat" @tab-change="onCatChange">
           <el-tab-pane label="全部" :name="0" />
           <el-tab-pane v-for="c in categories" :key="c.id" :label="c.name" :name="c.id" />
         </el-tabs>
-        <div class="news-row" v-for="n in list" :key="n.id" @click="$router.push(`/news/${n.id}`)" v-loading="loading">
-          <div class="cover" v-if="n.cover" :style="{ backgroundImage: `url(${n.cover})` }"></div>
-          <div class="body">
-            <h3 class="title">
-              <el-tag size="small" type="danger" v-if="n.isTop" effect="dark" class="top-tag">置顶</el-tag>
-              {{ n.title }}
-            </h3>
-            <p class="summary">{{ n.summary }}</p>
-            <div class="meta">
-              <span>{{ n.author || '就业办' }}</span>
-              <span>{{ formatDate(n.publishTime || n.createTime) }}</span>
-              <span><el-icon><View /></el-icon> {{ n.viewCount || 0 }}</span>
+        <div class="page-flex-scroll">
+          <div class="news-row" v-for="n in list" :key="n.id" @click="$router.push(`/news/${n.id}`)" v-loading="loading">
+            <div class="cover" v-if="n.cover" :style="{ backgroundImage: `url(${n.cover})` }"></div>
+            <div class="body">
+              <h3 class="title">
+                <el-tag size="small" type="danger" v-if="n.isTop" effect="dark" class="top-tag">置顶</el-tag>
+                {{ n.title }}
+              </h3>
+              <p class="summary">{{ n.summary }}</p>
+              <div class="meta">
+                <span>{{ n.author || '就业办' }}</span>
+                <span>{{ formatDate(n.publishTime || n.createTime) }}</span>
+                <span><el-icon><View /></el-icon> {{ n.viewCount || 0 }}</span>
+              </div>
             </div>
           </div>
+          <el-empty v-if="!loading && list.length === 0" description="暂无资讯" />
         </div>
-        <el-empty v-if="!loading && list.length === 0" description="暂无资讯" />
         <div class="pagination-wrap">
           <el-pagination v-model:current-page="query.pageNum" v-model:page-size="query.pageSize" :total="total"
             layout="prev, pager, next" background @current-change="load" />
@@ -74,7 +76,7 @@
         <div class="page-card sidebar-card mt-20">
           <h3 class="block-title">快捷入口</h3>
           <div class="quick-links">
-            <el-button v-for="link in quickLinks" :key="link.path" class="quick-link" plain @click="$router.push(link.path)">
+            <el-button v-for="link in quickLinks" :key="link.path" class="quick-link portal-quick-link" plain @click="$router.push(link.path)">
               <el-icon><component :is="link.icon" /></el-icon>
               <span>{{ link.label }}</span>
             </el-button>
@@ -141,7 +143,7 @@ onMounted(async () => {
 <style scoped lang="scss">
 .head h2 { color: var(--cr-text); .el-icon { vertical-align: middle; color: var(--cr-primary); } }
 .head .sub { color: var(--cr-text-muted); margin-top: .375rem; }
-.layout { display: grid; grid-template-columns: minmax(0, 1fr) minmax(15rem, 17.5rem); gap: clamp(1rem, 2vw, 1.25rem); }
+.layout { display: grid; grid-template-columns: minmax(0, 1fr) minmax(15rem, 17.5rem); gap: clamp(1rem, 2vw, 1.25rem); align-items: stretch; }
 .news-row { display: flex; gap: 1rem; padding: 1rem 0; border-bottom: 0.0625rem dashed #ebeef5; cursor: pointer;
   &:hover .title { color: var(--cr-primary); }
   .cover { width: clamp(7rem, 16vw, 10rem); aspect-ratio: 8 / 5; background-size: cover; background-position: center; border-radius: var(--cr-radius-sm); flex-shrink: 0; }
@@ -152,7 +154,9 @@ onMounted(async () => {
   .meta { display: flex; gap: .5rem 1rem; flex-wrap: wrap; color: var(--cr-text-muted); font-size: .75rem; .el-icon { vertical-align: middle; } }
 }
 .block-title { font-size: .9375rem; color: var(--cr-text); border-left: .1875rem solid var(--cr-primary); padding-left: .5rem; margin-bottom: .75rem; }
-.sidebar-card { display: flex; flex-direction: column; gap: .75rem; }
+.aside { display: grid; grid-template-rows: auto auto minmax(0, 1fr); gap: clamp(1rem, 2vw, 1.25rem); min-height: 0; height: 100%; }
+.aside > .page-card { min-height: 0; }
+.sidebar-card { display: flex; flex-direction: column; gap: .75rem; min-height: 0; }
 .brief-list, .schedule-list { display: flex; flex-direction: column; gap: .75rem; }
 .brief-item, .schedule-item { cursor: pointer; }
 .brief-item { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: .625rem; align-items: start; padding: .625rem 0; border-bottom: 0.0625rem dashed #ebeef5;
@@ -168,8 +172,8 @@ onMounted(async () => {
 }
 .schedule-dot { width: .5rem; height: .5rem; border-radius: 50%; background: var(--cr-primary); margin-top: .375rem; }
 .schedule-dot.alt { background: var(--cr-success); }
-.quick-links { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .625rem; }
-.quick-link { justify-content: flex-start; padding-inline: .75rem; height: 2.5rem; }
+.quick-links { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .625rem; align-content: start; }
+.quick-link { justify-content: flex-start; padding-inline: .75rem; }
 .quick-link span { white-space: nowrap; }
 .quick-link :deep(.el-icon) { margin-right: .375rem; }
 .quick-link:hover { border-color: rgba(37, 99, 235, .24); color: var(--cr-primary); }
@@ -185,6 +189,7 @@ ol { padding-left: 0; }
 }
 @media (max-width: 56.25rem) {
   .layout { grid-template-columns: 1fr; }
+  .aside { grid-template-rows: auto; }
 }
 @media (max-width: 35rem) {
   .news-row { flex-direction: column; }

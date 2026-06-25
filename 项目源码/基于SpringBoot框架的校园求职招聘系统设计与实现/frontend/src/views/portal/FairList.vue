@@ -5,32 +5,35 @@
       <p class="sub">面向全校学生的双选会、专场招聘会信息</p>
     </div>
 
-    <div class="grid mt-20" v-loading="loading">
-      <div class="fair-card" v-for="f in list" :key="f.id">
-        <div class="cover" :style="f.cover ? { backgroundImage: `url(${f.cover})` } : { background: 'linear-gradient(135deg, #2563eb 0%, #0891b2 100%)' }">
-          <div class="cover-mask">
-            <h3 class="title">{{ f.title }}</h3>
+    <div class="page-card page-flex-card mt-20">
+      <div class="page-flex-scroll">
+        <div class="grid" v-loading="loading">
+          <div class="fair-card" v-for="f in list" :key="f.id">
+            <div class="cover" :style="f.cover ? { backgroundImage: `url(${f.cover})` } : { background: 'linear-gradient(135deg, #2563eb 0%, #0891b2 100%)' }">
+              <div class="cover-mask">
+                <h3 class="title">{{ f.title }}</h3>
+              </div>
+            </div>
+            <div class="body">
+              <div class="info-row"><el-icon><Clock /></el-icon> {{ formatDateTime(f.fairTime) }}</div>
+              <div class="info-row"><el-icon><Location /></el-icon> {{ f.location }}</div>
+              <div class="info-row"><el-icon><Trophy /></el-icon> 主办方：{{ f.host || '校就业指导中心' }}</div>
+              <p class="content">{{ f.content }}</p>
+              <div class="stats">
+                <div class="stat-item"><span class="num">{{ f.companyCount || 0 }}</span><span class="label">参会企业</span></div>
+                <div class="stat-item"><span class="num">{{ f.jobCount || 0 }}</span><span class="label">提供岗位</span></div>
+                <div class="stat-item"><span class="num">{{ f.signCount || 0 }}</span><span class="label">报名人数</span></div>
+              </div>
+              <el-button type="primary" class="w-full" @click="onSign(f)">立即报名</el-button>
+            </div>
           </div>
-        </div>
-        <div class="body">
-          <div class="info-row"><el-icon><Clock /></el-icon> {{ formatDateTime(f.fairTime) }}</div>
-          <div class="info-row"><el-icon><Location /></el-icon> {{ f.location }}</div>
-          <div class="info-row"><el-icon><Trophy /></el-icon> 主办方：{{ f.host || '校就业指导中心' }}</div>
-          <p class="content">{{ f.content }}</p>
-          <div class="stats">
-            <div class="stat-item"><span class="num">{{ f.companyCount || 0 }}</span><span class="label">参会企业</span></div>
-            <div class="stat-item"><span class="num">{{ f.jobCount || 0 }}</span><span class="label">提供岗位</span></div>
-            <div class="stat-item"><span class="num">{{ f.signCount || 0 }}</span><span class="label">报名人数</span></div>
-          </div>
-          <el-button type="primary" class="w-full" @click="onSign(f)">立即报名</el-button>
+          <el-empty v-if="!loading && list.length === 0" description="暂无招聘会" class="grid-empty" />
         </div>
       </div>
-      <el-empty v-if="!loading && list.length === 0" description="暂无招聘会" class="grid-empty" />
-    </div>
-
-    <div class="pagination-wrap">
-      <el-pagination v-model:current-page="query.pageNum" v-model:page-size="query.pageSize" :total="total"
-        layout="total, prev, pager, next" background @current-change="load" />
+      <div class="pagination-wrap">
+        <el-pagination v-model:current-page="query.pageNum" v-model:page-size="query.pageSize" :total="total"
+          layout="total, prev, pager, next" background @current-change="load" />
+      </div>
     </div>
   </div>
 </template>

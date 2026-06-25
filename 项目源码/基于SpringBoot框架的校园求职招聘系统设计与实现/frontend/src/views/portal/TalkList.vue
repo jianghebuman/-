@@ -5,32 +5,35 @@
       <p class="sub">近期企业到校宣讲安排，提前了解、提前准备</p>
     </div>
 
-    <div class="list mt-20" v-loading="loading">
-      <div class="talk-item" v-for="t in list" :key="t.id">
-        <div class="date">
-          <div class="day">{{ getDay(t.talkTime) }}</div>
-          <div class="month">{{ getMonth(t.talkTime) }}</div>
-        </div>
-        <div class="body">
-          <h3 class="title">{{ t.title }}</h3>
-          <div class="meta">
-            <span><el-icon><OfficeBuilding /></el-icon> {{ t.companyName || '主办方' }}</span>
-            <span><el-icon><Clock /></el-icon> {{ formatDateTime(t.talkTime) }}</span>
-            <span><el-icon><Location /></el-icon> {{ t.location }}</span>
+    <div class="page-card page-flex-card mt-20">
+      <div class="page-flex-scroll">
+        <div class="list" v-loading="loading">
+          <div class="talk-item" v-for="t in list" :key="t.id">
+            <div class="date">
+              <div class="day">{{ getDay(t.talkTime) }}</div>
+              <div class="month">{{ getMonth(t.talkTime) }}</div>
+            </div>
+            <div class="body">
+              <h3 class="title">{{ t.title }}</h3>
+              <div class="meta">
+                <span><el-icon><OfficeBuilding /></el-icon> {{ t.companyName || '主办方' }}</span>
+                <span><el-icon><Clock /></el-icon> {{ formatDateTime(t.talkTime) }}</span>
+                <span><el-icon><Location /></el-icon> {{ t.location }}</span>
+              </div>
+              <p class="content">{{ t.content }}</p>
+              <div class="footer">
+                <el-tag size="small" type="success" v-if="t.signCount">已有 {{ t.signCount }} 人报名</el-tag>
+                <el-button type="primary" plain size="small" @click="onSign(t)">报名参加</el-button>
+              </div>
+            </div>
           </div>
-          <p class="content">{{ t.content }}</p>
-          <div class="footer">
-            <el-tag size="small" type="success" v-if="t.signCount">已有 {{ t.signCount }} 人报名</el-tag>
-            <el-button type="primary" plain size="small" @click="onSign(t)">报名参加</el-button>
-          </div>
+          <el-empty v-if="!loading && list.length === 0" description="暂无宣讲会安排" />
         </div>
       </div>
-      <el-empty v-if="!loading && list.length === 0" description="暂无宣讲会安排" />
-    </div>
-
-    <div class="pagination-wrap">
-      <el-pagination v-model:current-page="query.pageNum" v-model:page-size="query.pageSize" :total="total"
-        layout="total, prev, pager, next" background @current-change="load" />
+      <div class="pagination-wrap">
+        <el-pagination v-model:current-page="query.pageNum" v-model:page-size="query.pageSize" :total="total"
+          layout="total, prev, pager, next" background @current-change="load" />
+      </div>
     </div>
   </div>
 </template>

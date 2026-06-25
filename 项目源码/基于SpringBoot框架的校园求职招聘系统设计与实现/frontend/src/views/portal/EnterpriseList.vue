@@ -5,26 +5,29 @@
       <p class="sub">汇聚优质企业，发现你的理想雇主</p>
     </div>
 
-    <div class="grid mt-20" v-loading="loading">
-      <div class="ent-card" v-for="e in list" :key="e.id" @click="$router.push(`/enterprise/${e.id}`)">
-        <el-avatar :src="e.logo" shape="square" class="logo"><el-icon class="logo-icon"><OfficeBuilding /></el-icon></el-avatar>
-        <div class="info">
-          <h3 class="name">{{ e.companyName }}</h3>
-          <p class="meta">
-            <span v-if="e.industry">{{ e.industry }}</span>
-            <span class="sep" v-if="e.industry && e.scale">·</span>
-            <span v-if="e.scale">{{ e.scale }}</span>
-          </p>
-          <p class="city" v-if="e.city"><el-icon><Location /></el-icon> {{ e.city }}</p>
-          <p class="intro">{{ e.intro || '该企业暂未填写介绍' }}</p>
+    <div class="page-card page-flex-card mt-20">
+      <div class="page-flex-scroll">
+        <div class="grid" v-loading="loading">
+          <div class="ent-card" v-for="e in list" :key="e.id" @click="$router.push(`/enterprise/${e.id}`)">
+            <el-avatar :src="e.logo" shape="square" class="logo"><el-icon class="logo-icon"><OfficeBuilding /></el-icon></el-avatar>
+            <div class="info">
+              <h3 class="name">{{ e.companyName }}</h3>
+              <p class="meta">
+                <span v-if="e.industry">{{ e.industry }}</span>
+                <span class="sep" v-if="e.industry && e.scale">·</span>
+                <span v-if="e.scale">{{ e.scale }}</span>
+              </p>
+              <p class="city" v-if="e.city"><el-icon><Location /></el-icon> {{ e.city }}</p>
+              <p class="intro">{{ e.intro || '该企业暂未填写介绍' }}</p>
+            </div>
+          </div>
+          <el-empty v-if="!loading && list.length === 0" description="暂无企业" class="grid-empty" />
         </div>
       </div>
-      <el-empty v-if="!loading && list.length === 0" description="暂无企业" class="grid-empty" />
-    </div>
-
-    <div class="pagination-wrap">
-      <el-pagination v-model:current-page="query.pageNum" v-model:page-size="query.pageSize" :total="total"
-        layout="total, prev, pager, next" background @current-change="load" />
+      <div class="pagination-wrap">
+        <el-pagination v-model:current-page="query.pageNum" v-model:page-size="query.pageSize" :total="total"
+          layout="total, prev, pager, next" background @current-change="load" />
+      </div>
     </div>
   </div>
 </template>
