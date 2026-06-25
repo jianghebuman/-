@@ -68,7 +68,7 @@
 │       │   ├── config/           # Web、拦截器、MyBatis-Plus 配置
 │       │   ├── controller/       # 三端与公共接口
 │       │   ├── dto/              # 请求 DTO
-│       │   ├── entity/           # 33 张表实体
+│       │   ├── entity/           # 35 张表实体
 │       │   ├── mapper/           # MyBatis-Plus Mapper
 │       │   ├── service/          # Service 接口
 │       │   └── service/impl/     # Service 实现
@@ -83,7 +83,7 @@
 │       ├── router/               # 路由守卫
 │       ├── store/                # Pinia 用户状态
 │       └── views/                # 页面
-└── docs/sql/campus_recruitment.sql
+└── ../../数据库脚本/campus_recruitment.sql
 ```
 
 ## 环境要求
@@ -112,9 +112,11 @@ spring:
 
 SQL 文件位置：
 
-[docs/sql/campus_recruitment.sql](docs/sql/campus_recruitment.sql)
+[../../数据库脚本/campus_recruitment.sql](../../数据库脚本/campus_recruitment.sql)
 
-可用 Navicat Premium 17 执行该脚本，脚本会自动创建数据库 `campus_recruitment`，并初始化表结构、字典、测试账号和演示数据。
+可用 Navicat Premium 17 执行该脚本，脚本会自动创建数据库 `campus_recruitment`，并初始化 35 张业务表、字典、测试账号和演示数据。
+
+当前数据库连接默认指向 `campus_recruitment`。如果本地数据库已经跑过一段时间，`operation_log`、`system_notice` 等业务表的记录数可能会高于初始化脚本，这是正常的运行数据漂移；如需恢复初始演示数据，重新导入该脚本即可。
 
 ## 启动后端
 

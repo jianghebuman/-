@@ -19,20 +19,20 @@
 | 密码 | 12345678 |
 | 数据库 | campus_recruitment |
 
-如密码不同，请在导入后修改 [backend/src/main/resources/application.yml](../backend/src/main/resources/application.yml)。
+如密码不同，请在导入后修改 [application.yml](../项目源码/基于SpringBoot框架的校园求职招聘系统设计与实现/backend/src/main/resources/application.yml)。
 
 ## 2. SQL 文件位置
 
 数据库脚本位于：
 
 ```text
-docs/sql/campus_recruitment.sql
+数据库脚本/campus_recruitment.sql
 ```
 
 该脚本包含：
 
 - 自动创建数据库 `campus_recruitment`
-- 33 张业务表
+- 35 张业务表（共 409 个字段）
 - 角色、字典、岗位类别初始化数据
 - 管理员、学生、企业测试账号
 - 首页轮播图、公告、宣讲会、招聘会、职位、简历、投递、面试、Offer、论坛等演示数据
@@ -48,7 +48,7 @@ docs/sql/campus_recruitment.sql
    - 密码：`12345678`（如不同请填你的实际密码）
 4. 点击「测试连接」，提示成功后点击「确定」。
 5. 在左侧连接上右键，选择「新建查询」。
-6. 打开文件 [docs/sql/campus_recruitment.sql](sql/campus_recruitment.sql)，复制全部 SQL 内容。
+6. 打开文件 [campus_recruitment.sql](./campus_recruitment.sql)，复制全部 SQL 内容。
 7. 粘贴到 Navicat 查询窗口。
 8. 点击「运行」或按 F6 执行。
 9. 执行完成后，左侧刷新连接，应出现数据库 `campus_recruitment`。
@@ -67,6 +67,16 @@ SELECT * FROM enterprise;
 ```
 
 应能看到管理员、学生、企业测试账号。
+
+也可以继续执行：
+
+```sql
+SELECT COUNT(*) AS table_count
+FROM information_schema.tables
+WHERE table_schema = 'campus_recruitment';
+```
+
+正常情况下应返回 `35`。
 
 ## 5. 默认测试账号
 
@@ -114,5 +124,12 @@ DROP DATABASE campus_recruitment;
 
 1. MySQL 服务是否启动。
 2. 数据库是否已导入。
-3. [backend/src/main/resources/application.yml](../backend/src/main/resources/application.yml) 中账号密码是否正确。
+3. [application.yml](../项目源码/基于SpringBoot框架的校园求职招聘系统设计与实现/backend/src/main/resources/application.yml) 中账号密码是否正确。
 4. MySQL 端口是否为 3306。
+
+## 7. 脚本同步说明
+
+- 仓库中的权威初始化脚本为 [campus_recruitment.sql](./campus_recruitment.sql)。
+- 2026-06-25 已核对本地仓库与 GitHub `main` 分支中的该脚本，文件内容一致。
+- 同日已将脚本导入临时对比库，并与本机 `campus_recruitment` 数据库核对，结果为 35 张表、409 个字段，表结构一致。
+- 本地数据库在系统运行后会新增业务数据，因此 `operation_log`、`system_notice`、`activity_sign`、`student` 等表的记录数可能高于初始化脚本，这是正常现象；若需要回到初始演示数据，请重新导入脚本。
