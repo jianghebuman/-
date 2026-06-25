@@ -28,8 +28,11 @@ public class JobSeekerPostController {
     public Result<PageResult<Map<String, Object>>> publicPage(@RequestParam(defaultValue = "1") Integer pageNum,
                                                               @RequestParam(defaultValue = "10") Integer pageSize,
                                                               @RequestParam(required = false) String keyword,
-                                                              @RequestParam(required = false) String city) {
-        return Result.success(jobSeekerPostService.publicPage(pageNum, pageSize, keyword, city));
+                                                              @RequestParam(required = false) String city,
+                                                              @RequestParam(required = false) String expectPost,
+                                                              @RequestParam(required = false) String college,
+                                                              @RequestParam(required = false) Integer salaryMin) {
+        return Result.success(jobSeekerPostService.publicPage(pageNum, pageSize, keyword, city, expectPost, college, salaryMin));
     }
 
     @GetMapping("/public/seeker-posts/{id}")

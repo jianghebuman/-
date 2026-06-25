@@ -8,7 +8,8 @@ import java.util.Map;
 
 public interface JobSeekerPostService extends IService<JobSeekerPost> {
 
-    PageResult<Map<String, Object>> publicPage(Integer pageNum, Integer pageSize, String keyword, String city);
+    PageResult<Map<String, Object>> publicPage(Integer pageNum, Integer pageSize, String keyword, String city,
+                                               String expectPost, String college, Integer salaryMin);
 
     Map<String, Object> publicDetail(Long id);
 

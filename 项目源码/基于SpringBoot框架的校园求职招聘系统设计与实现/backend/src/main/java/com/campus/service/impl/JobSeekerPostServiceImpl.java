@@ -16,13 +16,18 @@ import com.campus.service.JobSeekerPostService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 @Service
 public class JobSeekerPostServiceImpl extends ServiceImpl<JobSeekerPostMapper, JobSeekerPost> implements JobSeekerPostService {
+
+    private static final Pattern SALARY_PATTERN = Pattern.compile("(\\d+(?:\\.\\d+)?)\\s*(?:[kK]|千)");
 
     @Autowired
     private ResumeMapper resumeMapper;
@@ -31,15 +36,64 @@ public class JobSeekerPostServiceImpl extends ServiceImpl<JobSeekerPostMapper, J
     private StudentMapper studentMapper;
 
     @Override
-    public PageResult<Map<String, Object>> publicPage(Integer pageNum, Integer pageSize, String keyword, String city) {
+    public PageResult<Map<String, Object>> publicPage(Integer pageNum, Integer pageSize, String keyword, String city,
+                                                      String expectPost, String college, Integer salaryMin) {
+        String keywordText = normalize(keyword);
+        String cityText = normalize(city);
+        String expectPostText = normalize(expectPost);
+        String collegeText = normalize(college);
+        List<Long> studentIds = null;
+        if (collegeText != null) {
+            studentIds = studentMapper.selectList(new LambdaQueryWrapper<Student>()
+                            .like(Student::getCollege, collegeText))
+                    .stream()
+                    .map(Student::getId)
+                    .collect(Collectors.toList());
+            if (studentIds.isEmpty()) {
+                return PageResult.of(0L, Collections.emptyList());
+            }
+        }
+
         Page<JobSeekerPost> page = new Page<>(pageNum, pageSize);
         LambdaQueryWrapper<JobSeekerPost> wrapper = new LambdaQueryWrapper<JobSeekerPost>()
                 .eq(JobSeekerPost::getStatus, 1)
-                .like(keyword != null && !keyword.trim().isEmpty(), JobSeekerPost::getTitle, keyword)
-                .like(city != null && !city.trim().isEmpty(), JobSeekerPost::getExpectCity, city)
+                .and(keywordText != null, w -> w
+                        .like(JobSeekerPost::getTitle, keywordText)
+                        .or().like(JobSeekerPost::getExpectPost, keywordText)
+                        .or().like(JobSeekerPost::getIntro, keywordText))
+                .like(cityText != null, JobSeekerPost::getExpectCity, cityText)
+                .like(expectPostText != null, JobSeekerPost::getExpectPost, expectPostText)
+                .in(studentIds != null, JobSeekerPost::getStudentId, studentIds)
                 .orderByDesc(JobSeekerPost::getUpdateTime);
+        if (salaryMin != null) {
+            List<JobSeekerPost> filtered = this.list(wrapper).stream()
+                    .filter(post -> matchSalaryMin(post.getExpectSalary(), salaryMin))
+                    .collect(Collectors.toList());
+            int fromIndex = Math.min(Math.max(pageNum - 1, 0) * pageSize, filtered.size());
+            int toIndex = Math.min(fromIndex + pageSize, filtered.size());
+            return PageResult.of((long) filtered.size(), enrich(filtered.subList(fromIndex, toIndex), false));
+        }
         this.page(page, wrapper);
         return PageResult.of(page.getTotal(), enrich(page.getRecords(), false));
+    }
+
+    private String normalize(String value) {
+        if (value == null) {
+            return null;
+        }
+        String trimmed = value.trim();
+        return trimmed.isEmpty() ? null : trimmed;
+    }
+
+    private boolean matchSalaryMin(String salary, Integer salaryMin) {
+        if (salary == null || salaryMin == null) {
+            return salaryMin == null;
+        }
+        Matcher matcher = SALARY_PATTERN.matcher(salary);
+        if (!matcher.find()) {
+            return false;
+        }
+        return Double.parseDouble(matcher.group(1)) >= salaryMin;
     }
 
     @Override

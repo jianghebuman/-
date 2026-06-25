@@ -8,16 +8,58 @@
       <el-button type="primary" @click="publish">发布求职信息</el-button>
     </div>
 
-    <div class="page-card mt-20">
+    <div class="search-card page-card mt-20">
       <el-form inline>
         <el-form-item label="关键词">
-          <el-input v-model="query.keyword" clearable placeholder="岗位/标题" @keyup.enter="reload" />
+          <el-input v-model="query.keyword" clearable placeholder="岗位/标题" @clear="reload" @input="reloadIfEmpty" @keyup.enter="reload" />
         </el-form-item>
         <el-form-item label="城市">
-          <el-input v-model="query.city" clearable placeholder="期望城市" @keyup.enter="reload" />
+          <el-input v-model="query.city" clearable placeholder="期望城市" @clear="reload" @input="reloadIfEmpty" @keyup.enter="reload" />
         </el-form-item>
         <el-button type="primary" @click="reload">搜索</el-button>
+        <el-button :type="showFilters ? 'primary' : 'default'" :icon="Filter" @click="showFilters = !showFilters">筛选</el-button>
+        <el-button v-if="hasCondition" @click="clearAll">清空条件</el-button>
       </el-form>
+
+      <div v-if="activeFilters.length" class="active-filters">
+        <span class="active-label">已选</span>
+        <el-tag v-for="item in activeFilters" :key="item.key" closable effect="plain" @close="removeFilter(item.key)">
+          {{ item.label }}
+        </el-tag>
+      </div>
+
+      <transition name="filter-drop">
+        <div v-show="showFilters" class="filter-panel">
+          <div class="filter-row">
+            <span class="label">城市：</span>
+            <div class="options">
+              <span class="opt" :class="{ active: !query.city }" @click="setFilter('city', '')">全部</span>
+              <span class="opt" v-for="c in cities" :key="c.dictValue" :class="{ active: query.city === c.dictValue }" @click="setFilter('city', c.dictValue)">{{ c.dictLabel }}</span>
+            </div>
+          </div>
+          <div class="filter-row">
+            <span class="label">求职方向：</span>
+            <div class="options">
+              <span class="opt" :class="{ active: !query.expectPost }" @click="setFilter('expectPost', '')">全部</span>
+              <span class="opt" v-for="p in postTypes" :key="p.value" :class="{ active: query.expectPost === p.value }" @click="setFilter('expectPost', p.value)">{{ p.label }}</span>
+            </div>
+          </div>
+          <div class="filter-row">
+            <span class="label">学院：</span>
+            <div class="options">
+              <span class="opt" :class="{ active: !query.college }" @click="setFilter('college', '')">全部</span>
+              <span class="opt" v-for="c in colleges" :key="c" :class="{ active: query.college === c }" @click="setFilter('college', c)">{{ c }}</span>
+            </div>
+          </div>
+          <div class="filter-row">
+            <span class="label">期望薪资：</span>
+            <div class="options">
+              <span class="opt" :class="{ active: !query.salaryMin }" @click="setFilter('salaryMin', '')">不限</span>
+              <span class="opt" v-for="s in salaryOptions" :key="s.value" :class="{ active: query.salaryMin === s.value }" @click="setFilter('salaryMin', s.value)">{{ s.label }}</span>
+            </div>
+          </div>
+        </div>
+      </transition>
     </div>
 
     <div class="seeker-grid mt-20" v-loading="loading">
@@ -49,10 +91,10 @@
 </template>
 
 <script setup>
-import { reactive, ref, onMounted } from 'vue'
+import { computed, reactive, ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
-import { User } from '@element-plus/icons-vue'
+import { Filter, User } from '@element-plus/icons-vue'
 import { publicApi } from '@/api'
 import { useUserStore } from '@/store/user'
 
@@ -61,27 +103,105 @@ const userStore = useUserStore()
 const loading = ref(false)
 const list = ref([])
 const total = ref(0)
-const query = reactive({ pageNum: 1, pageSize: 9, keyword: '', city: '' })
+const showFilters = ref(false)
+const cities = ref([])
+const postTypes = [
+  { label: '后端开发', value: '后端' },
+  { label: '前端开发', value: '前端' },
+  { label: '测试开发', value: '测试' },
+  { label: '算法', value: '算法' },
+  { label: '设计', value: '设计' },
+  { label: '运营', value: '运营' },
+  { label: '人力资源', value: '人力资源' }
+]
+const colleges = ['计算机学院', '人工智能学院', '软件学院', '电子信息学院', '经济管理学院', '艺术设计学院']
+const salaryOptions = [
+  { label: '5K以上', value: 5 },
+  { label: '8K以上', value: 8 },
+  { label: '10K以上', value: 10 },
+  { label: '12K以上', value: 12 }
+]
+const query = reactive({ pageNum: 1, pageSize: 9, keyword: '', city: '', expectPost: '', college: '', salaryMin: '' })
+
+const hasCondition = computed(() => ['keyword', 'city', 'expectPost', 'college', 'salaryMin'].some(k => query[k] !== '' && query[k] != null))
+const activeFilters = computed(() => {
+  const filters = []
+  if (query.keyword) filters.push({ key: 'keyword', label: `关键词：${query.keyword}` })
+  if (query.city) filters.push({ key: 'city', label: `城市：${query.city}` })
+  if (query.expectPost) {
+    filters.push({ key: 'expectPost', label: `方向：${postTypes.find(p => p.value === query.expectPost)?.label || query.expectPost}` })
+  }
+  if (query.college) filters.push({ key: 'college', label: `学院：${query.college}` })
+  if (query.salaryMin) filters.push({ key: 'salaryMin', label: `薪资：${query.salaryMin}K以上` })
+  return filters
+})
+
+const buildParams = () => {
+  const params = {}
+  Object.keys(query).forEach(k => {
+    if (query[k] !== '' && query[k] != null) params[k] = query[k]
+  })
+  return params
+}
 
 const load = async () => {
   loading.value = true
   try {
-    const res = await publicApi.seekerPosts(query)
+    const res = await publicApi.seekerPosts(buildParams())
     list.value = res.data.records || []
     total.value = Number(res.data.total || 0)
   } finally { loading.value = false }
 }
 const reload = () => { query.pageNum = 1; load() }
+const reloadIfEmpty = (value) => { if (!String(value || '').trim()) reload() }
+const setFilter = (key, value) => {
+  query[key] = value
+  reload()
+}
+const removeFilter = (key) => {
+  query[key] = ''
+  reload()
+}
+const clearAll = () => {
+  query.keyword = ''
+  query.city = ''
+  query.expectPost = ''
+  query.college = ''
+  query.salaryMin = ''
+  reload()
+}
 const publish = () => {
   if (!userStore.isLogin) { ElMessage.warning('请先登录'); router.push('/login'); return }
   if (userStore.role !== 'STUDENT') { ElMessage.warning('请使用学生账号发布'); return }
   router.push('/student/seeker-post')
 }
-onMounted(load)
+onMounted(async () => {
+  try {
+    const res = await publicApi.dict('city')
+    cities.value = res.data || []
+  } catch (e) {}
+  load()
+})
 </script>
 
 <style scoped lang="scss">
 .head { display:flex; justify-content:space-between; gap:1rem; align-items:center; h2{margin-bottom:.375rem;} p{color:var(--cr-text-muted);} }
+.search-card { display: grid; gap: .875rem; }
+.active-filters { display: flex; align-items: center; flex-wrap: wrap; gap: .5rem; padding-top: .25rem;
+  .active-label { color: var(--cr-text-muted); font-size: .8125rem; font-weight: 650; }
+}
+.filter-panel { border-top: .0625rem solid var(--cr-border-soft); padding-top: .25rem; }
+.filter-row { display: grid; grid-template-columns: minmax(5.5rem, max-content) minmax(0, 1fr); gap: .75rem; padding: .625rem 0; border-bottom: .0625rem dashed var(--cr-border-soft);
+  &:last-child { border-bottom: 0; padding-bottom: 0; }
+  .label { color: var(--cr-text-muted); padding-top: .375rem; font-weight: 650; }
+  .options { min-width: 0; display: flex; flex-wrap: wrap; gap: .5rem; }
+  .opt { padding: .375rem .875rem; border: .0625rem solid transparent; border-radius: 999rem; cursor: pointer; font-size: .875rem; color: var(--cr-text-soft); transition: all .2s ease;
+    &:hover { color: var(--cr-primary); background: var(--cr-primary-soft); }
+    &.active { background: var(--cr-primary); border-color: var(--cr-primary); color: #fff; box-shadow: 0 .5rem 1rem rgba(37,99,235,.14); }
+  }
+}
+.filter-drop-enter-active, .filter-drop-leave-active { transition: opacity .18s ease, transform .18s ease; }
+.filter-drop-enter-from, .filter-drop-leave-to { opacity: 0; transform: translateY(-.25rem); }
 .seeker-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(min(100%,20rem),1fr)); gap:1rem; }
 .seeker-card { background:#fff; border:1px solid var(--cr-border-soft); border-radius:var(--cr-radius-sm); padding:1rem; box-shadow:var(--cr-shadow-soft); cursor:pointer; display:flex; flex-direction:column; gap:.875rem; min-height:13rem; transition:transform .18s, box-shadow .18s;
   &:hover { transform:translateY(-.125rem); box-shadow:var(--cr-shadow); }
@@ -90,5 +210,5 @@ onMounted(load)
 .tags { display:flex; flex-wrap:wrap; gap:.375rem; }
 .intro { color:var(--cr-text-soft); line-height:1.7; display:-webkit-box; -webkit-line-clamp:3; -webkit-box-orient:vertical; overflow:hidden; }
 .card-foot { margin-top:auto; display:flex; justify-content:space-between; align-items:center; color:var(--cr-text-muted); font-size:.8125rem; }
-@media (max-width:40rem){.head{align-items:stretch;flex-direction:column}.head :deep(.el-button){width:100%;}}
+@media (max-width:40rem){.head{align-items:stretch;flex-direction:column}.head :deep(.el-button){width:100%;}.filter-row{grid-template-columns:1fr;gap:.5rem}.filter-row .label{padding-top:0;}}
 </style>
