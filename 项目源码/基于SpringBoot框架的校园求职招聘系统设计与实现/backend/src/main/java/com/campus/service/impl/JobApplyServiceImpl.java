@@ -4,10 +4,12 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.campus.common.BusinessException;
+import com.campus.entity.Enterprise;
 import com.campus.entity.JobApply;
 import com.campus.entity.JobPost;
 import com.campus.entity.Resume;
 import com.campus.entity.SystemNotice;
+import com.campus.mapper.EnterpriseMapper;
 import com.campus.mapper.JobApplyMapper;
 import com.campus.mapper.JobPostMapper;
 import com.campus.mapper.ResumeMapper;
@@ -18,9 +20,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
@@ -39,6 +43,9 @@ public class JobApplyServiceImpl extends ServiceImpl<JobApplyMapper, JobApply> i
 
     @Autowired
     private SystemNoticeMapper systemNoticeMapper;
+
+    @Autowired
+    private EnterpriseMapper enterpriseMapper;
 
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -107,19 +114,31 @@ public class JobApplyServiceImpl extends ServiceImpl<JobApplyMapper, JobApply> i
         List<Long> jobIds = records.stream().map(JobApply::getJobId).collect(Collectors.toList());
         Map<Long, JobPost> jobMap = jobPostMapper.selectBatchIds(jobIds).stream()
                 .collect(Collectors.toMap(JobPost::getId, j -> j, (a, b) -> a));
+        List<Long> enterpriseIds = records.stream()
+                .map(JobApply::getEnterpriseId)
+                .filter(Objects::nonNull)
+                .distinct()
+                .collect(Collectors.toList());
+        Map<Long, String> companyNameMap = enterpriseIds.isEmpty()
+                ? Collections.emptyMap()
+                : enterpriseMapper.selectBatchIds(enterpriseIds).stream()
+                .collect(Collectors.toMap(Enterprise::getId, Enterprise::getCompanyName, (a, b) -> a));
 
         List<Map<String, Object>> list = new ArrayList<>();
         for (JobApply apply : records) {
+            JobPost job = jobMap.get(apply.getJobId());
             Map<String, Object> item = new LinkedHashMap<>();
             item.put("id", apply.getId());
             item.put("jobId", apply.getJobId());
             item.put("resumeId", apply.getResumeId());
             item.put("enterpriseId", apply.getEnterpriseId());
+            item.put("jobTitle", job == null ? null : job.getTitle());
+            item.put("companyName", companyNameMap.get(apply.getEnterpriseId()));
             item.put("status", apply.getStatus());
             item.put("applyRemark", apply.getApplyRemark());
             item.put("hrRemark", apply.getHrRemark());
             item.put("createTime", apply.getCreateTime());
-            item.put("job", jobMap.get(apply.getJobId()));
+            item.put("job", job);
             list.add(item);
         }
         return com.campus.common.PageResult.of(result.getTotal(), list);

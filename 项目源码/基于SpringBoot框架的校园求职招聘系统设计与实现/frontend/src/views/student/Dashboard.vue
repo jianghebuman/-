@@ -56,11 +56,23 @@
         <div class="page-card mt-20">
           <div class="section-title">待办提醒</div>
           <el-timeline>
-            <el-timeline-item v-if="!profile.phone" type="warning">请完善手机号，便于企业联系</el-timeline-item>
-            <el-timeline-item v-if="!resume" type="danger">还未创建在线简历</el-timeline-item>
-            <el-timeline-item v-if="cards[1].value === 0" type="primary">开始搜索并投递心仪岗位</el-timeline-item>
-            <el-timeline-item type="success">关注消息中心，及时处理面试和Offer</el-timeline-item>
+            <el-timeline-item
+              v-for="notice in reminders"
+              :key="notice.id"
+              :type="noticeType(notice.noticeType)"
+              :timestamp="notice.createTime"
+              placement="top"
+            >
+              <div class="notice-reminder" @click="$router.push('/student/notice')">
+                <strong>{{ notice.title }}</strong>
+                <p>{{ notice.content }}</p>
+              </div>
+            </el-timeline-item>
           </el-timeline>
+          <el-empty v-if="reminders.length === 0" description="暂无未读通知" :image-size="72" />
+          <div class="notice-actions">
+            <el-button text type="primary" @click="$router.push('/student/notice')">查看消息中心</el-button>
+          </div>
         </div>
       </el-col>
     </el-row>
@@ -70,11 +82,12 @@
 <script setup>
 import { ref, reactive, onMounted, computed } from 'vue'
 import { User, Document, Tickets, ChatLineRound, Medal } from '@element-plus/icons-vue'
-import { studentApi } from '@/api'
+import { noticeApi, studentApi } from '@/api'
 
 const profile = reactive({})
 const resume = ref(null)
 const applies = ref([])
+const reminders = ref([])
 const interviewCount = ref(0)
 const offerCount = ref(0)
 const applyCount = ref(0)
@@ -82,6 +95,7 @@ const applyCount = ref(0)
 const statusText = ['待查看', '已查看', '邀请面试', '笔试', '已录用', '不合适']
 const applyText = (s) => statusText[s] || '未知'
 const applyType = (s) => s === 4 ? 'success' : s === 5 ? 'danger' : s === 2 ? 'warning' : 'info'
+const noticeType = (t) => ({ APPLY: 'success', INTERVIEW: 'warning', OFFER: 'danger', AUDIT: 'primary', CHAT: 'warning' }[t] || 'info')
 const stepActive = computed(() => resume.value ? (offerCount.value > 0 ? 5 : interviewCount.value > 0 ? 4 : applyCount.value > 0 ? 3 : 2) : 1)
 const cards = computed(() => [
   { title: '简历完整度', value: (resume.value?.completeRate || 0) + '%', icon: Document, bg: 'linear-gradient(135deg,#2563eb,#0891b2)' },
@@ -97,6 +111,8 @@ onMounted(async () => {
   applyCount.value = Number(a.data.total || 0); applies.value = a.data.records || []
   const i = await studentApi.interviews({ pageNum: 1, pageSize: 1 }).catch(() => ({ data: { total: 0 } })); interviewCount.value = Number(i.data.total || 0)
   const o = await studentApi.offers({ pageNum: 1, pageSize: 1 }).catch(() => ({ data: { total: 0 } })); offerCount.value = Number(o.data.total || 0)
+  const n = await noticeApi.list({ pageNum: 1, pageSize: 4, isRead: 0 }).catch(() => ({ data: { records: [] } }))
+  reminders.value = n.data.records || []
 })
 </script>
 
@@ -106,6 +122,8 @@ onMounted(async () => {
 .quick-actions { text-align: center; margin-top: 28px; }
 .profile-card { text-align: center; h3 { margin: 12px 0 4px; color: var(--cr-text); } p { color: var(--cr-text-muted); } }
 .resume-rate { text-align: left; span { display: block; color: var(--cr-text-soft); margin-bottom: 10px; } }
+.notice-reminder { cursor: pointer; strong { color: var(--cr-text); } p { margin: 6px 0 0; color: var(--cr-text-soft); line-height: 1.6; } }
+.notice-actions { margin-top: 8px; text-align: right; }
 
 @media (max-width: 900px) {
   :deep(.el-col) {
