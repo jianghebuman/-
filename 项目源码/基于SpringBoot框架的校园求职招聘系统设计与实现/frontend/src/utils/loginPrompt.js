@@ -1,23 +1,49 @@
 import { h } from 'vue'
 import { ElNotification } from 'element-plus'
 
-export const showLoginPrompt = (message = '请先登录后再使用该功能') => {
+const showPortalPrompt = ({ title, message, type = 'info', actionText, onAction }) => {
   let notice
-  const goLogin = () => {
-    notice?.close()
-    window.location.href = '/login'
+  const children = [
+    h('div', { class: 'login-required-text' }, message)
+  ]
+  if (actionText) {
+    children.push(h('button', {
+      class: 'login-required-action',
+      type: 'button',
+      onClick: () => {
+        notice?.close()
+        onAction?.()
+      }
+    }, actionText))
   }
 
   notice = ElNotification({
-    title: '请先登录',
-    message: h('div', { class: 'login-required-content' }, [
-      h('div', { class: 'login-required-text' }, message),
-      h('button', { class: 'login-required-action', type: 'button', onClick: goLogin }, '去登录')
-    ]),
-    type: 'warning',
+    title,
+    message: h('div', { class: 'login-required-content' }, children),
+    type,
     duration: 6000,
     showClose: true,
     customClass: 'login-required-notice',
     position: 'top-right'
+  })
+}
+
+export const showLoginPrompt = (message = '请先登录后再使用该功能') => {
+  showPortalPrompt({
+    title: '请先登录',
+    message,
+    type: 'warning',
+    actionText: '去登录',
+    onAction: () => {
+      window.location.href = '/login'
+    }
+  })
+}
+
+export const showSignupSuccessPrompt = (message = '报名成功，请准时参加') => {
+  showPortalPrompt({
+    title: '报名成功',
+    message,
+    type: 'success'
   })
 }

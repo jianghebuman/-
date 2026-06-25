@@ -37,11 +37,10 @@
 
 <script setup>
 import { ref, reactive, onMounted } from 'vue'
-import { ElMessage } from 'element-plus'
 import { ChatRound, OfficeBuilding, Clock, Location } from '@element-plus/icons-vue'
 import { activityApi, noticeApi, publicApi } from '@/api'
 import { useUserStore } from '@/store/user'
-import { showLoginPrompt } from '@/utils/loginPrompt'
+import { showLoginPrompt, showSignupSuccessPrompt } from '@/utils/loginPrompt'
 
 const userStore = useUserStore()
 const query = reactive({ pageNum: 1, pageSize: 10 })
@@ -58,7 +57,7 @@ const onSign = async (talk) => {
     return
   }
   const res = await activityApi.sign(1, talk.id)
-  ElMessage.success(res.message || '报名成功，请准时参加')
+  showSignupSuccessPrompt(`${res.message || '报名成功，请准时参加'}。时间：${formatDateTime(talk.talkTime) || '待定'}，地点：${talk.location || '待定'}。`)
   const unreadRes = await noticeApi.unread()
   userStore.setUnreadCounts(Number(unreadRes.data || 0), userStore.unreadChatCount)
   load()

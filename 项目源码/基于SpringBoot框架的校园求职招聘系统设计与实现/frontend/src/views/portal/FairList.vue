@@ -37,11 +37,10 @@
 
 <script setup>
 import { ref, reactive, onMounted } from 'vue'
-import { ElMessage } from 'element-plus'
 import { Calendar, Clock, Location, Trophy } from '@element-plus/icons-vue'
 import { activityApi, noticeApi, publicApi } from '@/api'
 import { useUserStore } from '@/store/user'
-import { showLoginPrompt } from '@/utils/loginPrompt'
+import { showLoginPrompt, showSignupSuccessPrompt } from '@/utils/loginPrompt'
 
 const userStore = useUserStore()
 const query = reactive({ pageNum: 1, pageSize: 6 })
@@ -56,7 +55,7 @@ const onSign = async (fair) => {
     return
   }
   const res = await activityApi.sign(2, fair.id)
-  ElMessage.success(res.message || '报名成功，请准时参加')
+  showSignupSuccessPrompt(`${res.message || '报名成功，请准时参加'}。时间：${formatDateTime(fair.fairTime) || '待定'}，地点：${fair.location || '待定'}。`)
   const unreadRes = await noticeApi.unread()
   userStore.setUnreadCounts(Number(unreadRes.data || 0), userStore.unreadChatCount)
   load()

@@ -359,13 +359,13 @@ public class PublicController {
         bannerWrapper.eq(Banner::getStatus, 1).orderByAsc(Banner::getSort);
         data.put("banners", bannerMapper.selectList(bannerWrapper));
 
-        // 热门职位：按浏览量、申请量取前 12（审核通过且招聘中），附带企业名称
+        // 热门职位：按浏览量、申请量取前 15（审核通过且招聘中），附带企业名称
         LambdaQueryWrapper<JobPost> hotWrapper = new LambdaQueryWrapper<>();
         hotWrapper.eq(JobPost::getAuditStatus, 1)
                 .eq(JobPost::getStatus, 1)
                 .orderByDesc(JobPost::getViewCount)
                 .orderByDesc(JobPost::getApplyCount)
-                .last("LIMIT 12");
+                .last("LIMIT 15");
         List<JobPost> hotJobs = jobPostMapper.selectList(hotWrapper);
         Map<Long, String> companyNameMap = batchEnterpriseName(
                 hotJobs.stream().map(JobPost::getEnterpriseId).collect(Collectors.toList()));
