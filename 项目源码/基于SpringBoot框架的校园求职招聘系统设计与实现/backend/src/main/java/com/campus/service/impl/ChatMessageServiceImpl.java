@@ -119,7 +119,8 @@ public class ChatMessageServiceImpl extends ServiceImpl<ChatMessageMapper, ChatM
                 .eq(ChatMessage::getIsRead, 0));
     }
 
-    private String peerName(String role, Long id) {
+    @Override
+    public String peerName(String role, Long id) {
         if ("STUDENT".equals(role)) {
             Student student = studentMapper.selectById(id);
             return student == null ? "学生" + id : student.getRealName();

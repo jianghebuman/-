@@ -43,6 +43,7 @@ export const noticeApi = {
 // ==================== 在线沟通 ====================
 export const chatApi = {
   conversations: () => request.get('/chat/conversations'),
+  peerName: (params) => request.get('/chat/peer-name', { params }),
   messages: (params) => request.get('/chat/messages', { params }),
   send: (data) => request.post('/chat/messages', data),
   read: (peerRole, peerId) => request.post('/chat/messages/read', null, { params: { peerRole, peerId } })

@@ -85,7 +85,7 @@ const consultHr = () => {
     ElMessage.warning('请使用学生账号咨询HR')
     return
   }
-  router.push({ path: '/student/chat', query: { peerRole: 'ENTERPRISE', peerId: enterprise.value.id } })
+  router.push({ path: '/student/chat', query: { peerRole: 'ENTERPRISE', peerId: enterprise.value.id, peerName: enterprise.value.companyName || `企业${enterprise.value.id}` } })
 }
 
 onMounted(async () => {

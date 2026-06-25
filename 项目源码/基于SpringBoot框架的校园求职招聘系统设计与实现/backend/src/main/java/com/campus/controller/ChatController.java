@@ -37,6 +37,11 @@ public class ChatController {
         return Result.success(chatMessageService.messages(peerRole, peerId));
     }
 
+    @GetMapping("/peer-name")
+    public Result<String> peerName(@RequestParam String peerRole, @RequestParam Long peerId) {
+        return Result.success(chatMessageService.peerName(peerRole, peerId));
+    }
+
     @PostMapping("/messages")
     public Result<ChatMessage> send(@RequestBody ChatMessage message) {
         ChatMessage saved = chatMessageService.send(message);

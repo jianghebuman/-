@@ -15,4 +15,6 @@ public interface ChatMessageService extends IService<ChatMessage> {
     List<ChatMessage> messages(String peerRole, Long peerId);
 
     void read(String peerRole, Long peerId);
+
+    String peerName(String peerRole, Long peerId);
 }

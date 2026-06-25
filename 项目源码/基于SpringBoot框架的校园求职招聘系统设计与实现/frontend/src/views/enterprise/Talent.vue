@@ -25,7 +25,7 @@
           <el-table-column prop="createTime" label="收藏时间" width="180" />
           <el-table-column label="操作" width="170">
             <template #default="{ row }">
-              <el-button text type="primary" @click="chat(row.studentId)">联系</el-button>
+              <el-button text type="primary" @click="chat(row.studentId, row.studentName || row.name)">联系</el-button>
               <el-button text type="danger" @click="remove(row)">移出</el-button>
             </template>
           </el-table-column>
@@ -49,7 +49,7 @@
           <el-table-column label="操作" width="190">
             <template #default="{ row }">
               <el-button text type="primary" @click="add(row)">加入人才库</el-button>
-              <el-button text type="primary" @click="chat(row.studentId)">联系</el-button>
+              <el-button text type="primary" @click="chat(row.studentId, row.name)">联系</el-button>
             </template>
           </el-table-column>
         </el-table>
@@ -86,7 +86,11 @@ const add = async (row) => {
   tab.value = 'pool'
   loadPool()
 }
-const chat = (studentId) => router.push({ path: '/enterprise/chat', query: { peerRole: 'STUDENT', peerId: studentId } })
+const chat = (studentId, peerName) => {
+  const query = { peerRole: 'STUDENT', peerId: studentId }
+  if (peerName) query.peerName = peerName
+  router.push({ path: '/enterprise/chat', query })
+}
 const remove = (row) => ElMessageBox.confirm('确定移出人才库？').then(async () => {
   await enterpriseApi.delTalent(row.id)
   ElMessage.success('已移出')

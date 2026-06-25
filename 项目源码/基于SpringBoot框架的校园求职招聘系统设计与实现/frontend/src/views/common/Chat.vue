@@ -8,7 +8,7 @@
         </div>
         <div class="conv" v-for="item in conversations" :key="`${item.peerRole}:${item.peerId}`" :class="{active: activeKey===`${item.peerRole}:${item.peerId}`}" @click="select(item)">
           <div>
-            <h3>{{ item.peerName }}</h3>
+            <h3>{{ item.peerName || fallbackPeerName(item.peerRole, item.peerId) }}</h3>
             <p>{{ item.lastMessage?.content || '' }}</p>
           </div>
           <el-badge v-if="item.unread" :value="item.unread" />
@@ -18,7 +18,7 @@
       <section class="chat-main">
         <template v-if="peer.peerId">
           <div class="chat-title">
-            <h3>{{ peer.peerName || peer.peerRole + ' ' + peer.peerId }}</h3>
+            <h3>{{ peerLabel }}</h3>
             <span>{{ peer.peerRole === 'STUDENT' ? '求职者' : 'HR/企业' }}</span>
           </div>
           <div ref="messageBox" class="messages">
@@ -56,6 +56,8 @@ const sending = ref(false)
 const messageBox = ref(null)
 const peer = reactive({ peerRole: '', peerId: '', peerName: '', seekerPostId: '', jobId: '' })
 const activeKey = computed(() => peer.peerId ? `${peer.peerRole}:${peer.peerId}` : '')
+const fallbackPeerName = (role, id) => role === 'STUDENT' ? `学生 ${id}` : `企业 ${id}`
+const peerLabel = computed(() => peer.peerName || fallbackPeerName(peer.peerRole, peer.peerId))
 let ws
 
 const wsUrl = () => {
@@ -78,7 +80,11 @@ const loadConversations = async () => {
   conversations.value = res.data || []
   if (peer.peerId) {
     const found = conversations.value.find(i => i.peerRole === peer.peerRole && Number(i.peerId) === Number(peer.peerId))
-    if (found) peer.peerName = found.peerName
+    if (found?.peerName) peer.peerName = found.peerName
+    else {
+      if (!peer.peerName) peer.peerName = fallbackPeerName(peer.peerRole, peer.peerId)
+      conversations.value.unshift({ peerRole: peer.peerRole, peerId: peer.peerId, peerName: peer.peerName, lastMessage: null, unread: 0 })
+    }
   }
 }
 const loadMessages = async () => {
@@ -88,8 +94,17 @@ const loadMessages = async () => {
   await chatApi.read(peer.peerRole, peer.peerId)
   scrollBottom()
 }
+const loadPeerName = async () => {
+  if (!peer.peerId || peer.peerName) return
+  try {
+    const res = await chatApi.peerName({ peerRole: peer.peerRole, peerId: peer.peerId })
+    peer.peerName = res.data || fallbackPeerName(peer.peerRole, peer.peerId)
+  } catch (e) {
+    peer.peerName = fallbackPeerName(peer.peerRole, peer.peerId)
+  }
+}
 const select = async (item) => {
-  Object.assign(peer, { peerRole: item.peerRole, peerId: item.peerId, peerName: item.peerName, seekerPostId: '', jobId: '' })
+  Object.assign(peer, { peerRole: item.peerRole, peerId: item.peerId, peerName: item.peerName || fallbackPeerName(item.peerRole, item.peerId), seekerPostId: '', jobId: '' })
   await loadMessages()
   await loadConversations()
 }
@@ -98,7 +113,7 @@ const applyRoutePeer = () => {
     Object.assign(peer, {
       peerRole: String(route.query.peerRole),
       peerId: String(route.query.peerId),
-      peerName: '',
+      peerName: route.query.peerName ? String(route.query.peerName) : '',
       seekerPostId: route.query.seekerPostId || '',
       jobId: route.query.jobId || ''
     })
@@ -125,6 +140,7 @@ const scrollBottom = () => nextTick(() => { if (messageBox.value) messageBox.val
 onMounted(async () => {
   applyRoutePeer()
   connect()
+  await loadPeerName()
   await loadConversations()
   await loadMessages()
 })
