@@ -82,6 +82,24 @@
               </el-descriptions-item>
             </el-descriptions>
 
+            <el-descriptions v-if="hasVerify(currentAudit)" title="权威数据核验痕迹" :column="2" border class="verify-block">
+              <el-descriptions-item label="核验来源">
+                <el-link v-if="currentAudit.verifySourceUrl" :href="currentAudit.verifySourceUrl" target="_blank" type="primary">
+                  {{ currentAudit.verifySource || '权威数据来源' }}
+                </el-link>
+                <span v-else>{{ currentAudit.verifySource || '-' }}</span>
+              </el-descriptions-item>
+              <el-descriptions-item label="核验时间">{{ currentAudit.verifyTime || '-' }}</el-descriptions-item>
+              <el-descriptions-item label="核验结论">
+                <el-tag :type="verifyType(currentAudit.verifyResult)">{{ verifyText(currentAudit.verifyResult) }}</el-tag>
+              </el-descriptions-item>
+              <el-descriptions-item label="登记状态">{{ currentAudit.verifyStatus || '-' }}</el-descriptions-item>
+              <el-descriptions-item label="权威企业名称">{{ currentAudit.verifyCompanyName || '-' }}</el-descriptions-item>
+              <el-descriptions-item label="权威信用代码">{{ currentAudit.verifyCreditCode || '-' }}</el-descriptions-item>
+              <el-descriptions-item label="核验说明" :span="2">{{ currentAudit.verifyRemark || '-' }}</el-descriptions-item>
+              <el-descriptions-item label="快照哈希" :span="2">{{ currentAudit.verifySnapshotHash || '-' }}</el-descriptions-item>
+            </el-descriptions>
+
             <div class="material-block">
               <div class="material-item">
                 <div class="material-title">营业执照</div>
@@ -127,8 +145,8 @@
               </div>
             </div>
 
-            <el-form v-if="currentAudit.auditStatus === 1" label-width="80px" class="audit-form">
-              <el-form-item label="审核意见">
+            <el-form v-if="currentAudit" label-width="80px" class="audit-form">
+              <el-form-item label="复核意见">
                 <el-input v-model="remark" type="textarea" :rows="3" placeholder="通过可不填；驳回时请填写原因" />
               </el-form-item>
             </el-form>
@@ -137,9 +155,9 @@
 
         <template #footer>
           <el-button @click="auditDialog = false">关闭</el-button>
-          <template v-if="currentAudit && currentAudit.auditStatus === 1">
-            <el-button type="success" @click="submitAudit(2)">通过认证</el-button>
-            <el-button type="danger" @click="submitAudit(3)">驳回认证</el-button>
+          <template v-if="currentAudit">
+            <el-button v-if="currentAudit.auditStatus !== 2" type="success" @click="submitAudit(2)">通过认证</el-button>
+            <el-button v-if="currentAudit.auditStatus !== 3" type="danger" @click="submitAudit(3)">驳回认证</el-button>
           </template>
         </template>
       </el-dialog>
@@ -165,6 +183,9 @@ const remark = ref('')
 
 const auditText = (status) => ({ 0: '未认证', 1: '待审核', 2: '已通过', 3: '已驳回' }[status] || '未知')
 const auditType = (status) => (status === 2 ? 'success' : status === 1 ? 'warning' : status === 3 ? 'danger' : 'info')
+const verifyText = (status) => ({ 0: '未核验', 1: '一致', 2: '不一致', 3: '未接入或异常' }[status] || '未知')
+const verifyType = (status) => (status === 1 ? 'success' : status === 2 ? 'danger' : status === 3 ? 'warning' : 'info')
+const hasVerify = (row) => !!row && row.verifyResult !== undefined && row.verifyResult !== null
 const isImage = (url) => /\.(png|jpe?g|gif|bmp|webp)$/i.test(url || '')
 
 const load = async () => {
@@ -230,6 +251,10 @@ onMounted(load)
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 16px;
+  margin-top: 16px;
+}
+
+.verify-block {
   margin-top: 16px;
 }
 

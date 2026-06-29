@@ -9,9 +9,13 @@ import com.campus.entity.EnterpriseAudit;
 import com.campus.mapper.EnterpriseAuditMapper;
 import com.campus.mapper.EnterpriseMapper;
 import com.campus.service.EnterpriseAuditService;
+import com.campus.service.EnterpriseVerificationService;
+import com.campus.service.EnterpriseVerificationService.VerificationResult;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Date;
 
 /**
  * 企业认证审核服务实现
@@ -24,6 +28,8 @@ public class EnterpriseAuditServiceImpl extends ServiceImpl<EnterpriseAuditMappe
 
     @Autowired
     private EnterpriseMapper enterpriseMapper;
+    @Autowired
+    private EnterpriseVerificationService enterpriseVerificationService;
 
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -47,18 +53,36 @@ public class EnterpriseAuditServiceImpl extends ServiceImpl<EnterpriseAuditMappe
         if (licenseImg == null || licenseImg.trim().isEmpty()) {
             throw new BusinessException("营业执照图片不能为空");
         }
-        // 新增一条审核记录，auditStatus=1 待审核
+        VerificationResult verify = enterpriseVerificationService.verify(enterprise, licenseNo);
+        boolean autoPass = Boolean.TRUE.equals(verify.getMatched());
+
+        // 新增一条审核记录；权威核验一致时系统自动通过，仍保留管理员复核痕迹。
         EnterpriseAudit audit = new EnterpriseAudit();
         audit.setEnterpriseId(enterpriseId);
         audit.setLicenseNo(licenseNo);
         audit.setLicenseImg(licenseImg);
         audit.setExtraImg(extraImg);
-        audit.setAuditStatus(1);
+        audit.setAuditStatus(autoPass ? 2 : 1);
+        audit.setAuditRemark(autoPass
+                ? "系统自动核验通过：" + verify.getVerifyRemark()
+                : verify.getVerifyRemark());
+        audit.setAuditorId(autoPass ? 0L : null);
+        audit.setAuditTime(autoPass ? new Date() : null);
+        audit.setVerifySource(verify.getVerifySource());
+        audit.setVerifySourceUrl(verify.getVerifySourceUrl());
+        audit.setVerifyTime(verify.getVerifyTime());
+        audit.setVerifyCompanyName(verify.getVerifyCompanyName());
+        audit.setVerifyCreditCode(verify.getVerifyCreditCode());
+        audit.setVerifyStatus(verify.getVerifyStatus());
+        audit.setVerifyResult(verify.getVerifyResult());
+        audit.setVerifyRemark(verify.getVerifyRemark());
+        audit.setVerifySnapshotHash(verify.getVerifySnapshotHash());
         this.save(audit);
-        // 把企业认证状态置 1（待审核）
+
+        // 同步企业认证状态：自动核验一致则直接通过，否则进入人工审核。
         Enterprise update = new Enterprise();
         update.setId(enterpriseId);
-        update.setAuditStatus(1);
+        update.setAuditStatus(autoPass ? 2 : 1);
         enterpriseMapper.updateById(update);
     }
 

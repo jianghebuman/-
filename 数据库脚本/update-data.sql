@@ -1,5 +1,42 @@
 USE campus_recruitment;
 
+-- Enterprise audit authority verification trace fields.
+DROP PROCEDURE IF EXISTS add_enterprise_audit_verify_columns;
+DELIMITER //
+CREATE PROCEDURE add_enterprise_audit_verify_columns()
+BEGIN
+  IF NOT EXISTS (SELECT 1 FROM information_schema.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'enterprise_audit' AND COLUMN_NAME = 'verify_source') THEN
+    ALTER TABLE `enterprise_audit` ADD COLUMN `verify_source` varchar(120) DEFAULT NULL COMMENT '权威核验来源' AFTER `audit_time`;
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM information_schema.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'enterprise_audit' AND COLUMN_NAME = 'verify_source_url') THEN
+    ALTER TABLE `enterprise_audit` ADD COLUMN `verify_source_url` varchar(255) DEFAULT NULL COMMENT '权威核验来源地址' AFTER `verify_source`;
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM information_schema.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'enterprise_audit' AND COLUMN_NAME = 'verify_time') THEN
+    ALTER TABLE `enterprise_audit` ADD COLUMN `verify_time` datetime DEFAULT NULL COMMENT '权威核验时间' AFTER `verify_source_url`;
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM information_schema.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'enterprise_audit' AND COLUMN_NAME = 'verify_company_name') THEN
+    ALTER TABLE `enterprise_audit` ADD COLUMN `verify_company_name` varchar(120) DEFAULT NULL COMMENT '权威来源企业名称' AFTER `verify_time`;
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM information_schema.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'enterprise_audit' AND COLUMN_NAME = 'verify_credit_code') THEN
+    ALTER TABLE `enterprise_audit` ADD COLUMN `verify_credit_code` varchar(60) DEFAULT NULL COMMENT '权威来源统一社会信用代码' AFTER `verify_company_name`;
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM information_schema.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'enterprise_audit' AND COLUMN_NAME = 'verify_status') THEN
+    ALTER TABLE `enterprise_audit` ADD COLUMN `verify_status` varchar(60) DEFAULT NULL COMMENT '权威来源登记状态' AFTER `verify_credit_code`;
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM information_schema.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'enterprise_audit' AND COLUMN_NAME = 'verify_result') THEN
+    ALTER TABLE `enterprise_audit` ADD COLUMN `verify_result` tinyint NOT NULL DEFAULT 0 COMMENT '核验结果：0未核验1一致2不一致3未接入或异常' AFTER `verify_status`;
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM information_schema.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'enterprise_audit' AND COLUMN_NAME = 'verify_remark') THEN
+    ALTER TABLE `enterprise_audit` ADD COLUMN `verify_remark` varchar(255) DEFAULT NULL COMMENT '核验说明' AFTER `verify_result`;
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM information_schema.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'enterprise_audit' AND COLUMN_NAME = 'verify_snapshot_hash') THEN
+    ALTER TABLE `enterprise_audit` ADD COLUMN `verify_snapshot_hash` varchar(64) DEFAULT NULL COMMENT '权威返回快照SHA256' AFTER `verify_remark`;
+  END IF;
+END//
+DELIMITER ;
+CALL add_enterprise_audit_verify_columns();
+DROP PROCEDURE IF EXISTS add_enterprise_audit_verify_columns;
+
 -- New tables introduced after the original server-side seed snapshot.
 CREATE TABLE IF NOT EXISTS `job_seeker_post` (
   `id`             bigint       NOT NULL AUTO_INCREMENT COMMENT '主键',

@@ -37,6 +37,25 @@ public class EnterpriseAudit implements Serializable {
 
     private Date auditTime;
 
+    private String verifySource;
+
+    private String verifySourceUrl;
+
+    private Date verifyTime;
+
+    private String verifyCompanyName;
+
+    private String verifyCreditCode;
+
+    private String verifyStatus;
+
+    /** 权威核验结果：0未核验1一致2不一致3未接入或异常 */
+    private Integer verifyResult;
+
+    private String verifyRemark;
+
+    private String verifySnapshotHash;
+
     @TableField(fill = FieldFill.INSERT)
     private Date createTime;
 

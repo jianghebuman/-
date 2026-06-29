@@ -196,6 +196,15 @@ CREATE TABLE `enterprise_audit` (
   `audit_remark`   varchar(255)          DEFAULT NULL COMMENT '审核意见',
   `auditor_id`     bigint                DEFAULT NULL COMMENT '审核人ID',
   `audit_time`     datetime              DEFAULT NULL COMMENT '审核时间',
+  `verify_source`  varchar(120)          DEFAULT NULL COMMENT '权威核验来源',
+  `verify_source_url` varchar(255)       DEFAULT NULL COMMENT '权威核验来源地址',
+  `verify_time`    datetime              DEFAULT NULL COMMENT '权威核验时间',
+  `verify_company_name` varchar(120)     DEFAULT NULL COMMENT '权威来源企业名称',
+  `verify_credit_code` varchar(60)       DEFAULT NULL COMMENT '权威来源统一社会信用代码',
+  `verify_status`  varchar(60)           DEFAULT NULL COMMENT '权威来源登记状态',
+  `verify_result`  tinyint      NOT NULL DEFAULT 0 COMMENT '核验结果：0未核验1一致2不一致3未接入或异常',
+  `verify_remark`  varchar(255)          DEFAULT NULL COMMENT '核验说明',
+  `verify_snapshot_hash` varchar(64)     DEFAULT NULL COMMENT '权威返回快照SHA256',
   `create_time`    datetime              DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   `update_time`    datetime              DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
   `deleted`        tinyint      NOT NULL DEFAULT 0 COMMENT '逻辑删除：0否1是',
@@ -1041,16 +1050,16 @@ INSERT INTO `enterprise` (`id`,`username`,`password`,`company_name`,`credit_code
 (8,'greenmaker','$2a$10$5cl.E33gmXaCawXN8CQIi.htvEQ0FWNhkr3jv8QiixVQmIqmvITSO','绿动智能制造有限公司','914201001234567898','制造业','500-999人','民营企业','武汉市东湖高新区','武汉','聚焦智能制造、工业互联网和绿色能源设备。','五险一金,绩效奖金,节日福利','宋经理','027-77778888','hr@greenmaker.com','https://www.greenmaker.com',3,1),
 (9,'oldcorp','$2a$10$5cl.E33gmXaCawXN8CQIi.htvEQ0FWNhkr3jv8QiixVQmIqmvITSO','停用演示企业有限公司','913201001234567899','计算机软件','20-99人','民营企业','南京市软件大道','南京','用于验证企业禁用状态。','五险一金','停用联系人','025-11112222','disabled@oldcorp.com','',2,0);
 
-INSERT INTO `enterprise_audit` (`id`,`enterprise_id`,`license_no`,`license_img`,`extra_img`,`audit_status`,`audit_remark`,`auditor_id`,`audit_time`) VALUES
-(1,1,'911100001234567890','/upload/audit/bytedance_license.png','/upload/audit/bytedance_extra.png',2,'营业执照与授权材料完整，认证通过',1,'2026-02-25 10:00:00'),
-(2,2,'914403001234567891','/upload/audit/tencent_license.png','/upload/audit/tencent_extra.png',2,'企业信息完整，认证通过',1,'2026-02-26 10:30:00'),
-(3,3,'913100001234567892','/upload/audit/newcorp_license.png','/upload/audit/newcorp_extra.png',1,'等待平台审核',NULL,NULL),
-(4,4,'913301001234567894','/upload/audit/alibaba_license.png','/upload/audit/alibaba_extra.png',2,'云计算企业资质材料完整，认证通过',1,'2026-02-26 14:00:00'),
-(5,5,'911101051234567895','/upload/audit/meituan_license.png','/upload/audit/meituan_extra.png',2,'营业执照与联系人授权材料完整，认证通过',1,'2026-02-26 15:10:00'),
-(6,6,'915101001234567896','/upload/audit/eduonline_license.png','/upload/audit/eduonline_extra.png',2,'教育培训企业材料齐全，认证通过',1,'2026-02-26 16:20:00'),
-(7,7,'913100001234567897','/upload/audit/fintech_license.png','/upload/audit/fintech_extra.png',1,'新提交认证，等待审核',NULL,NULL),
-(8,8,'914201001234567898','/upload/audit/greenmaker_license.png','/upload/audit/greenmaker_extra.png',3,'授权材料信息与企业资料不一致，请重新上传',3,'2026-02-27 15:00:00'),
-(9,9,'913201001234567899','/upload/audit/oldcorp_license.png','/upload/audit/oldcorp_extra.png',2,'历史认证材料完整，认证通过；账号当前为禁用演示状态',1,'2026-02-27 16:00:00');
+INSERT INTO `enterprise_audit` (`id`,`enterprise_id`,`license_no`,`license_img`,`extra_img`,`audit_status`,`audit_remark`,`auditor_id`,`audit_time`,`verify_source`,`verify_source_url`,`verify_time`,`verify_company_name`,`verify_credit_code`,`verify_status`,`verify_result`,`verify_remark`,`verify_snapshot_hash`) VALUES
+(1,1,'911100001234567890','/upload/audit/bytedance_license.png','/upload/audit/bytedance_extra.png',2,'营业执照与授权材料完整，认证通过',1,'2026-02-25 10:00:00','国家企业信用信息公示系统','https://www.gsxt.gov.cn/','2026-02-25 09:58:00','字节跳动科技有限公司','911100001234567890','存续',1,'权威来源返回的企业名称、统一社会信用代码与提交信息一致',NULL),
+(2,2,'914403001234567891','/upload/audit/tencent_license.png','/upload/audit/tencent_extra.png',2,'企业信息完整，认证通过',1,'2026-02-26 10:30:00','国家企业信用信息公示系统','https://www.gsxt.gov.cn/','2026-02-26 10:25:00','腾讯科技有限公司','914403001234567891','存续',1,'权威来源返回的企业名称、统一社会信用代码与提交信息一致',NULL),
+(3,3,'913100001234567892','/upload/audit/newcorp_license.png','/upload/audit/newcorp_extra.png',1,'等待平台审核',NULL,NULL,'国家企业信用信息公示系统','https://www.gsxt.gov.cn/','2026-02-26 11:00:00','灵犀数据科技有限公司','913100001234567892','存续',1,'权威来源返回的企业名称、统一社会信用代码与提交信息一致',NULL),
+(4,4,'913301001234567894','/upload/audit/alibaba_license.png','/upload/audit/alibaba_extra.png',2,'云计算企业资质材料完整，认证通过',1,'2026-02-26 14:00:00','国家企业信用信息公示系统','https://www.gsxt.gov.cn/','2026-02-26 13:55:00','阿里巴巴云计算有限公司','913301001234567894','存续',1,'权威来源返回的企业名称、统一社会信用代码与提交信息一致',NULL),
+(5,5,'911101051234567895','/upload/audit/meituan_license.png','/upload/audit/meituan_extra.png',2,'营业执照与联系人授权材料完整，认证通过',1,'2026-02-26 15:10:00','国家企业信用信息公示系统','https://www.gsxt.gov.cn/','2026-02-26 15:05:00','美团科技有限公司','911101051234567895','存续',1,'权威来源返回的企业名称、统一社会信用代码与提交信息一致',NULL),
+(6,6,'915101001234567896','/upload/audit/eduonline_license.png','/upload/audit/eduonline_extra.png',2,'教育培训企业材料齐全，认证通过',1,'2026-02-26 16:20:00','国家企业信用信息公示系统','https://www.gsxt.gov.cn/','2026-02-26 16:15:00','启航在线教育科技有限公司','915101001234567896','存续',1,'权威来源返回的企业名称、统一社会信用代码与提交信息一致',NULL),
+(7,7,'913100001234567897','/upload/audit/fintech_license.png','/upload/audit/fintech_extra.png',1,'新提交认证，等待审核',NULL,NULL,'国家企业信用信息公示系统','https://www.gsxt.gov.cn/','2026-02-27 09:30:00','海纳金融科技有限公司','913100001234567897','存续',1,'权威来源返回的企业名称、统一社会信用代码与提交信息一致',NULL),
+(8,8,'914201001234567898','/upload/audit/greenmaker_license.png','/upload/audit/greenmaker_extra.png',3,'授权材料信息与企业资料不一致，请重新上传',3,'2026-02-27 15:00:00','国家企业信用信息公示系统','https://www.gsxt.gov.cn/','2026-02-27 14:40:00','绿动智能制造有限公司','914201001234567898','存续',1,'权威来源返回的企业名称、统一社会信用代码与提交信息一致',NULL),
+(9,9,'913201001234567899','/upload/audit/oldcorp_license.png','/upload/audit/oldcorp_extra.png',2,'历史认证材料完整，认证通过；账号当前为禁用演示状态',1,'2026-02-27 16:00:00','国家企业信用信息公示系统','https://www.gsxt.gov.cn/','2026-02-27 15:45:00','停用演示企业有限公司','913201001234567899','存续',1,'权威来源返回的企业名称、统一社会信用代码与提交信息一致',NULL);
 
 -- 更多分类和字典
 INSERT INTO `job_category` (`id`,`name`,`parent_id`,`sort`) VALUES

@@ -115,7 +115,7 @@ public class EnterpriseController {
                                     @RequestParam(value = "extraImg", required = false) String extraImg) {
         enterpriseAuditService.submitAudit(licenseNo, licenseImg, extraImg);
         operationLogService.record("OPERATION", "企业认证", "提交认证申请", 1);
-        return Result.success("认证申请已提交，请等待审核", null);
+        return Result.success("认证申请已提交，系统将先进行权威数据核验", null);
     }
 
     /** 查询认证状态（当前企业最新一条认证记录 + 企业当前认证状态） */

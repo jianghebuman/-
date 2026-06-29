@@ -44,6 +44,15 @@ campus:
   upload:
     path: ${CAMPUS_UPLOAD_PATH:/opt/campus-recruitment/upload/}
     prefix: ${CAMPUS_UPLOAD_PREFIX:/upload/}
+  enterprise-verification:
+    enabled: ${ENTERPRISE_VERIFY_ENABLED:false}
+    source-name: ${ENTERPRISE_VERIFY_SOURCE_NAME:国家企业信用信息公示系统}
+    source-url: ${ENTERPRISE_VERIFY_SOURCE_URL:https://www.gsxt.gov.cn/}
+    query-url: ${ENTERPRISE_VERIFY_QUERY_URL:}
+    company-name-field: ${ENTERPRISE_VERIFY_COMPANY_NAME_FIELD:data.companyName}
+    credit-code-field: ${ENTERPRISE_VERIFY_CREDIT_CODE_FIELD:data.creditCode}
+    status-field: ${ENTERPRISE_VERIFY_STATUS_FIELD:data.status}
+    normal-statuses: ${ENTERPRISE_VERIFY_NORMAL_STATUSES:存续,在业,正常,开业}
 
 logging:
   file:

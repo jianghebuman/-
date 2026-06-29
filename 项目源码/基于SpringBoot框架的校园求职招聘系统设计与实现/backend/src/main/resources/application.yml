@@ -48,6 +48,16 @@ campus:
     path: ${user.dir}/../upload/
     # 访问前缀
     prefix: /upload/
+  enterprise-verification:
+    enabled: false
+    source-name: 国家企业信用信息公示系统
+    source-url: https://www.gsxt.gov.cn/
+    # 接入合规工商数据接口后填写，支持 {creditCode} 和 {companyName} 占位符。
+    query-url:
+    company-name-field: data.companyName
+    credit-code-field: data.creditCode
+    status-field: data.status
+    normal-statuses: 存续,在业,正常,开业
 
 logging:
   level:
