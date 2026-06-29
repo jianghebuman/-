@@ -126,7 +126,12 @@
           </el-form>
 
           <div class="auth-links">
-            <router-link v-if="form.role !== 'ADMIN'" to="/register">创建{{ activeRole.label }}账号</router-link>
+            <router-link
+              v-if="form.role !== 'ADMIN'"
+              :to="{ path: '/register', query: { role: form.role } }"
+            >
+              创建{{ activeRole.label }}账号
+            </router-link>
             <router-link to="/">先浏览招聘信息</router-link>
           </div>
 

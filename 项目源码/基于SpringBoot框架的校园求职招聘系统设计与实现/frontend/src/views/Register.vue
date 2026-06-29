@@ -242,7 +242,7 @@
 
 <script setup>
 import { computed, reactive, ref } from 'vue'
-import { useRouter } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
 import {
   ArrowLeft,
@@ -264,7 +264,8 @@ import {
 import { authApi } from '@/api'
 
 const router = useRouter()
-const role = ref('STUDENT')
+const route = useRoute()
+const role = ref(route.query.role === 'ENTERPRISE' ? 'ENTERPRISE' : 'STUDENT')
 const loading = ref(false)
 const stuRef = ref()
 const entRef = ref()
