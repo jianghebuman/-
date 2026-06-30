@@ -76,6 +76,7 @@ public class JobApplyServiceImpl extends ServiceImpl<JobApplyMapper, JobApply> i
         apply.setResumeId(resumeId);
         apply.setJobId(jobId);
         apply.setEnterpriseId(job.getEnterpriseId());
+        apply.setHrId(job.getHrId());
         apply.setStatus(0);
         apply.setApplyRemark(applyRemark);
         this.save(apply);
@@ -86,7 +87,7 @@ public class JobApplyServiceImpl extends ServiceImpl<JobApplyMapper, JobApply> i
         jobPostMapper.updateById(update);
         // 6. 给企业和学生发系统通知
         systemNoticeService.send(
-                job.getEnterpriseId(),
+                job.getHrId(),
                 "ENTERPRISE",
                 "收到新的简历投递",
                 "您发布的职位【" + job.getTitle() + "】收到了一份新的简历投递，请及时查看。",
@@ -172,7 +173,7 @@ public class JobApplyServiceImpl extends ServiceImpl<JobApplyMapper, JobApply> i
             jobPostMapper.updateById(update);
         }
         systemNoticeService.send(
-                apply.getEnterpriseId(),
+                apply.getHrId(),
                 "ENTERPRISE",
                 "学生撤回投递",
                 "学生已撤回职位【" + (job == null ? apply.getJobId() : job.getTitle()) + "】的投递记录。",

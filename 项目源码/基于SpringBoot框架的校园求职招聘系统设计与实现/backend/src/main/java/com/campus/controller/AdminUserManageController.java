@@ -7,7 +7,10 @@ import com.campus.common.RequireRole;
 import com.campus.common.Result;
 import com.campus.entity.Enterprise;
 import com.campus.entity.EnterpriseAudit;
+import com.campus.entity.EnterpriseHr;
 import com.campus.entity.Student;
+import com.campus.dto.EnterpriseHrDTO;
+import com.campus.service.EnterpriseHrService;
 import com.campus.service.EnterpriseService;
 import com.campus.service.OperationLogService;
 import com.campus.service.StudentService;
@@ -18,6 +21,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.Date;
 
 /**
@@ -34,6 +38,8 @@ public class AdminUserManageController {
     private StudentService studentService;
     @Autowired
     private EnterpriseService enterpriseService;
+    @Autowired
+    private EnterpriseHrService enterpriseHrService;
     @Autowired
     private EnterpriseAuditMapper enterpriseAuditMapper;
     @Autowired
@@ -108,7 +114,6 @@ public class AdminUserManageController {
                 .eq(auditStatus != null, Enterprise::getAuditStatus, auditStatus)
                 .orderByDesc(Enterprise::getCreateTime);
         enterpriseService.page(page, wrapper);
-        page.getRecords().forEach(e -> e.setPassword(null));
         return Result.success(PageResult.of(page.getTotal(), page.getRecords()));
     }
 
@@ -119,6 +124,55 @@ public class AdminUserManageController {
         e.setStatus(status);
         enterpriseService.updateById(e);
         return Result.success(status == 1 ? "已启用" : "已禁用", null);
+    }
+
+    // ==================== 企业 HR 管理 ====================
+
+    @GetMapping("/enterprise/{enterpriseId}/hr")
+    public Result<PageResult<EnterpriseHr>> enterpriseHrPage(@PathVariable Long enterpriseId,
+                                                            @RequestParam(defaultValue = "1") Integer pageNum,
+                                                            @RequestParam(defaultValue = "10") Integer pageSize,
+                                                            @RequestParam(required = false) String keyword) {
+        if (enterpriseService.getById(enterpriseId) == null) {
+            return Result.error("企业不存在");
+        }
+        return Result.success(enterpriseHrService.pageByEnterprise(enterpriseId, pageNum, pageSize, keyword));
+    }
+
+    @PostMapping("/enterprise/{enterpriseId}/hr")
+    public Result<Long> addEnterpriseHr(@PathVariable Long enterpriseId, @Valid @RequestBody EnterpriseHrDTO dto) {
+        if (enterpriseService.getById(enterpriseId) == null) {
+            return Result.error("企业不存在");
+        }
+        Long id = enterpriseHrService.createHr(enterpriseId, dto);
+        operationLogService.record("OPERATION", "企业HR管理", "新增企业HR：" + dto.getUsername(), 1);
+        return Result.success("新增成功，初始密码123456", id);
+    }
+
+    @PutMapping("/enterprise/hr/{id}")
+    public Result<Void> updateEnterpriseHr(@PathVariable Long id, @Valid @RequestBody EnterpriseHrDTO dto) {
+        enterpriseHrService.updateHr(id, dto);
+        operationLogService.record("OPERATION", "企业HR管理", "修改企业HR：" + id, 1);
+        return Result.success("修改成功", null);
+    }
+
+    @PutMapping("/enterprise/hr/{id}/role")
+    public Result<Void> updateEnterpriseHrRole(@PathVariable Long id, @RequestParam String role) {
+        enterpriseHrService.changeRole(id, role);
+        operationLogService.record("OPERATION", "企业HR管理", "调整企业HR角色：" + id + " -> " + role, 1);
+        return Result.success("角色已更新", null);
+    }
+
+    @PutMapping("/enterprise/hr/{id}/status")
+    public Result<Void> updateEnterpriseHrStatus(@PathVariable Long id, @RequestParam Integer status) {
+        enterpriseHrService.changeStatus(id, status);
+        return Result.success(status == 1 ? "已启用" : "已禁用", null);
+    }
+
+    @PutMapping("/enterprise/hr/{id}/reset")
+    public Result<Void> resetEnterpriseHrPassword(@PathVariable Long id) {
+        enterpriseHrService.resetPassword(id);
+        return Result.success("密码已重置为123456", null);
     }
 
     /** 企业认证审核列表（待审核的认证申请） */
@@ -160,7 +214,7 @@ public class AdminUserManageController {
         enterpriseService.update(up);
         Enterprise enterprise = enterpriseService.getById(audit.getEnterpriseId());
         String companyName = enterprise == null ? String.valueOf(audit.getEnterpriseId()) : enterprise.getCompanyName();
-        systemNoticeService.send(audit.getEnterpriseId(), "ENTERPRISE",
+        systemNoticeService.sendToEnterpriseSupervisors(audit.getEnterpriseId(),
                 status == 2 ? "企业认证审核通过" : "企业认证审核驳回",
                 status == 2
                         ? "您的企业认证已审核通过，可正常开展招聘。"

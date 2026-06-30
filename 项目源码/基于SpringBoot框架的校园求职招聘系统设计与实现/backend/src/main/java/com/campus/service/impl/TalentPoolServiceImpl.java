@@ -27,7 +27,7 @@ public class TalentPoolServiceImpl extends ServiceImpl<TalentPoolMapper, TalentP
 
     @Override
     public void addTalent(Long studentId, Long resumeId, String tag, String remark) {
-        Long enterpriseId = UserContext.getUserId();
+        Long enterpriseId = UserContext.getEnterpriseId();
         if (studentId == null) {
             throw new BusinessException("缺少候选人ID");
         }
@@ -40,6 +40,7 @@ public class TalentPoolServiceImpl extends ServiceImpl<TalentPoolMapper, TalentP
         }
         TalentPool talent = new TalentPool();
         talent.setEnterpriseId(enterpriseId);
+        talent.setHrId(UserContext.getUserId());
         talent.setStudentId(studentId);
         talent.setResumeId(resumeId);
         talent.setTag(tag);
@@ -49,9 +50,9 @@ public class TalentPoolServiceImpl extends ServiceImpl<TalentPoolMapper, TalentP
 
     @Override
     public void removeTalent(Long talentId) {
-        Long enterpriseId = UserContext.getUserId();
+        Long enterpriseId = UserContext.getEnterpriseId();
         TalentPool db = this.getById(talentId);
-        if (db == null || !enterpriseId.equals(db.getEnterpriseId())) {
+        if (!canAccess(db, enterpriseId)) {
             throw new BusinessException("人才库记录不存在或无权操作");
         }
         this.removeById(talentId);
@@ -59,10 +60,11 @@ public class TalentPoolServiceImpl extends ServiceImpl<TalentPoolMapper, TalentP
 
     @Override
     public PageResult<TalentPool> talentPage(Integer pageNum, Integer pageSize, String tag, String keyword) {
-        Long enterpriseId = UserContext.getUserId();
+        Long enterpriseId = UserContext.getEnterpriseId();
         Page<TalentPool> page = new Page<>(pageNum, pageSize);
         LambdaQueryWrapper<TalentPool> wrapper = new LambdaQueryWrapper<TalentPool>()
                 .eq(TalentPool::getEnterpriseId, enterpriseId)
+                .eq(!UserContext.isSupervisorHr(), TalentPool::getHrId, UserContext.getUserId())
                 .like(tag != null && !tag.trim().isEmpty(), TalentPool::getTag, tag)
                 .like(keyword != null && !keyword.trim().isEmpty(), TalentPool::getRemark, keyword)
                 .orderByDesc(TalentPool::getCreateTime);
@@ -87,5 +89,12 @@ public class TalentPoolServiceImpl extends ServiceImpl<TalentPoolMapper, TalentP
         wrapper.orderByDesc(Resume::getUpdateTime);
         resumeMapper.selectPage(page, wrapper);
         return PageResult.of(page.getTotal(), page.getRecords());
+    }
+
+    private boolean canAccess(TalentPool talent, Long enterpriseId) {
+        if (talent == null || !enterpriseId.equals(talent.getEnterpriseId())) {
+            return false;
+        }
+        return UserContext.isSupervisorHr() || UserContext.getUserId().equals(talent.getHrId());
     }
 }

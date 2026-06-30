@@ -54,6 +54,14 @@ public class AuthInterceptor implements HandlerInterceptor {
         loginUser.setUserId(Long.valueOf(claims.get("userId").toString()));
         loginUser.setUsername(claims.get("username").toString());
         loginUser.setRole(claims.get("role").toString());
+        Object enterpriseId = claims.get("enterpriseId");
+        if (enterpriseId != null) {
+            loginUser.setEnterpriseId(Long.valueOf(enterpriseId.toString()));
+        }
+        Object hrRole = claims.get("hrRole");
+        if (hrRole != null) {
+            loginUser.setHrRole(hrRole.toString());
+        }
         UserContext.set(loginUser);
 
         // 角色校验

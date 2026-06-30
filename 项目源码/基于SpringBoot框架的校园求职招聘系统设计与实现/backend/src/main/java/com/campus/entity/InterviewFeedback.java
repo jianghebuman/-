@@ -20,6 +20,8 @@ public class InterviewFeedback implements Serializable {
 
     private Long enterpriseId;
 
+    private Long hrId;
+
     private Integer score;
 
     private String content;

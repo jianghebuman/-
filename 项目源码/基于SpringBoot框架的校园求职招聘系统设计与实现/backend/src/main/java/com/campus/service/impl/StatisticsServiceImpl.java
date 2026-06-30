@@ -108,13 +108,23 @@ public class StatisticsServiceImpl implements StatisticsService {
         long feedbackTotal = interviewFeedbackMapper.selectCount(null);
         long feedbackPass = interviewFeedbackMapper.selectCount(
                 new LambdaQueryWrapper<InterviewFeedback>().eq(InterviewFeedback::getIsPass, 1));
-        result.put("interviewPassRate", feedbackTotal == 0 ? 0 : Math.round(feedbackPass * 1000.0 / feedbackTotal) / 10.0);
+        double interviewPassRate = rate(feedbackPass, feedbackTotal);
+        result.put("interviewPassRate", interviewPassRate);
 
         // 7. Offer 接受率
         long offerTotal = offerRecordMapper.selectCount(null);
         long offerAccept = offerRecordMapper.selectCount(
                 new LambdaQueryWrapper<OfferRecord>().eq(OfferRecord::getOfferStatus, 1));
-        result.put("offerAcceptRate", offerTotal == 0 ? 0 : Math.round(offerAccept * 1000.0 / offerTotal) / 10.0);
+        double offerAcceptRate = rate(offerAccept, offerTotal);
+        result.put("offerAcceptRate", offerAcceptRate);
+
+        List<Map<String, Object>> keyRates = new ArrayList<>();
+        keyRates.add(rateItem("简历查看率", rate(viewed, total), "已查看及后续状态占投递总数"));
+        keyRates.add(rateItem("面试转化率", rate(interview, total), "进入面试环节占投递总数"));
+        keyRates.add(rateItem("录用转化率", rate(hired, total), "最终录用占投递总数"));
+        keyRates.add(rateItem("面试通过率", interviewPassRate, "面试反馈中通过的比例"));
+        keyRates.add(rateItem("Offer 接受率", offerAcceptRate, "已发 Offer 中被接受的比例"));
+        result.put("keyRates", keyRates);
 
         // 8. 投递状态分布（用于饼图）
         Map<Integer, Long> statusCount = applies.stream()
@@ -146,6 +156,18 @@ public class StatisticsServiceImpl implements StatisticsService {
         Map<String, Object> m = new HashMap<>();
         m.put("name", name);
         m.put("value", value);
+        return m;
+    }
+
+    private double rate(long part, long total) {
+        return total == 0 ? 0 : Math.round(part * 1000.0 / total) / 10.0;
+    }
+
+    private Map<String, Object> rateItem(String name, double value, String caption) {
+        Map<String, Object> m = new HashMap<>();
+        m.put("name", name);
+        m.put("value", value);
+        m.put("caption", caption);
         return m;
     }
 }

@@ -122,6 +122,11 @@ export const enterpriseApi = {
   uploadAuditMaterial: (formData) => request.post('/enterprise/audit/upload', formData),
   auditStatus: () => request.get('/enterprise/audit'),
   dashboard: () => request.get('/enterprise/dashboard'),
+  hrs: (params) => request.get('/enterprise/hr', { params }),
+  addHr: (data) => request.post('/enterprise/hr', data),
+  updateHr: (id, data) => request.put(`/enterprise/hr/${id}`, data),
+  toggleHr: (id, status) => request.put(`/enterprise/hr/${id}/status`, null, { params: { status } }),
+  resetHr: (id) => request.put(`/enterprise/hr/${id}/reset`),
   // 职位
   jobList: (params) => request.get('/enterprise/job', { params }),
   jobDetail: (id) => request.get(`/enterprise/job/${id}`),
@@ -163,6 +168,12 @@ export const adminApi = {
   // 企业管理
   enterprises: (params) => request.get('/admin/enterprise', { params }),
   toggleEnterprise: (id, status) => request.put(`/admin/enterprise/${id}/status`, null, { params: { status } }),
+  enterpriseHrs: (enterpriseId, params) => request.get(`/admin/enterprise/${enterpriseId}/hr`, { params }),
+  addEnterpriseHr: (enterpriseId, data) => request.post(`/admin/enterprise/${enterpriseId}/hr`, data),
+  updateEnterpriseHr: (id, data) => request.put(`/admin/enterprise/hr/${id}`, data),
+  updateEnterpriseHrRole: (id, role) => request.put(`/admin/enterprise/hr/${id}/role`, null, { params: { role } }),
+  toggleEnterpriseHr: (id, status) => request.put(`/admin/enterprise/hr/${id}/status`, null, { params: { status } }),
+  resetEnterpriseHr: (id) => request.put(`/admin/enterprise/hr/${id}/reset`),
   auditList: (params) => request.get('/admin/enterprise/audit', { params }),
   auditEnterprise: (id, status, remark) => request.put(`/admin/enterprise/audit/${id}`, null, { params: { status, remark } }),
   // 岗位审核

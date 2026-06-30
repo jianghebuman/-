@@ -39,17 +39,18 @@ public class OfferServiceImpl extends ServiceImpl<OfferRecordMapper, OfferRecord
     @Override
     @Transactional(rollbackFor = Exception.class)
     public Long sendOffer(OfferRecord offer) {
-        Long enterpriseId = UserContext.getUserId();
+        Long enterpriseId = UserContext.getEnterpriseId();
         if (offer.getApplyId() == null) {
             throw new BusinessException("缺少投递记录ID");
         }
         JobApply apply = jobApplyMapper.selectById(offer.getApplyId());
-        if (apply == null || !enterpriseId.equals(apply.getEnterpriseId())) {
+        if (!canAccessApply(apply, enterpriseId)) {
             throw new BusinessException("投递记录不存在或无权操作");
         }
         // 强制归属与冗余字段从投递记录回填，offer_status=0 待确认
         offer.setId(null);
         offer.setEnterpriseId(enterpriseId);
+        offer.setHrId(apply.getHrId());
         offer.setStudentId(apply.getStudentId());
         offer.setJobId(apply.getJobId());
         offer.setOfferStatus(0);
@@ -79,9 +80,9 @@ public class OfferServiceImpl extends ServiceImpl<OfferRecordMapper, OfferRecord
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void revoke(Long offerId) {
-        Long enterpriseId = UserContext.getUserId();
+        Long enterpriseId = UserContext.getEnterpriseId();
         OfferRecord db = this.getById(offerId);
-        if (db == null || !enterpriseId.equals(db.getEnterpriseId())) {
+        if (!canAccessOffer(db, enterpriseId)) {
             throw new BusinessException("Offer 不存在或无权操作");
         }
         if (Integer.valueOf(1).equals(db.getOfferStatus())) {
@@ -108,9 +109,9 @@ public class OfferServiceImpl extends ServiceImpl<OfferRecordMapper, OfferRecord
 
     @Override
     public Integer getConfirmStatus(Long offerId) {
-        Long enterpriseId = UserContext.getUserId();
+        Long enterpriseId = UserContext.getEnterpriseId();
         OfferRecord db = this.getById(offerId);
-        if (db == null || !enterpriseId.equals(db.getEnterpriseId())) {
+        if (!canAccessOffer(db, enterpriseId)) {
             throw new BusinessException("Offer 不存在或无权查看");
         }
         return db.getOfferStatus();
@@ -118,13 +119,28 @@ public class OfferServiceImpl extends ServiceImpl<OfferRecordMapper, OfferRecord
 
     @Override
     public PageResult<OfferRecord> myOfferPage(Integer pageNum, Integer pageSize, Integer offerStatus) {
-        Long enterpriseId = UserContext.getUserId();
+        Long enterpriseId = UserContext.getEnterpriseId();
         Page<OfferRecord> page = new Page<>(pageNum, pageSize);
         LambdaQueryWrapper<OfferRecord> wrapper = new LambdaQueryWrapper<OfferRecord>()
                 .eq(OfferRecord::getEnterpriseId, enterpriseId)
+                .eq(!UserContext.isSupervisorHr(), OfferRecord::getHrId, UserContext.getUserId())
                 .eq(offerStatus != null, OfferRecord::getOfferStatus, offerStatus)
                 .orderByDesc(OfferRecord::getCreateTime);
         this.page(page, wrapper);
         return PageResult.of(page.getTotal(), page.getRecords());
+    }
+
+    private boolean canAccessApply(JobApply apply, Long enterpriseId) {
+        if (apply == null || !enterpriseId.equals(apply.getEnterpriseId())) {
+            return false;
+        }
+        return UserContext.isSupervisorHr() || UserContext.getUserId().equals(apply.getHrId());
+    }
+
+    private boolean canAccessOffer(OfferRecord offer, Long enterpriseId) {
+        if (offer == null || !enterpriseId.equals(offer.getEnterpriseId())) {
+            return false;
+        }
+        return UserContext.isSupervisorHr() || UserContext.getUserId().equals(offer.getHrId());
     }
 }

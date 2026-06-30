@@ -87,6 +87,7 @@ const loading = ref(false)
 const enterprise = ref(null)
 const jobs = ref([])
 const favorited = ref(false)
+const hrId = ref('')
 
 const ensureStudent = (message) => {
   if (!userStore.isLogin) {
@@ -136,7 +137,11 @@ const toggleFavorite = async () => {
 
 const consultHr = () => {
   if (!ensureStudent('请使用学生账号咨询HR')) return
-  router.push({ path: '/student/chat', query: { peerRole: 'ENTERPRISE', peerId: enterprise.value.id, peerName: enterprise.value.companyName || `企业${enterprise.value.id}` } })
+  if (!hrId.value) {
+    ElMessage.warning('该企业暂未配置可咨询HR')
+    return
+  }
+  router.push({ path: '/student/chat', query: { peerRole: 'ENTERPRISE', peerId: hrId.value, peerName: enterprise.value.companyName || `企业HR${hrId.value}` } })
 }
 
 onMounted(async () => {
@@ -146,6 +151,7 @@ onMounted(async () => {
     const data = res.data
     enterprise.value = data.enterprise || data
     jobs.value = data.jobs || []
+    hrId.value = data.hrId || ''
     await checkFavorite()
   } finally { loading.value = false }
 })

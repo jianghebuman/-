@@ -32,10 +32,11 @@
 该脚本包含：
 
 - 自动创建数据库 `campus_recruitment`
-- 36 张业务表（共 416 个字段）
+- 37 张业务表（共 434 个字段）
 - 角色、字典、岗位类别初始化数据
-- 管理员、学生、企业测试账号
-- 首页轮播图、公告、宣讲会、招聘会、职位、简历、投递、面试、Offer、论坛等演示数据
+- 管理员、学生、企业主管 HR、企业普通 HR 测试账号
+- 首页轮播图、公告、宣讲会、招聘会、职位、简历、投递、面试、Offer、人才库、论坛等演示数据
+- 企业多 HR 模型：`enterprise` 为公司主体，`enterprise_hr` 为 HR 登录账号；岗位、投递、面试、Offer、人才库均记录 `hr_id`
 
 ## 3. 使用 Navicat Premium 17 导入步骤
 
@@ -76,7 +77,7 @@ FROM information_schema.tables
 WHERE table_schema = 'campus_recruitment';
 ```
 
-正常情况下应返回 `36`。
+正常情况下应返回 `37`。
 
 ## 5. 默认测试账号
 
@@ -88,9 +89,15 @@ WHERE table_schema = 'campus_recruitment';
 | 管理员 | jiuyeban | 就业办老师 |
 | 学生 | student | 张三 |
 | 学生 | lisi | 李四 |
-| 企业 | company | 字节跳动科技有限公司 |
-| 企业 | tencent | 腾讯科技有限公司 |
-| 企业 | newcorp | 待审核企业 |
+| 企业主管 HR | company | 字节跳动科技有限公司 |
+| 企业普通 HR | bytedance-recruit-a | 字节跳动后端招聘 |
+| 企业主管 HR | bytedance-campus | 字节跳动校招主管 |
+| 企业主管 HR | tencent | 腾讯科技有限公司 |
+| 企业普通 HR | tencent-product | 腾讯产品招聘 |
+| 企业普通 HR | aliyun-data | 阿里云数据招聘 |
+| 企业主管 HR | newcorp | 待审核企业 |
+
+主展示企业已配置多 HR，例如字节跳动 4 个 HR、腾讯 4 个 HR、阿里云 4 个 HR、美团 3 个 HR、星火 AI 3 个 HR。所有账号默认密码均为 `123456`。
 
 ## 6. 常见问题
 
@@ -130,6 +137,7 @@ DROP DATABASE campus_recruitment;
 ## 7. 脚本同步说明
 
 - 仓库中的权威初始化脚本为 [campus_recruitment.sql](./campus_recruitment.sql)。
-- 2026-06-30 已同步企业收藏表，当前初始化脚本为 36 张表、416 个字段。
-- 同日已将 `favorite_enterprise` 表补入本机 `campus_recruitment` 数据库。
-- 本地数据库在系统运行后会新增业务数据，因此 `operation_log`、`system_notice`、`activity_sign`、`student` 等表的记录数可能高于初始化脚本，这是正常现象；若需要回到初始演示数据，请重新导入脚本。
+- 2026-06-30 已同步企业收藏表和企业多 HR 模型，当前初始化脚本为 37 张表、434 个字段。
+- 同日已将 `enterprise_hr` 表补入本机 `campus_recruitment` 数据库，并为 `job_post`、`job_apply`、`interview_notice`、`interview_feedback`、`offer_record`、`talent_pool` 增加 `hr_id`。
+- 当前演示数据约包含 64 家企业、77 个企业 HR、72 名学生、80 个岗位、101 条投递、18 条面试通知、20 条 Offer、54 条人才库记录。
+- 本地数据库在系统运行后会新增业务数据，因此 `operation_log`、`system_notice`、`activity_sign`、`job_apply` 等表的记录数可能高于初始化脚本，这是正常现象；若需要回到初始演示数据，请重新导入脚本。

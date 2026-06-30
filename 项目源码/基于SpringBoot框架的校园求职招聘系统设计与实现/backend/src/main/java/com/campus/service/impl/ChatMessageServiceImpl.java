@@ -6,9 +6,11 @@ import com.campus.common.BusinessException;
 import com.campus.common.UserContext;
 import com.campus.entity.ChatMessage;
 import com.campus.entity.Enterprise;
+import com.campus.entity.EnterpriseHr;
 import com.campus.entity.Student;
 import com.campus.mapper.ChatMessageMapper;
 import com.campus.mapper.EnterpriseMapper;
+import com.campus.mapper.EnterpriseHrMapper;
 import com.campus.mapper.StudentMapper;
 import com.campus.service.ChatMessageService;
 import com.campus.service.SystemNoticeService;
@@ -29,6 +31,9 @@ public class ChatMessageServiceImpl extends ServiceImpl<ChatMessageMapper, ChatM
 
     @Autowired
     private EnterpriseMapper enterpriseMapper;
+
+    @Autowired
+    private EnterpriseHrMapper enterpriseHrMapper;
 
     @Autowired
     private SystemNoticeService systemNoticeService;
@@ -133,7 +138,13 @@ public class ChatMessageServiceImpl extends ServiceImpl<ChatMessageMapper, ChatM
             Student student = studentMapper.selectById(id);
             return student == null ? "学生" + id : student.getRealName();
         }
-        Enterprise enterprise = enterpriseMapper.selectById(id);
-        return enterprise == null ? "企业" + id : enterprise.getCompanyName();
+        EnterpriseHr hr = enterpriseHrMapper.selectById(id);
+        if (hr == null) {
+            return "企业HR" + id;
+        }
+        Enterprise enterprise = enterpriseMapper.selectById(hr.getEnterpriseId());
+        String company = enterprise == null ? "企业" + hr.getEnterpriseId() : enterprise.getCompanyName();
+        String name = hr.getRealName() == null || hr.getRealName().trim().isEmpty() ? hr.getUsername() : hr.getRealName();
+        return company + " - " + name;
     }
 }

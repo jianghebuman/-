@@ -63,7 +63,7 @@ public class StudentProcessController {
         update.setStudentStatus(status);
         interviewService.updateById(update);
         if (!status.equals(notice.getStudentStatus())) {
-            systemNoticeService.send(notice.getEnterpriseId(), "ENTERPRISE", "学生已确认面试",
+            systemNoticeService.send(notice.getHrId(), "ENTERPRISE", "学生已确认面试",
                     "学生已" + (status == 1 ? "确认参加" : "拒绝") + "面试通知，请及时跟进。",
                     "INTERVIEW");
         }
@@ -100,7 +100,7 @@ public class StudentProcessController {
         offerService.updateById(update);
         if (!status.equals(offer.getOfferStatus())) {
             String position = offer.getPosition() == null ? "相关岗位" : offer.getPosition();
-            systemNoticeService.send(offer.getEnterpriseId(), "ENTERPRISE", "学生已处理 Offer",
+            systemNoticeService.send(offer.getHrId(), "ENTERPRISE", "学生已处理 Offer",
                     "学生已" + (status == 1 ? "接受" : "拒绝") + "【" + position + "】的 Offer。",
                     "OFFER");
         }

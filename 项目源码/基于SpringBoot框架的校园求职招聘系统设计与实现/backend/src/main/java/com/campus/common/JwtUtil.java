@@ -28,10 +28,21 @@ public class JwtUtil {
 
     /** 生成 token */
     public String createToken(Long userId, String username, String role) {
+        return createToken(userId, username, role, null, null);
+    }
+
+    /** 生成 token */
+    public String createToken(Long userId, String username, String role, Long enterpriseId, String hrRole) {
         Map<String, Object> claims = new HashMap<>(4);
         claims.put("userId", userId);
         claims.put("username", username);
         claims.put("role", role);
+        if (enterpriseId != null) {
+            claims.put("enterpriseId", enterpriseId);
+        }
+        if (hrRole != null) {
+            claims.put("hrRole", hrRole);
+        }
         Date now = new Date();
         Date expireDate = new Date(now.getTime() + expire);
         return Jwts.builder()
@@ -62,6 +73,14 @@ public class JwtUtil {
         user.setUserId(Long.valueOf(claims.get("userId").toString()));
         user.setUsername(claims.get("username").toString());
         user.setRole(claims.get("role").toString());
+        Object enterpriseId = claims.get("enterpriseId");
+        if (enterpriseId != null) {
+            user.setEnterpriseId(Long.valueOf(enterpriseId.toString()));
+        }
+        Object hrRole = claims.get("hrRole");
+        if (hrRole != null) {
+            user.setHrRole(hrRole.toString());
+        }
         return user;
     }
 }

@@ -10,6 +10,8 @@ export const useUserStore = defineStore('user', {
     role: localStorage.getItem('role') || '',
     avatar: localStorage.getItem('avatar') || '',
     auditStatus: localStorage.getItem('auditStatus') || '',
+    enterpriseId: localStorage.getItem('enterpriseId') || '',
+    hrRole: localStorage.getItem('hrRole') || '',
     unreadNoticeCount: 0,
     unreadChatCount: 0
   }),
@@ -25,6 +27,8 @@ export const useUserStore = defineStore('user', {
       this.role = data.role
       this.avatar = data.avatar || ''
       this.auditStatus = data.auditStatus != null ? data.auditStatus : ''
+      this.enterpriseId = data.enterpriseId != null ? data.enterpriseId : ''
+      this.hrRole = data.hrRole || ''
       localStorage.setItem('token', data.token)
       localStorage.setItem('userId', data.userId)
       localStorage.setItem('username', data.username)
@@ -32,6 +36,8 @@ export const useUserStore = defineStore('user', {
       localStorage.setItem('role', data.role)
       localStorage.setItem('avatar', data.avatar || '')
       localStorage.setItem('auditStatus', data.auditStatus != null ? data.auditStatus : '')
+      localStorage.setItem('enterpriseId', data.enterpriseId != null ? data.enterpriseId : '')
+      localStorage.setItem('hrRole', data.hrRole || '')
     },
     setAvatar(avatar) {
       this.avatar = avatar
@@ -49,6 +55,8 @@ export const useUserStore = defineStore('user', {
       this.role = ''
       this.avatar = ''
       this.auditStatus = ''
+      this.enterpriseId = ''
+      this.hrRole = ''
       this.unreadNoticeCount = 0
       this.unreadChatCount = 0
       localStorage.clear()

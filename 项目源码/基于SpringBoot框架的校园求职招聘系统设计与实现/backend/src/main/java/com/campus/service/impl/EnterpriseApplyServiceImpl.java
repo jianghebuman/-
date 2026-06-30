@@ -67,10 +67,11 @@ public class EnterpriseApplyServiceImpl extends ServiceImpl<JobApplyMapper, JobA
 
     @Override
     public PageResult<JobApply> receivedPage(Integer pageNum, Integer pageSize, Long jobId, Integer status) {
-        Long enterpriseId = UserContext.getUserId();
+        Long enterpriseId = UserContext.getEnterpriseId();
         Page<JobApply> page = new Page<>(pageNum, pageSize);
         LambdaQueryWrapper<JobApply> wrapper = new LambdaQueryWrapper<JobApply>()
                 .eq(JobApply::getEnterpriseId, enterpriseId)
+                .eq(!UserContext.isSupervisorHr(), JobApply::getHrId, UserContext.getUserId())
                 .eq(jobId != null, JobApply::getJobId, jobId)
                 .eq(status != null, JobApply::getStatus, status)
                 .orderByDesc(JobApply::getCreateTime);
@@ -91,12 +92,12 @@ public class EnterpriseApplyServiceImpl extends ServiceImpl<JobApplyMapper, JobA
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void updateStatus(Long applyId, Integer status, String hrRemark) {
-        Long enterpriseId = UserContext.getUserId();
+        Long enterpriseId = UserContext.getEnterpriseId();
         if (status == null || status < 0 || status > 5) {
             throw new BusinessException("投递状态非法");
         }
         JobApply apply = this.getById(applyId);
-        if (apply == null || !enterpriseId.equals(apply.getEnterpriseId())) {
+        if (!canAccess(apply, enterpriseId)) {
             throw new BusinessException("投递记录不存在或无权操作");
         }
         JobApply update = new JobApply();
@@ -112,9 +113,9 @@ public class EnterpriseApplyServiceImpl extends ServiceImpl<JobApplyMapper, JobA
     @Override
     @Transactional(rollbackFor = Exception.class)
     public EnterpriseApplyDetailVO viewDetail(Long applyId) {
-        Long enterpriseId = UserContext.getUserId();
+        Long enterpriseId = UserContext.getEnterpriseId();
         JobApply apply = this.getById(applyId);
-        if (apply == null || !enterpriseId.equals(apply.getEnterpriseId())) {
+        if (!canAccess(apply, enterpriseId)) {
             throw new BusinessException("投递记录不存在或无权查看");
         }
         // status=0 待查看 -> 1 已查看
@@ -160,5 +161,12 @@ public class EnterpriseApplyServiceImpl extends ServiceImpl<JobApplyMapper, JobA
         systemNoticeService.send(studentId, "STUDENT", "投递状态更新",
                 "您投递的职位「" + jobTitle + "」状态已更新为：" + text,
                 "APPLY");
+    }
+
+    private boolean canAccess(JobApply apply, Long enterpriseId) {
+        if (apply == null || !enterpriseId.equals(apply.getEnterpriseId())) {
+            return false;
+        }
+        return UserContext.isSupervisorHr() || UserContext.getUserId().equals(apply.getHrId());
     }
 }

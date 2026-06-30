@@ -8,6 +8,7 @@ import com.campus.entity.Announcement;
 import com.campus.entity.Banner;
 import com.campus.entity.CampusTalk;
 import com.campus.entity.Enterprise;
+import com.campus.entity.EnterpriseHr;
 import com.campus.entity.ForumComment;
 import com.campus.entity.ForumPost;
 import com.campus.entity.JobCategory;
@@ -19,6 +20,7 @@ import com.campus.mapper.AnnouncementMapper;
 import com.campus.mapper.BannerMapper;
 import com.campus.mapper.CampusTalkMapper;
 import com.campus.mapper.EnterpriseMapper;
+import com.campus.mapper.EnterpriseHrMapper;
 import com.campus.mapper.ForumCommentMapper;
 import com.campus.mapper.ForumPostMapper;
 import com.campus.mapper.JobCategoryMapper;
@@ -66,6 +68,9 @@ public class PublicController {
 
     @Autowired
     private EnterpriseMapper enterpriseMapper;
+
+    @Autowired
+    private EnterpriseHrMapper enterpriseHrMapper;
 
     @Autowired
     private JobCategoryMapper jobCategoryMapper;
@@ -160,16 +165,13 @@ public class PublicController {
         jobPostMapper.updateById(update);
         post.setViewCount(update.getViewCount());
 
-        Map<String, Object> result = new HashMap<>(4);
+        Map<String, Object> result = new HashMap<>(6);
         result.put("job", post);
         if (post.getEnterpriseId() != null) {
             Enterprise enterprise = enterpriseMapper.selectById(post.getEnterpriseId());
-            // 脱敏：不返回密码
-            if (enterprise != null) {
-                enterprise.setPassword(null);
-            }
             result.put("enterprise", enterprise);
         }
+        result.put("hrId", post.getHrId());
         return Result.success(result);
     }
 
@@ -206,8 +208,6 @@ public class PublicController {
                 .eq(city != null && !city.isEmpty(), Enterprise::getCity, city)
                 .orderByDesc(Enterprise::getCreateTime);
         Page<Enterprise> page = enterpriseMapper.selectPage(new Page<>(pageNum, pageSize), wrapper);
-        // 脱敏：清除密码
-        page.getRecords().forEach(e -> e.setPassword(null));
         return Result.success(PageResult.of(page.getTotal(), page.getRecords()));
     }
 
@@ -218,8 +218,6 @@ public class PublicController {
         if (enterprise == null) {
             return Result.error("企业不存在");
         }
-        enterprise.setPassword(null);
-
         // 在招职位：审核通过且招聘中
         LambdaQueryWrapper<JobPost> jobWrapper = new LambdaQueryWrapper<>();
         jobWrapper.eq(JobPost::getEnterpriseId, id)
@@ -228,9 +226,10 @@ public class PublicController {
                 .orderByDesc(JobPost::getPublishTime);
         List<JobPost> jobs = jobPostMapper.selectList(jobWrapper);
 
-        Map<String, Object> result = new HashMap<>(4);
+        Map<String, Object> result = new HashMap<>(6);
         result.put("enterprise", enterprise);
         result.put("jobs", jobs);
+        result.put("hrId", defaultHrId(id));
         return Result.success(result);
     }
 
@@ -412,7 +411,6 @@ public class PublicController {
                 .orderByDesc(Enterprise::getCreateTime)
                 .last("LIMIT 8");
         List<Enterprise> recommendEnterprises = enterpriseMapper.selectList(entWrapper);
-        recommendEnterprises.forEach(e -> e.setPassword(null));
         data.put("recommendEnterprises", recommendEnterprises);
 
         // 宣讲会前 7
@@ -461,6 +459,24 @@ public class PublicController {
             map.put(e.getId(), e.getCompanyName());
         }
         return map;
+    }
+
+    private Long defaultHrId(Long enterpriseId) {
+        EnterpriseHr supervisor = enterpriseHrMapper.selectOne(new LambdaQueryWrapper<EnterpriseHr>()
+                .eq(EnterpriseHr::getEnterpriseId, enterpriseId)
+                .eq(EnterpriseHr::getHrRole, "SUPERVISOR")
+                .eq(EnterpriseHr::getStatus, 1)
+                .orderByAsc(EnterpriseHr::getId)
+                .last("LIMIT 1"));
+        if (supervisor != null) {
+            return supervisor.getId();
+        }
+        EnterpriseHr hr = enterpriseHrMapper.selectOne(new LambdaQueryWrapper<EnterpriseHr>()
+                .eq(EnterpriseHr::getEnterpriseId, enterpriseId)
+                .eq(EnterpriseHr::getStatus, 1)
+                .orderByAsc(EnterpriseHr::getId)
+                .last("LIMIT 1"));
+        return hr == null ? null : hr.getId();
     }
 
     private LambdaQueryWrapper<JobPost> buildJobWrapper(String keyword, Long enterpriseId, List<String> cities, List<Long> categoryIds,
@@ -674,6 +690,7 @@ public class PublicController {
         Map<String, Object> map = new HashMap<>(24);
         map.put("id", post.getId());
         map.put("enterpriseId", post.getEnterpriseId());
+        map.put("hrId", post.getHrId());
         map.put("categoryId", post.getCategoryId());
         map.put("title", post.getTitle());
         map.put("jobType", post.getJobType());

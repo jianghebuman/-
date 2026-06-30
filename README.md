@@ -34,15 +34,18 @@
 
 ### 企业 HR 端
 
-- 企业注册、登录、资料维护、Logo 上传
-- 企业认证申请和状态查看
+- 企业注册、登录、修改密码；企业账号采用“公司主体 + HR 登录账号”模型
+- 主管 HR 维护企业资料、Logo、企业认证申请和状态查看
+- 主管 HR 管理本企业多个 HR 账号，可新增、编辑、启用/禁用、重置密码、调整主管/普通 HR
 - 职位发布、编辑、上下架、刷新
+- 普通 HR 可发布岗位并处理自己负责的岗位、投递、面试、Offer、人才库
 - 简历管理、面试邀请、面试评价、Offer 管理
 - 人才库和 ECharts 招聘数据看板
 
 ### 管理员端
 
 - 学生、企业、管理员用户管理
+- 企业 HR 管理：按企业查看 HR 列表，新增、编辑、启用/禁用、重置密码、调整主管/普通 HR
 - 企业认证审核、岗位审核、岗位类别和数据字典管理
 - 公告资讯、轮播图、宣讲会、招聘会管理
 - 论坛审核、留言反馈、系统日志、数据导出
@@ -67,14 +70,14 @@ SQL 文件：
 
 [数据库脚本/campus_recruitment.sql](数据库脚本/campus_recruitment.sql)
 
-该脚本会创建 `campus_recruitment` 数据库，并初始化 36 张业务表、角色/权限、字典、测试账号和演示数据。
+该脚本会创建 `campus_recruitment` 数据库，并初始化 37 张业务表、角色/权限、字典、测试账号和演示数据。
 
 ### 数据库同步说明
 
 - 数据库初始化脚本以 [数据库脚本/campus_recruitment.sql](数据库脚本/campus_recruitment.sql) 为准。
-- `git rev-parse HEAD:"数据库脚本/campus_recruitment.sql"` 与 `git rev-parse origin/main:"数据库脚本/campus_recruitment.sql"` 当前一致，说明仓库本地脚本与 GitHub `main` 分支脚本一致。
-- 2026-06-30 已将企业收藏表同步到本机 `campus_recruitment`，当前初始化脚本为 36 张表、416 个字段。
-- 本地数据库在项目运行后会产生业务数据漂移，当前与初始化脚本存在记录数差异的表主要有：`activity_sign`、`student`、`system_notice`、`operation_log`。如需恢复到初始演示数据，请重新导入 SQL 脚本。
+- 2026-06-30 已同步企业多 HR 模型：新增 `enterprise_hr` 表，并为 `job_post`、`job_apply`、`interview_notice`、`interview_feedback`、`offer_record`、`talent_pool` 增加 `hr_id`。
+- 当前数据库口径为 37 张表、434 个字段；演示数据约包含 64 家企业、77 个企业 HR、72 名学生、80 个岗位、101 条投递、18 条面试通知、20 条 Offer、54 条人才库记录。
+- 本地数据库在项目运行后会产生业务数据漂移，`system_notice`、`operation_log`、`job_apply` 等表记录数可能高于初始化脚本。如需恢复到初始演示数据，请重新导入 SQL 脚本。
 
 ### 启动后端
 
@@ -103,6 +106,8 @@ npm run dev
 http://localhost:8080
 ```
 
+如果 `8080` 端口已被占用，可临时执行 `npm run dev -- --port 5173`，再访问 `http://localhost:5173`。
+
 ## 默认测试账号
 
 所有账号初始密码均为：`123456`
@@ -113,9 +118,15 @@ http://localhost:8080
 | 管理员 | jiuyeban | 就业办老师 |
 | 学生 | student | 张三 |
 | 学生 | lisi | 李四 |
-| 企业 HR | company | 字节跳动科技有限公司 |
-| 企业 HR | tencent | 腾讯科技有限公司 |
-| 企业 HR | newcorp | 待审核企业 |
+| 企业主管 HR | company | 字节跳动科技有限公司 |
+| 企业普通 HR | bytedance-recruit-a | 字节跳动后端招聘 |
+| 企业主管 HR | bytedance-campus | 字节跳动校招主管 |
+| 企业主管 HR | tencent | 腾讯科技有限公司 |
+| 企业普通 HR | tencent-product | 腾讯产品招聘 |
+| 企业普通 HR | aliyun-data | 阿里云数据招聘 |
+| 企业主管 HR | newcorp | 待审核企业 |
+
+企业登录时 `userId` 表示 HR 账号 ID，`enterpriseId` 表示公司主体 ID；主管 HR 可查看本企业全部招聘数据，普通 HR 仅能查看和处理自己负责的数据。
 
 ## 生产部署
 

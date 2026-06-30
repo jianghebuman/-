@@ -20,10 +20,6 @@ public class Enterprise implements Serializable {
     @TableId(type = IdType.AUTO)
     private Long id;
 
-    private String username;
-
-    private String password;
-
     private String companyName;
 
     private String creditCode;
@@ -56,8 +52,6 @@ public class Enterprise implements Serializable {
     private Integer auditStatus;
 
     private Integer status;
-
-    private Date lastLogin;
 
     @TableField(fill = FieldFill.INSERT)
     private Date createTime;

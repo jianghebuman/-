@@ -16,7 +16,7 @@
     <el-row :gutter="16" class="dashboard-row mt-20">
       <el-col :xs="24" :lg="12">
         <div class="panel">
-          <div class="panel-title">投递到录用招聘漏斗</div>
+          <div class="panel-title">投递转化概览</div>
           <div class="funnel-board">
             <div class="funnel-total">
               <span>累计投递</span>
@@ -87,16 +87,58 @@
       </el-col>
       <el-col :xs="24" :lg="12">
         <div class="panel">
-          <div class="panel-title">岗位类别招聘数量 TOP 8</div>
-          <div ref="categoryRef" class="chart"></div>
+          <div class="panel-title">热门岗位类别排行</div>
+          <div class="leaderboard">
+            <div v-if="!categoryRank.length" class="empty-chart">暂无岗位类别数据</div>
+            <div
+              v-for="item in categoryRank"
+              v-else
+              :key="item.name"
+              class="leader-row"
+              :class="{ hot: item.rank <= 3 }"
+              :style="{ '--row-color': item.color, '--row-width': `${item.barPercent}%` }"
+            >
+              <span class="leader-rank">{{ rankNo(item.rank) }}</span>
+              <div class="leader-main">
+                <div class="leader-head">
+                  <span class="leader-name">{{ item.name }}</span>
+                  <strong>{{ item.value }}<em>{{ item.unit }}</em></strong>
+                </div>
+                <div class="leader-track">
+                  <div class="leader-fill"></div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </el-col>
     </el-row>
     <el-row :gutter="16" class="dashboard-row mt-20">
       <el-col :xs="24" :lg="16">
         <div class="panel">
-          <div class="panel-title">企业招聘活跃度 TOP</div>
-          <div ref="enterpriseRef" class="chart"></div>
+          <div class="panel-title">企业岗位发布排行</div>
+          <div class="leaderboard leaderboard-wide">
+            <div v-if="!enterpriseRank.length" class="empty-chart">暂无企业发布数据</div>
+            <div
+              v-for="item in enterpriseRank"
+              v-else
+              :key="item.name"
+              class="leader-row"
+              :class="{ hot: item.rank <= 3 }"
+              :style="{ '--row-color': item.color, '--row-width': `${item.barPercent}%` }"
+            >
+              <span class="leader-rank">{{ rankNo(item.rank) }}</span>
+              <div class="leader-main">
+                <div class="leader-head">
+                  <span class="leader-name">{{ item.name }}</span>
+                  <strong>{{ item.value }}<em>{{ item.unit }}</em></strong>
+                </div>
+                <div class="leader-track">
+                  <div class="leader-fill"></div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </el-col>
       <el-col :xs="24" :lg="8">
@@ -108,10 +150,10 @@
                 <span>{{ item.name }}</span>
                 <strong>{{ item.value }}%</strong>
               </div>
+              <div class="rate-meta">{{ item.caption }}</div>
               <div class="rate-track">
                 <div class="rate-fill" :style="{ width: `${item.safeValue}%` }"></div>
               </div>
-              <div class="rate-meta">{{ item.caption }}</div>
             </div>
           </div>
         </div>
@@ -129,15 +171,15 @@ import { adminApi } from '@/api'
 const data = ref({})
 const statusRef = ref()
 const majorRef = ref()
-const categoryRef = ref()
-const enterpriseRef = ref()
 let charts = []
 let resizeObserver
 
 const funnelColors = ['#2563eb', '#0891b2', '#7c3aed', '#e45757']
 const chartPalette = ['#2563eb', '#0891b2', '#7c3aed', '#e45757', '#16a34a', '#f59e0b', '#475569', '#db2777']
+const leaderboardPalette = ['#2563eb', '#0891b2', '#7c3aed', '#e45757', '#16a34a', '#f59e0b', '#475569', '#db2777', '#0f766e', '#9333ea']
 const clampRate = (value) => Math.min(Math.max(Number(value) || 0, 0), 100)
 const percentOf = (value, total) => total ? Math.round((value / total) * 100) : 0
+const rankNo = (rank) => String(rank).padStart(2, '0')
 const normalizeItems = (items = []) => (
   items
     .map((item) => ({ name: item.name, value: Number(item.value) || 0 }))
@@ -145,6 +187,24 @@ const normalizeItems = (items = []) => (
 )
 const topItems = (items = [], limit = 8) => (
   normalizeItems(items).slice(0, limit)
+)
+const rankingItems = (items = [], limit = 8, unit = '') => {
+  const rows = topItems(items, limit)
+  const max = rows[0]?.value || 0
+
+  return rows.map((item, index) => ({
+    ...item,
+    unit,
+    rank: index + 1,
+    color: leaderboardPalette[index % leaderboardPalette.length],
+    barPercent: max ? Math.max(Math.round((item.value / max) * 100), 8) : 0
+  }))
+}
+const categoryRank = computed(() =>
+  rankingItems(data.value.categoryJob || [], 8, '个')
+)
+const enterpriseRank = computed(() =>
+  rankingItems(data.value.enterpriseActive || [], 10, '个')
 )
 const normalizeFunnel = (items = []) => {
   const rows = items.map((item) => ({ name: item.name, value: Number(item.value) || 0 }))
@@ -173,21 +233,19 @@ const kpis = computed(() => [
 ])
 
 const rates = computed(() => [
-  {
-    name: '面试通过率',
-    value: clampRate(data.value.interviewPassRate),
-    safeValue: clampRate(data.value.interviewPassRate),
-    color: '#2563eb',
-    caption: '从面试进入通过状态的比例'
-  },
-  {
-    name: 'Offer 接受率',
-    value: clampRate(data.value.offerAcceptRate),
-    safeValue: clampRate(data.value.offerAcceptRate),
-    color: '#0891b2',
-    caption: '已发 Offer 中被接受的比例'
+  ...(data.value.keyRates?.length ? data.value.keyRates : [
+    { name: '面试通过率', value: data.value.interviewPassRate, caption: '从面试进入通过状态的比例' },
+    { name: 'Offer 接受率', value: data.value.offerAcceptRate, caption: '已发 Offer 中被接受的比例' }
+  ])
+].map((item, index) => {
+  const value = clampRate(item.value)
+  return {
+    ...item,
+    value,
+    safeValue: value,
+    color: leaderboardPalette[index % leaderboardPalette.length]
   }
-])
+}))
 const funnelItems = computed(() => normalizeFunnel(data.value.funnel || []))
 const funnelTotal = computed(() => funnelItems.value[0]?.value || 0)
 const majorRows = computed(() => normalizeItems(data.value.majorApply || []))
@@ -207,7 +265,7 @@ const observeChartResize = () => {
   if (!window.ResizeObserver) return
 
   resizeObserver = new ResizeObserver(resizeCharts)
-  ;[statusRef.value, majorRef.value, categoryRef.value, enterpriseRef.value]
+  ;[statusRef.value, majorRef.value]
     .filter(Boolean)
     .forEach((el) => resizeObserver.observe(el))
 }
@@ -263,34 +321,6 @@ const init = () => {
     }]
   })
   charts.push(major)
-
-  const catData = topItems(data.value.categoryJob || [])
-  const cat = echarts.init(categoryRef.value)
-  cat.setOption({
-    tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' } },
-    toolbox: commonTool,
-    grid: { left: 102, right: 42, top: 42, bottom: 28, containLabel: true },
-    xAxis: { type: 'value', minInterval: 1 },
-    yAxis: {
-      type: 'category',
-      data: catData.map((i) => i.name).reverse(),
-      axisLabel: { width: 88, overflow: 'truncate' }
-    },
-    series: [{ type: 'bar', name: '岗位数', data: catData.map((i) => i.value).reverse(), color: '#0891b2', barMaxWidth: 22 }]
-  })
-  charts.push(cat)
-
-  const entData = (data.value.enterpriseActive || []).slice().reverse()
-  const ent = echarts.init(enterpriseRef.value)
-  ent.setOption({
-    tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' } },
-    toolbox: commonTool,
-    grid: { left: 120, right: 32, top: 42, bottom: 36, containLabel: true },
-    xAxis: { type: 'value' },
-    yAxis: { type: 'category', data: entData.map((i) => i.name) },
-    series: [{ type: 'bar', name: '发布岗位数', data: entData.map((i) => i.value), color: '#7c3aed' }]
-  })
-  charts.push(ent)
 
   observeChartResize()
 }
@@ -509,10 +539,123 @@ onBeforeUnmount(() => {
   line-height: 1.2;
 }
 
-.rate-list {
+.leaderboard {
+  min-height: clamp(300px, 31vw, 380px);
+  padding-top: 22px;
   display: grid;
-  gap: 22px;
-  padding-top: 34px;
+  align-content: center;
+  gap: 10px;
+}
+
+.leaderboard-wide {
+  min-height: clamp(300px, 24vw, 370px);
+}
+
+.leader-row {
+  min-width: 0;
+  display: grid;
+  grid-template-columns: 38px minmax(0, 1fr);
+  gap: 12px;
+  align-items: center;
+  padding: 9px 12px;
+  border: 1px solid transparent;
+  border-radius: 10px;
+  background: linear-gradient(90deg, color-mix(in srgb, var(--row-color) 8%, white), #fff 54%);
+}
+
+.leader-row.hot {
+  border-color: color-mix(in srgb, var(--row-color) 18%, white);
+  box-shadow: 0 10px 24px color-mix(in srgb, var(--row-color) 9%, transparent);
+}
+
+.leader-rank {
+  width: 32px;
+  height: 32px;
+  border-radius: 9px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-size: 13px;
+  font-weight: 700;
+  background: var(--row-color);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.22);
+}
+
+.leader-main {
+  min-width: 0;
+}
+
+.leader-head {
+  min-width: 0;
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 14px;
+}
+
+.leader-name {
+  min-width: 0;
+  color: var(--cr-text);
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.4;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.leader-head strong {
+  flex: 0 0 auto;
+  color: var(--row-color);
+  font-size: 18px;
+  line-height: 1;
+}
+
+.leader-head em {
+  margin-left: 2px;
+  color: var(--cr-text-muted);
+  font-size: 12px;
+  font-style: normal;
+  font-weight: 500;
+}
+
+.leader-track {
+  height: 8px;
+  margin-top: 8px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: var(--cr-surface-muted);
+}
+
+.leader-fill {
+  width: var(--row-width);
+  height: 100%;
+  min-width: 8px;
+  border-radius: inherit;
+  background: linear-gradient(90deg, var(--row-color), color-mix(in srgb, var(--row-color) 38%, white));
+}
+
+.empty-chart {
+  min-height: 220px;
+  display: grid;
+  place-items: center;
+  color: var(--cr-text-muted);
+  font-size: 14px;
+}
+
+.rate {
+  display: flex;
+  flex-direction: column;
+}
+
+.rate-list {
+  flex: 1;
+  min-height: 0;
+  display: grid;
+  align-content: space-between;
+  gap: 10px;
+  padding-top: 18px;
 }
 
 .funnel-board {
@@ -607,46 +750,59 @@ onBeforeUnmount(() => {
 
 .rate-item {
   min-width: 0;
+  padding: 12px 14px;
+  border-radius: 10px;
+  border: 1px solid color-mix(in srgb, var(--rate-color) 16%, white);
+  background:
+    linear-gradient(90deg, color-mix(in srgb, var(--rate-color) 8%, white), #fff 58%),
+    #fff;
 }
 
 .rate-head {
   display: flex;
+  flex-direction: row;
   align-items: baseline;
   justify-content: space-between;
-  gap: 12px;
+  gap: 10px;
   color: var(--cr-text);
 }
 
 .rate-head span {
+  min-width: 0;
   font-weight: 600;
   line-height: 1.4;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .rate-head strong {
+  flex: 0 0 auto;
   color: var(--rate-color);
-  font-size: 30px;
+  font-size: 24px;
+  font-weight: 800;
   line-height: 1;
 }
 
 .rate-track {
-  height: 12px;
-  margin-top: 12px;
+  height: 7px;
+  margin-top: 8px;
   overflow: hidden;
   border-radius: 999px;
-  background: var(--cr-surface-muted);
+  background: color-mix(in srgb, var(--rate-color) 10%, white);
 }
 
 .rate-fill {
   height: 100%;
   min-width: 6px;
   border-radius: inherit;
-  background: linear-gradient(90deg, var(--rate-color), rgba(21, 36, 59, 0.88));
+  background: linear-gradient(90deg, var(--rate-color), color-mix(in srgb, var(--rate-color) 42%, #15243b));
 }
 
 .rate-meta {
-  margin-top: 8px;
+  margin-top: 6px;
   color: var(--cr-text-muted);
-  font-size: 13px;
+  font-size: 12px;
   line-height: 1.5;
 }
 
@@ -691,6 +847,20 @@ onBeforeUnmount(() => {
 
   .donut-rank {
     padding-top: 0;
+  }
+
+  .leaderboard {
+    min-height: 0;
+  }
+
+  .leader-row {
+    grid-template-columns: 34px minmax(0, 1fr);
+    padding: 9px 10px;
+  }
+
+  .leader-rank {
+    width: 30px;
+    height: 30px;
   }
 
   .funnel-board {

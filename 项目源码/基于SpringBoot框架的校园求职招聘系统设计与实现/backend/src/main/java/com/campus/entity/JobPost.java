@@ -22,6 +22,8 @@ public class JobPost implements Serializable {
 
     private Long enterpriseId;
 
+    private Long hrId;
+
     private Long categoryId;
 
     private String title;

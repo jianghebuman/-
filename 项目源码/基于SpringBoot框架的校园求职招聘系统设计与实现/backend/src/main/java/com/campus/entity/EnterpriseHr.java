@@ -1,40 +1,42 @@
 package com.campus.entity;
 
 import com.baomidou.mybatisplus.annotation.*;
-import java.io.Serializable;
-import java.util.Date;
 import lombok.Data;
 
+import java.io.Serializable;
+import java.util.Date;
+
+/**
+ * 企业 HR 账号
+ */
 @Data
-@TableName("interview_notice")
-public class InterviewNotice implements Serializable {
+@TableName("enterprise_hr")
+public class EnterpriseHr implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
     @TableId(type = IdType.AUTO)
     private Long id;
 
-    private Long applyId;
-
-    private Long studentId;
-
     private Long enterpriseId;
 
-    private Long hrId;
+    private String username;
 
-    private Long jobId;
+    private String password;
 
-    private Date interviewTime;
+    private String realName;
 
-    private Integer interviewType;
+    private String phone;
 
-    private String location;
+    private String email;
 
-    private String contact;
+    /** SUPERVISOR 主管HR；STAFF 普通HR */
+    private String hrRole;
 
-    private String remark;
+    /** 1正常0禁用 */
+    private Integer status;
 
-    private Integer studentStatus;
+    private Date lastLogin;
 
     @TableField(fill = FieldFill.INSERT)
     private Date createTime;

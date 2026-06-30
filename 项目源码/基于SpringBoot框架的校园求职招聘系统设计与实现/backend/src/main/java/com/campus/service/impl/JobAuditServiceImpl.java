@@ -85,7 +85,7 @@ public class JobAuditServiceImpl implements JobAuditService {
         update.setAuditStatus(1);
         update.setAuditRemark("");
         jobPostMapper.updateById(update);
-        systemNoticeService.send(db.getEnterpriseId(), "ENTERPRISE", "岗位审核通过",
+        systemNoticeService.send(db.getHrId(), "ENTERPRISE", "岗位审核通过",
                 "您发布的岗位【" + db.getTitle() + "】已审核通过，可以对外展示。",
                 "AUDIT");
     }
@@ -101,7 +101,7 @@ public class JobAuditServiceImpl implements JobAuditService {
         update.setAuditStatus(2);
         update.setAuditRemark(auditRemark);
         jobPostMapper.updateById(update);
-        systemNoticeService.send(db.getEnterpriseId(), "ENTERPRISE", "岗位审核驳回",
+        systemNoticeService.send(db.getHrId(), "ENTERPRISE", "岗位审核驳回",
                 "您发布的岗位【" + db.getTitle() + "】审核未通过。原因：" + (auditRemark == null ? "请修改后重新提交。" : auditRemark),
                 "AUDIT");
     }
@@ -116,7 +116,7 @@ public class JobAuditServiceImpl implements JobAuditService {
         update.setId(jobId);
         update.setStatus(0);
         jobPostMapper.updateById(update);
-        systemNoticeService.send(db.getEnterpriseId(), "ENTERPRISE", "岗位已下架",
+        systemNoticeService.send(db.getHrId(), "ENTERPRISE", "岗位已下架",
                 "您发布的岗位【" + db.getTitle() + "】已被管理员下架，请及时处理。",
                 "AUDIT");
     }

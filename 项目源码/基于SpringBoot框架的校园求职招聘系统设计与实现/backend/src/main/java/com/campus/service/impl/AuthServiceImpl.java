@@ -4,6 +4,7 @@ import com.campus.common.*;
 import com.campus.dto.*;
 import com.campus.entity.AdminUser;
 import com.campus.entity.Enterprise;
+import com.campus.entity.EnterpriseHr;
 import com.campus.entity.Student;
 import com.campus.service.*;
 import com.campus.vo.LoginVO;
@@ -26,6 +27,8 @@ public class AuthServiceImpl implements AuthService {
     private StudentService studentService;
     @Autowired
     private EnterpriseService enterpriseService;
+    @Autowired
+    private EnterpriseHrService enterpriseHrService;
     @Autowired
     private AdminUserService adminUserService;
     @Autowired
@@ -50,16 +53,22 @@ public class AuthServiceImpl implements AuthService {
             vo.setName(s.getRealName());
             vo.setAvatar(s.getAvatar());
         } else if ("ENTERPRISE".equals(role)) {
-            Enterprise e = enterpriseService.getByUsername(dto.getUsername());
-            checkUser(e == null, e != null && e.getStatus() == 0, e == null ? null : e.getPassword(), dto.getPassword());
-            e.setLastLogin(new Date());
-            enterpriseService.updateById(e);
-            vo.setToken(jwtUtil.createToken(e.getId(), e.getUsername(), role));
-            vo.setUserId(e.getId());
-            vo.setUsername(e.getUsername());
-            vo.setName(e.getCompanyName());
+            EnterpriseHr hr = enterpriseHrService.getByUsername(dto.getUsername());
+            checkUser(hr == null, hr != null && hr.getStatus() == 0, hr == null ? null : hr.getPassword(), dto.getPassword());
+            Enterprise e = enterpriseService.getById(hr.getEnterpriseId());
+            if (e == null || Integer.valueOf(0).equals(e.getStatus())) {
+                throw new BusinessException("企业已被禁用，请联系管理员");
+            }
+            hr.setLastLogin(new Date());
+            enterpriseHrService.updateById(hr);
+            vo.setToken(jwtUtil.createToken(hr.getId(), hr.getUsername(), role, hr.getEnterpriseId(), hr.getHrRole()));
+            vo.setUserId(hr.getId());
+            vo.setUsername(hr.getUsername());
+            vo.setName(hr.getRealName() == null || hr.getRealName().trim().isEmpty() ? e.getCompanyName() : hr.getRealName());
             vo.setAvatar(e.getLogo());
             vo.setAuditStatus(e.getAuditStatus());
+            vo.setEnterpriseId(hr.getEnterpriseId());
+            vo.setHrRole(hr.getHrRole());
         } else if ("ADMIN".equals(role)) {
             AdminUser a = adminUserService.getByUsername(dto.getUsername());
             checkUser(a == null, a != null && a.getStatus() == 0, a == null ? null : a.getPassword(), dto.getPassword());
@@ -128,8 +137,6 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public void enterpriseRegister(EnterpriseRegisterDTO dto) {
         Enterprise e = new Enterprise();
-        e.setUsername(dto.getUsername());
-        e.setPassword(passwordEncoder.encode(dto.getPassword()));
         e.setCompanyName(dto.getCompanyName());
         e.setCreditCode(dto.getCreditCode());
         e.setIndustry(dto.getIndustry());
@@ -143,10 +150,20 @@ public class AuthServiceImpl implements AuthService {
         e.setStatus(1);
         try {
             enterpriseService.save(e);
+            EnterpriseHr hr = new EnterpriseHr();
+            hr.setEnterpriseId(e.getId());
+            hr.setUsername(dto.getUsername());
+            hr.setPassword(passwordEncoder.encode(dto.getPassword()));
+            hr.setRealName(dto.getContactName());
+            hr.setPhone(dto.getContactPhone());
+            hr.setEmail(dto.getEmail());
+            hr.setHrRole(EnterpriseHrService.ROLE_SUPERVISOR);
+            hr.setStatus(1);
+            enterpriseHrService.save(hr);
         } catch (DuplicateKeyException ex) {
             String msg = ex.getMessage() == null ? "" : ex.getMessage();
             if (msg.contains("uk_enterprise_credit_code")) {
-                throw new BusinessException("该统一社会信用代码已注册");
+                throw new BusinessException("该企业已入驻，请联系企业主管HR添加账号");
             }
             throw new BusinessException("账号已存在");
         }
@@ -166,10 +183,10 @@ public class AuthServiceImpl implements AuthService {
             s.setPassword(encoded);
             studentService.updateById(s);
         } else if ("ENTERPRISE".equals(role)) {
-            Enterprise e = enterpriseService.getById(user.getUserId());
-            verifyOldPwd(dto.getOldPassword(), e.getPassword());
-            e.setPassword(encoded);
-            enterpriseService.updateById(e);
+            EnterpriseHr hr = enterpriseHrService.getById(user.getUserId());
+            verifyOldPwd(dto.getOldPassword(), hr.getPassword());
+            hr.setPassword(encoded);
+            enterpriseHrService.updateById(hr);
         } else if ("ADMIN".equals(role)) {
             AdminUser a = adminUserService.getById(user.getUserId());
             verifyOldPwd(dto.getOldPassword(), a.getPassword());

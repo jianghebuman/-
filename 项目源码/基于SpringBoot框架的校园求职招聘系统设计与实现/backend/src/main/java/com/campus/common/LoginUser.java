@@ -18,4 +18,10 @@ public class LoginUser {
 
     /** 角色：ADMIN/ENTERPRISE/STUDENT */
     private String role;
+
+    /** 企业ID（企业HR登录时为所属公司ID） */
+    private Long enterpriseId;
+
+    /** HR角色：SUPERVISOR/STAFF（仅企业HR） */
+    private String hrRole;
 }

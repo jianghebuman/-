@@ -155,8 +155,8 @@ CREATE TABLE `job_intention` (
 DROP TABLE IF EXISTS `enterprise`;
 CREATE TABLE `enterprise` (
   `id`            bigint       NOT NULL AUTO_INCREMENT COMMENT '主键',
-  `username`      varchar(50)  NOT NULL COMMENT '登录账号',
-  `password`      varchar(100) NOT NULL COMMENT '密码(BCrypt)',
+  `username`      varchar(50)           DEFAULT NULL COMMENT '旧企业登录账号(兼容迁移)',
+  `password`      varchar(100)          DEFAULT NULL COMMENT '旧企业密码(兼容迁移)',
   `company_name`  varchar(120) NOT NULL COMMENT '企业名称',
   `credit_code`   varchar(18)           DEFAULT NULL COMMENT '统一社会信用代码',
   `industry`      varchar(60)           DEFAULT NULL COMMENT '所属行业',
@@ -181,6 +181,30 @@ CREATE TABLE `enterprise` (
   UNIQUE KEY `uk_enterprise_username` (`username`),
   UNIQUE KEY `uk_enterprise_credit_code` (`credit_code`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='企业表';
+
+-- ----------------------------
+-- 企业 HR 账号表
+-- ----------------------------
+DROP TABLE IF EXISTS `enterprise_hr`;
+CREATE TABLE `enterprise_hr` (
+  `id`            bigint       NOT NULL AUTO_INCREMENT COMMENT '主键',
+  `enterprise_id` bigint       NOT NULL COMMENT '企业ID',
+  `username`      varchar(50)  NOT NULL COMMENT '登录账号',
+  `password`      varchar(100) NOT NULL COMMENT '密码(BCrypt)',
+  `real_name`     varchar(50)           DEFAULT NULL COMMENT 'HR姓名',
+  `phone`         varchar(20)           DEFAULT NULL COMMENT '联系电话',
+  `email`         varchar(80)           DEFAULT NULL COMMENT '邮箱',
+  `hr_role`       varchar(20)  NOT NULL DEFAULT 'STAFF' COMMENT 'HR角色：SUPERVISOR主管 STAFF普通',
+  `status`        tinyint      NOT NULL DEFAULT 1 COMMENT '状态：1正常0禁用',
+  `last_login`    datetime              DEFAULT NULL COMMENT '最后登录时间',
+  `create_time`   datetime              DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  `update_time`   datetime              DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+  `deleted`       tinyint      NOT NULL DEFAULT 0 COMMENT '逻辑删除：0否1是',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uk_enterprise_hr_username` (`username`),
+  KEY `idx_enterprise_hr_enterprise` (`enterprise_id`),
+  KEY `idx_enterprise_hr_role` (`enterprise_id`,`hr_role`,`status`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='企业HR账号表';
 
 -- ----------------------------
 -- 企业认证审核表
@@ -259,6 +283,7 @@ DROP TABLE IF EXISTS `job_post`;
 CREATE TABLE `job_post` (
   `id`             bigint       NOT NULL AUTO_INCREMENT COMMENT '主键',
   `enterprise_id`  bigint       NOT NULL COMMENT '企业ID',
+  `hr_id`          bigint                DEFAULT NULL COMMENT '负责HR账号ID',
   `category_id`    bigint                DEFAULT NULL COMMENT '岗位类别ID',
   `title`          varchar(120) NOT NULL COMMENT '岗位名称',
   `job_type`       tinyint               DEFAULT 1 COMMENT '类型：1全职2实习',
@@ -283,6 +308,7 @@ CREATE TABLE `job_post` (
   `deleted`        tinyint      NOT NULL DEFAULT 0 COMMENT '逻辑删除：0否1是',
   PRIMARY KEY (`id`),
   KEY `idx_job_enterprise` (`enterprise_id`),
+  KEY `idx_job_hr` (`hr_id`),
   KEY `idx_job_category` (`category_id`),
   KEY `idx_job_city` (`city`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='职位表';
@@ -427,6 +453,7 @@ CREATE TABLE `job_apply` (
   `resume_id`     bigint            DEFAULT NULL COMMENT '简历ID',
   `job_id`        bigint   NOT NULL COMMENT '职位ID',
   `enterprise_id` bigint   NOT NULL COMMENT '企业ID',
+  `hr_id`         bigint            DEFAULT NULL COMMENT '负责HR账号ID',
   `status`        tinyint  NOT NULL DEFAULT 0 COMMENT '状态：0待查看1已查看2邀请面试3笔试4已录用5不合适',
   `apply_remark`  varchar(255)      DEFAULT NULL COMMENT '投递备注',
   `hr_remark`     varchar(255)      DEFAULT NULL COMMENT 'HR备注',
@@ -436,7 +463,8 @@ CREATE TABLE `job_apply` (
   PRIMARY KEY (`id`),
   KEY `idx_apply_student` (`student_id`),
   KEY `idx_apply_job` (`job_id`),
-  KEY `idx_apply_enterprise` (`enterprise_id`)
+  KEY `idx_apply_enterprise` (`enterprise_id`),
+  KEY `idx_apply_hr` (`hr_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='投递记录表';
 
 -- ----------------------------
@@ -448,6 +476,7 @@ CREATE TABLE `interview_notice` (
   `apply_id`       bigint   NOT NULL COMMENT '投递记录ID',
   `student_id`     bigint   NOT NULL COMMENT '学生ID',
   `enterprise_id`  bigint   NOT NULL COMMENT '企业ID',
+  `hr_id`          bigint            DEFAULT NULL COMMENT '负责HR账号ID',
   `job_id`         bigint            DEFAULT NULL COMMENT '职位ID',
   `interview_time` datetime          DEFAULT NULL COMMENT '面试时间',
   `interview_type` tinyint           DEFAULT 1 COMMENT '方式：1现场2线上',
@@ -460,7 +489,8 @@ CREATE TABLE `interview_notice` (
   `deleted`        tinyint  NOT NULL DEFAULT 0 COMMENT '逻辑删除：0否1是',
   PRIMARY KEY (`id`),
   KEY `idx_notice_student` (`student_id`),
-  KEY `idx_notice_enterprise` (`enterprise_id`)
+  KEY `idx_notice_enterprise` (`enterprise_id`),
+  KEY `idx_notice_hr` (`hr_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='面试通知表';
 
 -- ----------------------------
@@ -472,6 +502,7 @@ CREATE TABLE `interview_feedback` (
   `notice_id`    bigint   NOT NULL COMMENT '面试通知ID',
   `apply_id`     bigint            DEFAULT NULL COMMENT '投递记录ID',
   `enterprise_id` bigint           DEFAULT NULL COMMENT '企业ID',
+  `hr_id`         bigint           DEFAULT NULL COMMENT '负责HR账号ID',
   `score`        int               DEFAULT 0 COMMENT '评分(0-100)',
   `content`      varchar(500)      DEFAULT NULL COMMENT '评价内容',
   `is_pass`      tinyint  NOT NULL DEFAULT 0 COMMENT '是否通过：0否1是',
@@ -492,6 +523,7 @@ CREATE TABLE `offer_record` (
   `apply_id`       bigint            DEFAULT NULL COMMENT '投递记录ID',
   `student_id`     bigint   NOT NULL COMMENT '学生ID',
   `enterprise_id`  bigint   NOT NULL COMMENT '企业ID',
+  `hr_id`          bigint            DEFAULT NULL COMMENT '负责HR账号ID',
   `job_id`         bigint            DEFAULT NULL COMMENT '职位ID',
   `position`       varchar(120)      DEFAULT NULL COMMENT '岗位名称',
   `salary`         varchar(60)       DEFAULT NULL COMMENT '薪资',
@@ -504,7 +536,8 @@ CREATE TABLE `offer_record` (
   `deleted`        tinyint  NOT NULL DEFAULT 0 COMMENT '逻辑删除：0否1是',
   PRIMARY KEY (`id`),
   KEY `idx_offer_student` (`student_id`),
-  KEY `idx_offer_enterprise` (`enterprise_id`)
+  KEY `idx_offer_enterprise` (`enterprise_id`),
+  KEY `idx_offer_hr` (`hr_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='Offer记录表';
 
 -- ----------------------------
@@ -544,6 +577,7 @@ DROP TABLE IF EXISTS `talent_pool`;
 CREATE TABLE `talent_pool` (
   `id`            bigint   NOT NULL AUTO_INCREMENT COMMENT '主键',
   `enterprise_id` bigint   NOT NULL COMMENT '企业ID',
+  `hr_id`         bigint            DEFAULT NULL COMMENT '负责HR账号ID',
   `student_id`    bigint   NOT NULL COMMENT '学生ID',
   `resume_id`     bigint            DEFAULT NULL COMMENT '简历ID',
   `tag`           varchar(120)      DEFAULT NULL COMMENT '标签',
@@ -552,7 +586,8 @@ CREATE TABLE `talent_pool` (
   `update_time`   datetime          DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
   `deleted`       tinyint  NOT NULL DEFAULT 0 COMMENT '逻辑删除：0否1是',
   PRIMARY KEY (`id`),
-  KEY `idx_talent_enterprise` (`enterprise_id`)
+  KEY `idx_talent_enterprise` (`enterprise_id`),
+  KEY `idx_talent_hr` (`hr_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='人才库表';
 
 -- ----------------------------
@@ -832,6 +867,11 @@ INSERT INTO `enterprise` (`id`,`username`,`password`,`company_name`,`credit_code
 (1,'company','$2a$10$5cl.E33gmXaCawXN8CQIi.htvEQ0FWNhkr3jv8QiixVQmIqmvITSO','字节跳动科技有限公司','911100001234567890','互联网','1000人以上','民营企业','北京市海淀区','北京','字节跳动是一家全球化的科技公司，旗下产品包括抖音、今日头条等。','五险一金,年终奖,带薪年假,免费三餐','HR王经理','010-88888888','hr@bytedance.com',2,1),
 (2,'tencent','$2a$10$5cl.E33gmXaCawXN8CQIi.htvEQ0FWNhkr3jv8QiixVQmIqmvITSO','腾讯科技有限公司','914403001234567891','互联网','1000人以上','民营企业','深圳市南山区','深圳','腾讯是领先的互联网增值服务提供商之一。','五险一金,股票期权,弹性工作,免费班车','李HR','0755-86013388','hr@tencent.com',2,1),
 (3,'newcorp','$2a$10$5cl.E33gmXaCawXN8CQIi.htvEQ0FWNhkr3jv8QiixVQmIqmvITSO','创新未来信息技术有限公司','913100001234567892','计算机软件','100-499人','民营企业','上海市浦东新区','上海','专注于企业数字化转型的创新型科技公司。','五险一金,绩效奖金,节日福利','张总监','021-66668888','hr@newcorp.com',1,1);
+
+INSERT INTO `enterprise_hr` (`id`,`enterprise_id`,`username`,`password`,`real_name`,`phone`,`email`,`hr_role`,`status`) VALUES
+(1,1,'company','$2a$10$5cl.E33gmXaCawXN8CQIi.htvEQ0FWNhkr3jv8QiixVQmIqmvITSO','HR王经理','010-88888888','hr@bytedance.com','SUPERVISOR',1),
+(2,2,'tencent','$2a$10$5cl.E33gmXaCawXN8CQIi.htvEQ0FWNhkr3jv8QiixVQmIqmvITSO','李HR','0755-86013388','hr@tencent.com','SUPERVISOR',1),
+(3,3,'newcorp','$2a$10$5cl.E33gmXaCawXN8CQIi.htvEQ0FWNhkr3jv8QiixVQmIqmvITSO','张总监','021-66668888','hr@newcorp.com','SUPERVISOR',1);
 
 -- 岗位类别
 INSERT INTO `job_category` (`id`,`name`,`parent_id`,`sort`) VALUES
@@ -1696,3 +1736,36 @@ WHERE NOT EXISTS (SELECT 1 FROM `forum_post` fp WHERE fp.`id` = src.`id`);
 -- ============================================================================
 -- 脚本结束
 -- ============================================================================
+
+
+-- 多 HR 模型兼容迁移：旧企业账号迁入 enterprise_hr，并回填历史业务数据负责人。
+INSERT INTO `enterprise_hr` (`enterprise_id`,`username`,`password`,`real_name`,`phone`,`email`,`hr_role`,`status`)
+SELECT e.`id`, e.`username`, e.`password`, e.`contact_name`, e.`contact_phone`, e.`email`, 'SUPERVISOR', e.`status`
+FROM `enterprise` e
+WHERE e.`username` IS NOT NULL
+  AND NOT EXISTS (SELECT 1 FROM `enterprise_hr` hr WHERE hr.`enterprise_id` = e.`id`);
+
+UPDATE `job_post` p
+JOIN `enterprise_hr` hr ON hr.`enterprise_id` = p.`enterprise_id` AND hr.`hr_role` = 'SUPERVISOR' AND hr.`status` = 1
+SET p.`hr_id` = hr.`id`
+WHERE p.`hr_id` IS NULL;
+UPDATE `job_apply` a
+JOIN `enterprise_hr` hr ON hr.`enterprise_id` = a.`enterprise_id` AND hr.`hr_role` = 'SUPERVISOR' AND hr.`status` = 1
+SET a.`hr_id` = hr.`id`
+WHERE a.`hr_id` IS NULL;
+UPDATE `interview_notice` n
+JOIN `enterprise_hr` hr ON hr.`enterprise_id` = n.`enterprise_id` AND hr.`hr_role` = 'SUPERVISOR' AND hr.`status` = 1
+SET n.`hr_id` = hr.`id`
+WHERE n.`hr_id` IS NULL;
+UPDATE `interview_feedback` f
+JOIN `enterprise_hr` hr ON hr.`enterprise_id` = f.`enterprise_id` AND hr.`hr_role` = 'SUPERVISOR' AND hr.`status` = 1
+SET f.`hr_id` = hr.`id`
+WHERE f.`hr_id` IS NULL;
+UPDATE `offer_record` o
+JOIN `enterprise_hr` hr ON hr.`enterprise_id` = o.`enterprise_id` AND hr.`hr_role` = 'SUPERVISOR' AND hr.`status` = 1
+SET o.`hr_id` = hr.`id`
+WHERE o.`hr_id` IS NULL;
+UPDATE `talent_pool` t
+JOIN `enterprise_hr` hr ON hr.`enterprise_id` = t.`enterprise_id` AND hr.`hr_role` = 'SUPERVISOR' AND hr.`status` = 1
+SET t.`hr_id` = hr.`id`
+WHERE t.`hr_id` IS NULL;

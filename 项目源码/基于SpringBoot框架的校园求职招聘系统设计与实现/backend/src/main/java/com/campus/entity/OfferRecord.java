@@ -20,6 +20,8 @@ public class OfferRecord implements Serializable {
 
     private Long enterpriseId;
 
+    private Long hrId;
+
     private Long jobId;
 
     private String position;

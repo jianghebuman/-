@@ -13,6 +13,9 @@ public interface SystemNoticeService extends IService<SystemNotice> {
     /** 发送通知 */
     void send(Long receiverId, String receiverType, String title, String content, String noticeType);
 
+    /** 发送给企业所有启用主管HR */
+    void sendToEnterpriseSupervisors(Long enterpriseId, String title, String content, String noticeType);
+
     /** 当前用户未读数量 */
     long unreadCount(Long receiverId, String receiverType);
 }

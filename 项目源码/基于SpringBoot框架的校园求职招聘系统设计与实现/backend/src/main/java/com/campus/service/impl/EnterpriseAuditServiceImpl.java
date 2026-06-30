@@ -37,7 +37,7 @@ public class EnterpriseAuditServiceImpl extends ServiceImpl<EnterpriseAuditMappe
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void submitAudit(String licenseNo, String licenseImg, String extraImg) {
-        Long enterpriseId = UserContext.getUserId();
+        Long enterpriseId = UserContext.getEnterpriseId();
         Enterprise enterprise = enterpriseMapper.selectById(enterpriseId);
         if (enterprise == null) {
             throw new BusinessException("企业信息不存在");
@@ -88,7 +88,7 @@ public class EnterpriseAuditServiceImpl extends ServiceImpl<EnterpriseAuditMappe
         update.setAuditStatus(autoPass ? 2 : 1);
         enterpriseMapper.updateById(update);
         if (autoPass) {
-            systemNoticeService.send(enterpriseId, "ENTERPRISE", "企业认证已通过",
+            systemNoticeService.sendToEnterpriseSupervisors(enterpriseId, "企业认证已通过",
                     "您的企业认证已通过系统自动核验，可正常开展招聘。",
                     "AUDIT");
         }
@@ -96,7 +96,7 @@ public class EnterpriseAuditServiceImpl extends ServiceImpl<EnterpriseAuditMappe
 
     @Override
     public EnterpriseAudit getLatest() {
-        Long enterpriseId = UserContext.getUserId();
+        Long enterpriseId = UserContext.getEnterpriseId();
         return this.getOne(new LambdaQueryWrapper<EnterpriseAudit>()
                 .eq(EnterpriseAudit::getEnterpriseId, enterpriseId)
                 .orderByDesc(EnterpriseAudit::getCreateTime)

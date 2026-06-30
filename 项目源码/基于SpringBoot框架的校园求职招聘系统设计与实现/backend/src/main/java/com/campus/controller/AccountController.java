@@ -37,6 +37,8 @@ public class AccountController {
         map.put("userId", UserContext.getUserId());
         map.put("username", UserContext.getUsername());
         map.put("role", UserContext.getRole());
+        map.put("enterpriseId", UserContext.getEnterpriseId());
+        map.put("hrRole", UserContext.getHrRole());
         return Result.success(map);
     }
 }

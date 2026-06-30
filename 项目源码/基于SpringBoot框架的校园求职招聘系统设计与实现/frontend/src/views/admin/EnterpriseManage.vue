@@ -7,7 +7,7 @@
     :loading="loading"
     :query="query"
     :show-add="false"
-    :action-width="240"
+    :action-width="320"
     @load="load"
   >
     <template #toolbar>
@@ -42,6 +42,7 @@
       <el-button text type="primary" @click="openAudit(row)">
         {{ row.auditStatus === 1 ? '审核' : '查看认证' }}
       </el-button>
+      <el-button text type="success" @click="openHr(row)">HR管理</el-button>
       <el-button text @click="toggle(row)">{{ row.status === 1 ? '禁用' : '启用' }}</el-button>
     </template>
 
@@ -161,6 +162,76 @@
           </template>
         </template>
       </el-dialog>
+
+      <el-dialog v-model="hrDialog" :title="hrEnterprise ? `${hrEnterprise.companyName} - HR管理` : 'HR管理'" width="920px">
+        <div class="hr-toolbar">
+          <el-input v-model="hrQuery.keyword" clearable placeholder="账号 / 姓名 / 电话 / 邮箱" @keyup.enter="reloadHr" />
+          <el-button type="primary" @click="reloadHr">查询</el-button>
+          <el-button type="primary" @click="openHrForm()">新增 HR</el-button>
+        </div>
+        <el-table :data="hrList" stripe v-loading="hrLoading">
+          <el-table-column prop="username" label="账号" min-width="120" />
+          <el-table-column prop="realName" label="姓名" min-width="110" />
+          <el-table-column prop="phone" label="电话" min-width="130" />
+          <el-table-column prop="email" label="邮箱" min-width="170" />
+          <el-table-column label="权限" width="110">
+            <template #default="{ row }">
+              <el-tag :type="row.hrRole === 'SUPERVISOR' ? 'success' : 'info'">{{ roleText(row.hrRole) }}</el-tag>
+            </template>
+          </el-table-column>
+          <el-table-column label="状态" width="90">
+            <template #default="{ row }">
+              <el-tag :type="row.status === 1 ? 'success' : 'danger'">{{ row.status === 1 ? '正常' : '禁用' }}</el-tag>
+            </template>
+          </el-table-column>
+          <el-table-column label="操作" width="300" fixed="right">
+            <template #default="{ row }">
+              <el-button text type="primary" @click="openHrForm(row)">编辑</el-button>
+              <el-button text type="success" @click="changeHrRole(row)">
+                {{ row.hrRole === 'SUPERVISOR' ? '设为普通' : '设为主管' }}
+              </el-button>
+              <el-button text @click="toggleHr(row)">{{ row.status === 1 ? '禁用' : '启用' }}</el-button>
+              <el-button text @click="resetHr(row)">重置密码</el-button>
+            </template>
+          </el-table-column>
+        </el-table>
+        <div class="dialog-pagination">
+          <el-pagination
+            v-model:current-page="hrQuery.pageNum"
+            :total="hrTotal"
+            background
+            layout="total,prev,pager,next"
+            @current-change="loadHr"
+          />
+        </div>
+      </el-dialog>
+
+      <el-dialog v-model="hrFormDialog" :title="hrForm.id ? '编辑 HR' : '新增 HR'" width="560px" append-to-body>
+        <el-form :model="hrForm" label-width="90px">
+          <el-form-item label="账号">
+            <el-input v-model="hrForm.username" :disabled="!!hrForm.id" />
+          </el-form-item>
+          <el-form-item label="姓名">
+            <el-input v-model="hrForm.realName" />
+          </el-form-item>
+          <el-form-item label="电话">
+            <el-input v-model="hrForm.phone" />
+          </el-form-item>
+          <el-form-item label="邮箱">
+            <el-input v-model="hrForm.email" />
+          </el-form-item>
+          <el-form-item label="权限">
+            <el-radio-group v-model="hrForm.hrRole">
+              <el-radio label="SUPERVISOR">主管 HR</el-radio>
+              <el-radio label="STAFF">普通 HR</el-radio>
+            </el-radio-group>
+          </el-form-item>
+        </el-form>
+        <template #footer>
+          <el-button @click="hrFormDialog = false">取消</el-button>
+          <el-button type="primary" @click="saveHr">保存</el-button>
+        </template>
+      </el-dialog>
     </template>
   </AdminTablePage>
 </template>
@@ -180,11 +251,20 @@ const auditLoading = ref(false)
 const currentEnterprise = ref(null)
 const currentAudit = ref(null)
 const remark = ref('')
+const hrDialog = ref(false)
+const hrFormDialog = ref(false)
+const hrLoading = ref(false)
+const hrEnterprise = ref(null)
+const hrList = ref([])
+const hrTotal = ref(0)
+const hrQuery = reactive({ pageNum: 1, pageSize: 10, keyword: '' })
+const hrForm = reactive({})
 
 const auditText = (status) => ({ 0: '未认证', 1: '待审核', 2: '已通过', 3: '已驳回' }[status] || '未知')
 const auditType = (status) => (status === 2 ? 'success' : status === 1 ? 'warning' : status === 3 ? 'danger' : 'info')
 const verifyText = (status) => ({ 0: '未核验', 1: '一致', 2: '不一致', 3: '未接入或异常' }[status] || '未知')
 const verifyType = (status) => (status === 1 ? 'success' : status === 2 ? 'danger' : status === 3 ? 'warning' : 'info')
+const roleText = (role) => (role === 'SUPERVISOR' ? '主管 HR' : '普通 HR')
 const hasVerify = (row) => !!row && row.verifyResult !== undefined && row.verifyResult !== null
 const isImage = (url) => /\.(png|jpe?g|gif|bmp|webp)$/i.test(url || '')
 
@@ -239,6 +319,74 @@ const submitAudit = async (status) => {
   load()
 }
 
+const loadHr = async () => {
+  if (!hrEnterprise.value?.id) return
+  hrLoading.value = true
+  try {
+    const res = await adminApi.enterpriseHrs(hrEnterprise.value.id, hrQuery)
+    hrList.value = res.data.records
+    hrTotal.value = Number(res.data.total)
+  } finally {
+    hrLoading.value = false
+  }
+}
+
+const reloadHr = () => {
+  hrQuery.pageNum = 1
+  loadHr()
+}
+
+const openHr = (row) => {
+  hrEnterprise.value = row
+  hrQuery.pageNum = 1
+  hrQuery.keyword = ''
+  hrDialog.value = true
+  loadHr()
+}
+
+const openHrForm = (row) => {
+  Object.keys(hrForm).forEach((key) => delete hrForm[key])
+  Object.assign(hrForm, row || { username: '', realName: '', phone: '', email: '', hrRole: 'STAFF' })
+  hrFormDialog.value = true
+}
+
+const saveHr = async () => {
+  if (!hrForm.username || !hrForm.realName) {
+    ElMessage.warning('请填写账号和姓名')
+    return
+  }
+  if (hrForm.id) {
+    await adminApi.updateEnterpriseHr(hrForm.id, hrForm)
+  } else {
+    await adminApi.addEnterpriseHr(hrEnterprise.value.id, hrForm)
+  }
+  ElMessage.success(hrForm.id ? '修改成功' : '新增成功，初始密码123456')
+  hrFormDialog.value = false
+  loadHr()
+}
+
+const changeHrRole = (row) => {
+  const role = row.hrRole === 'SUPERVISOR' ? 'STAFF' : 'SUPERVISOR'
+  ElMessageBox.confirm(`确定将「${row.username}」调整为${roleText(role)}？`).then(async () => {
+    await adminApi.updateEnterpriseHrRole(row.id, role)
+    ElMessage.success('角色已更新')
+    loadHr()
+  })
+}
+
+const toggleHr = (row) =>
+  ElMessageBox.confirm(`确定${row.status === 1 ? '禁用' : '启用'}该 HR？`).then(async () => {
+    await adminApi.toggleEnterpriseHr(row.id, row.status === 1 ? 0 : 1)
+    ElMessage.success('操作成功')
+    loadHr()
+  })
+
+const resetHr = (row) =>
+  ElMessageBox.confirm(`确定将「${row.username}」密码重置为 123456？`).then(async () => {
+    await adminApi.resetEnterpriseHr(row.id)
+    ElMessage.success('密码已重置为123456')
+  })
+
 onMounted(load)
 </script>
 
@@ -290,6 +438,22 @@ onMounted(load)
 }
 
 .audit-form {
+  margin-top: 16px;
+}
+
+.hr-toolbar {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.hr-toolbar .el-input {
+  width: 260px;
+}
+
+.dialog-pagination {
+  display: flex;
+  justify-content: flex-end;
   margin-top: 16px;
 }
 </style>

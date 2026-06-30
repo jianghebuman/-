@@ -16,6 +16,8 @@ public class TalentPool implements Serializable {
 
     private Long enterpriseId;
 
+    private Long hrId;
+
     private Long studentId;
 
     private Long resumeId;

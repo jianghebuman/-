@@ -27,13 +27,14 @@ public class JobPostServiceImpl extends ServiceImpl<JobPostMapper, JobPost> impl
     @Override
     @Transactional(rollbackFor = Exception.class)
     public Long publishJob(JobPost jobPost) {
-        Long enterpriseId = UserContext.getUserId();
+        Long enterpriseId = UserContext.getEnterpriseId();
         if (jobPost.getTitle() == null || jobPost.getTitle().trim().isEmpty()) {
             throw new BusinessException("职位名称不能为空");
         }
         // 强制归属当前企业，前端传入的归属字段无效
         jobPost.setId(null);
         jobPost.setEnterpriseId(enterpriseId);
+        jobPost.setHrId(UserContext.getUserId());
         jobPost.setAuditStatus(0);
         jobPost.setStatus(1);
         jobPost.setPublishTime(new Date());
@@ -52,13 +53,14 @@ public class JobPostServiceImpl extends ServiceImpl<JobPostMapper, JobPost> impl
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void updateJob(JobPost jobPost) {
-        Long enterpriseId = UserContext.getUserId();
+        Long enterpriseId = UserContext.getEnterpriseId();
         JobPost db = this.getById(jobPost.getId());
-        if (db == null || !enterpriseId.equals(db.getEnterpriseId())) {
+        if (!canAccess(db, enterpriseId)) {
             throw new BusinessException("职位不存在或无权操作");
         }
         // 不允许修改归属与统计字段
         jobPost.setEnterpriseId(enterpriseId);
+        jobPost.setHrId(db.getHrId());
         jobPost.setViewCount(null);
         jobPost.setApplyCount(null);
         // 编辑后重新进入待审核
@@ -69,9 +71,9 @@ public class JobPostServiceImpl extends ServiceImpl<JobPostMapper, JobPost> impl
 
     @Override
     public void deleteJob(Long jobId) {
-        Long enterpriseId = UserContext.getUserId();
+        Long enterpriseId = UserContext.getEnterpriseId();
         JobPost db = this.getById(jobId);
-        if (db == null || !enterpriseId.equals(db.getEnterpriseId())) {
+        if (!canAccess(db, enterpriseId)) {
             throw new BusinessException("职位不存在或无权操作");
         }
         this.removeById(jobId);
@@ -79,12 +81,12 @@ public class JobPostServiceImpl extends ServiceImpl<JobPostMapper, JobPost> impl
 
     @Override
     public void changeStatus(Long jobId, Integer status) {
-        Long enterpriseId = UserContext.getUserId();
+        Long enterpriseId = UserContext.getEnterpriseId();
         if (status == null || (status != 0 && status != 1)) {
             throw new BusinessException("状态值非法");
         }
         JobPost db = this.getById(jobId);
-        if (db == null || !enterpriseId.equals(db.getEnterpriseId())) {
+        if (!canAccess(db, enterpriseId)) {
             throw new BusinessException("职位不存在或无权操作");
         }
         JobPost update = new JobPost();
@@ -95,7 +97,7 @@ public class JobPostServiceImpl extends ServiceImpl<JobPostMapper, JobPost> impl
 
     @Override
     public void refresh(List<Long> jobIds) {
-        Long enterpriseId = UserContext.getUserId();
+        Long enterpriseId = UserContext.getEnterpriseId();
         if (jobIds == null || jobIds.isEmpty()) {
             throw new BusinessException("请选择要刷新的职位");
         }
@@ -103,16 +105,18 @@ public class JobPostServiceImpl extends ServiceImpl<JobPostMapper, JobPost> impl
         LambdaUpdateWrapper<JobPost> wrapper = new LambdaUpdateWrapper<JobPost>()
                 .set(JobPost::getPublishTime, new Date())
                 .eq(JobPost::getEnterpriseId, enterpriseId)
+                .eq(!UserContext.isSupervisorHr(), JobPost::getHrId, UserContext.getUserId())
                 .in(JobPost::getId, jobIds);
         this.update(wrapper);
     }
 
     @Override
     public PageResult<JobPost> myJobPage(Integer pageNum, Integer pageSize, Integer status, Integer auditStatus) {
-        Long enterpriseId = UserContext.getUserId();
+        Long enterpriseId = UserContext.getEnterpriseId();
         Page<JobPost> page = new Page<>(pageNum, pageSize);
         LambdaQueryWrapper<JobPost> wrapper = new LambdaQueryWrapper<JobPost>()
                 .eq(JobPost::getEnterpriseId, enterpriseId)
+                .eq(!UserContext.isSupervisorHr(), JobPost::getHrId, UserContext.getUserId())
                 .eq(status != null, JobPost::getStatus, status)
                 .eq(auditStatus != null, JobPost::getAuditStatus, auditStatus)
                 .orderByDesc(JobPost::getCreateTime);
@@ -122,11 +126,18 @@ public class JobPostServiceImpl extends ServiceImpl<JobPostMapper, JobPost> impl
 
     @Override
     public JobPost getDetail(Long jobId) {
-        Long enterpriseId = UserContext.getUserId();
+        Long enterpriseId = UserContext.getEnterpriseId();
         JobPost db = this.getById(jobId);
-        if (db == null || !enterpriseId.equals(db.getEnterpriseId())) {
+        if (!canAccess(db, enterpriseId)) {
             throw new BusinessException("职位不存在或无权查看");
         }
         return db;
+    }
+
+    private boolean canAccess(JobPost db, Long enterpriseId) {
+        if (db == null || !enterpriseId.equals(db.getEnterpriseId())) {
+            return false;
+        }
+        return UserContext.isSupervisorHr() || UserContext.getUserId().equals(db.getHrId());
     }
 }

@@ -9,7 +9,4 @@ import com.campus.entity.Enterprise;
  * @author campus
  */
 public interface EnterpriseService extends IService<Enterprise> {
-
-    /** 根据用户名查询 */
-    Enterprise getByUsername(String username);
 }

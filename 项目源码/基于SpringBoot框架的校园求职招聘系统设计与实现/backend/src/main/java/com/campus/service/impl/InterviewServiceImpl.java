@@ -44,7 +44,7 @@ public class InterviewServiceImpl extends ServiceImpl<InterviewNoticeMapper, Int
     @Override
     @Transactional(rollbackFor = Exception.class)
     public Long invite(InterviewNotice notice) {
-        Long enterpriseId = UserContext.getUserId();
+        Long enterpriseId = UserContext.getEnterpriseId();
         if (notice.getApplyId() == null) {
             throw new BusinessException("缺少投递记录ID");
         }
@@ -52,12 +52,13 @@ public class InterviewServiceImpl extends ServiceImpl<InterviewNoticeMapper, Int
             throw new BusinessException("面试时间不能为空");
         }
         JobApply apply = jobApplyMapper.selectById(notice.getApplyId());
-        if (apply == null || !enterpriseId.equals(apply.getEnterpriseId())) {
+        if (!canAccessApply(apply, enterpriseId)) {
             throw new BusinessException("投递记录不存在或无权操作");
         }
         // 写面试通知，强制归属与冗余字段从投递记录回填
         notice.setId(null);
         notice.setEnterpriseId(enterpriseId);
+        notice.setHrId(apply.getHrId());
         notice.setStudentId(apply.getStudentId());
         notice.setJobId(apply.getJobId());
         notice.setStudentStatus(0);
@@ -79,10 +80,11 @@ public class InterviewServiceImpl extends ServiceImpl<InterviewNoticeMapper, Int
 
     @Override
     public PageResult<InterviewNotice> myInterviewPage(Integer pageNum, Integer pageSize, Integer studentStatus) {
-        Long enterpriseId = UserContext.getUserId();
+        Long enterpriseId = UserContext.getEnterpriseId();
         Page<InterviewNotice> page = new Page<>(pageNum, pageSize);
         LambdaQueryWrapper<InterviewNotice> wrapper = new LambdaQueryWrapper<InterviewNotice>()
                 .eq(InterviewNotice::getEnterpriseId, enterpriseId)
+                .eq(!UserContext.isSupervisorHr(), InterviewNotice::getHrId, UserContext.getUserId())
                 .eq(studentStatus != null, InterviewNotice::getStudentStatus, studentStatus)
                 .orderByDesc(InterviewNotice::getCreateTime);
         this.page(page, wrapper);
@@ -91,13 +93,14 @@ public class InterviewServiceImpl extends ServiceImpl<InterviewNoticeMapper, Int
 
     @Override
     public void updateInterview(InterviewNotice notice) {
-        Long enterpriseId = UserContext.getUserId();
+        Long enterpriseId = UserContext.getEnterpriseId();
         InterviewNotice db = this.getById(notice.getId());
-        if (db == null || !enterpriseId.equals(db.getEnterpriseId())) {
+        if (!canAccessNotice(db, enterpriseId)) {
             throw new BusinessException("面试记录不存在或无权操作");
         }
         // 不允许篡改归属与学生确认状态
         notice.setEnterpriseId(enterpriseId);
+        notice.setHrId(db.getHrId());
         notice.setStudentId(null);
         notice.setStudentStatus(null);
         this.updateById(notice);
@@ -109,15 +112,16 @@ public class InterviewServiceImpl extends ServiceImpl<InterviewNoticeMapper, Int
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void feedback(Long noticeId, Integer score, String content, Integer isPass, String interviewer) {
-        Long enterpriseId = UserContext.getUserId();
+        Long enterpriseId = UserContext.getEnterpriseId();
         InterviewNotice db = this.getById(noticeId);
-        if (db == null || !enterpriseId.equals(db.getEnterpriseId())) {
+        if (!canAccessNotice(db, enterpriseId)) {
             throw new BusinessException("面试记录不存在或无权操作");
         }
         InterviewFeedback feedback = new InterviewFeedback();
         feedback.setNoticeId(noticeId);
         feedback.setApplyId(db.getApplyId());
         feedback.setEnterpriseId(enterpriseId);
+        feedback.setHrId(db.getHrId());
         feedback.setScore(score);
         feedback.setContent(content);
         feedback.setIsPass(isPass);
@@ -131,5 +135,19 @@ public class InterviewServiceImpl extends ServiceImpl<InterviewNoticeMapper, Int
     private String jobTitle(Long jobId) {
         JobPost job = jobPostMapper.selectById(jobId);
         return job == null ? "" : job.getTitle();
+    }
+
+    private boolean canAccessApply(JobApply apply, Long enterpriseId) {
+        if (apply == null || !enterpriseId.equals(apply.getEnterpriseId())) {
+            return false;
+        }
+        return UserContext.isSupervisorHr() || UserContext.getUserId().equals(apply.getHrId());
+    }
+
+    private boolean canAccessNotice(InterviewNotice notice, Long enterpriseId) {
+        if (notice == null || !enterpriseId.equals(notice.getEnterpriseId())) {
+            return false;
+        }
+        return UserContext.isSupervisorHr() || UserContext.getUserId().equals(notice.getHrId());
     }
 }

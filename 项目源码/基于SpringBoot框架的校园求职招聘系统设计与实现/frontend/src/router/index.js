@@ -64,8 +64,9 @@ const routes = [
     children: [
       { path: '', redirect: '/enterprise/dashboard' },
       { path: 'dashboard', component: () => import('@/views/enterprise/Dashboard.vue'), meta: { title: '数据看板' } },
-      { path: 'profile', component: () => import('@/views/enterprise/Profile.vue'), meta: { title: '企业资料' } },
-      { path: 'audit', component: () => import('@/views/enterprise/Audit.vue'), meta: { title: '企业认证' } },
+      { path: 'profile', component: () => import('@/views/enterprise/Profile.vue'), meta: { title: '企业资料', supervisorOnly: true } },
+      { path: 'audit', component: () => import('@/views/enterprise/Audit.vue'), meta: { title: '企业认证', supervisorOnly: true } },
+      { path: 'hr', component: () => import('@/views/enterprise/HrManage.vue'), meta: { title: 'HR管理', supervisorOnly: true } },
       { path: 'job', component: () => import('@/views/enterprise/JobManage.vue'), meta: { title: '职位管理' } },
       { path: 'apply', component: () => import('@/views/enterprise/ApplyManage.vue'), meta: { title: '简历筛选' } },
       { path: 'interview', component: () => import('@/views/enterprise/InterviewManage.vue'), meta: { title: '面试管理' } },
@@ -136,6 +137,11 @@ router.beforeEach((to, from, next) => {
     if (roles && !roles.includes(userStore.role)) {
       ElMessage.error('无权访问该页面')
       next('/')
+      return
+    }
+    if (to.matched.some(record => record.meta.supervisorOnly) && userStore.hrRole !== 'SUPERVISOR') {
+      ElMessage.error('仅主管HR可访问该页面')
+      next('/enterprise/dashboard')
       return
     }
   }

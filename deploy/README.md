@@ -28,6 +28,8 @@
 mysql -uroot -p < 数据库脚本/campus_recruitment.sql
 ```
 
+当前初始化脚本包含 37 张业务表、434 个字段，并内置企业多 HR 演示数据：`enterprise` 表保存公司主体，`enterprise_hr` 表保存 HR 登录账号，岗位、投递、面试、Offer、人才库等业务数据记录负责 HR。
+
 ## 构建后端
 
 ```bash

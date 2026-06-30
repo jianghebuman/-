@@ -3,11 +3,15 @@
 </template>
 <script setup>
 import AdminBase from './AdminBase.vue'
-import { Odometer, OfficeBuilding, CircleCheck, Briefcase, Tickets, ChatLineRound, Medal, UserFilled, Bell, Lock } from '@element-plus/icons-vue'
-const menus = [
+import { computed } from 'vue'
+import { Odometer, OfficeBuilding, CircleCheck, Briefcase, Tickets, ChatLineRound, Medal, UserFilled, Bell, Lock, User } from '@element-plus/icons-vue'
+import { useUserStore } from '@/store/user'
+const userStore = useUserStore()
+const allMenus = [
   { path: '/enterprise/dashboard', title: '数据看板', icon: Odometer },
-  { path: '/enterprise/profile', title: '企业资料', icon: OfficeBuilding },
-  { path: '/enterprise/audit', title: '企业认证', icon: CircleCheck },
+  { path: '/enterprise/profile', title: '企业资料', icon: OfficeBuilding, supervisor: true },
+  { path: '/enterprise/audit', title: '企业认证', icon: CircleCheck, supervisor: true },
+  { path: '/enterprise/hr', title: 'HR管理', icon: User, supervisor: true },
   { path: '/enterprise/job', title: '职位管理', icon: Briefcase },
   { path: '/enterprise/apply', title: '简历筛选', icon: Tickets },
   { path: '/enterprise/interview', title: '面试管理', icon: ChatLineRound },
@@ -16,4 +20,5 @@ const menus = [
   { path: '/enterprise/notice', title: '消息中心', icon: Bell },
   { path: '/enterprise/password', title: '修改密码', icon: Lock }
 ]
+const menus = computed(() => allMenus.filter((item) => !item.supervisor || userStore.hrRole === 'SUPERVISOR'))
 </script>

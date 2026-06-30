@@ -30,4 +30,10 @@ public class LoginVO {
 
     /** 企业认证状态（仅企业）：0未认证1待审核2已通过3已驳回 */
     private Integer auditStatus;
+
+    /** 所属企业ID（仅企业HR） */
+    private Long enterpriseId;
+
+    /** HR角色：SUPERVISOR/STAFF（仅企业HR） */
+    private String hrRole;
 }
