@@ -1,5 +1,5 @@
 <template>
-  <div class="page-container"><div class="page-card">
+  <div class="page-container student-list-page"><div class="page-card page-flex-card compact-list-card student-list-card">
     <div class="header"><h2>面试通知</h2><p>及时确认面试安排，避免错过企业沟通。</p></div><el-divider/>
     <el-table :data="list" stripe v-loading="loading">
       <el-table-column prop="interviewTime" label="面试时间" width="180"/>

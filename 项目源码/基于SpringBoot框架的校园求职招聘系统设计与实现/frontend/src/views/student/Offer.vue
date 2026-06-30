@@ -1,5 +1,5 @@
 <template>
-  <div class="page-container"><div class="page-card">
+  <div class="page-container student-list-page"><div class="page-card page-flex-card compact-list-card student-list-card">
     <div class="header"><h2>Offer 管理</h2><p>查看企业发放的录用 Offer，并及时做出确认。</p></div><el-divider/>
     <el-table :data="list" stripe v-loading="loading">
       <el-table-column prop="position" label="岗位" min-width="160"/>

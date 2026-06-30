@@ -1,6 +1,6 @@
 <template>
-  <div class="page-container">
-    <el-row :gutter="16">
+  <div class="page-container student-dashboard-page">
+    <el-row :gutter="16" class="dashboard-stats">
       <el-col :span="6" v-for="card in cards" :key="card.title">
         <div class="stat-card" :style="{ background: card.bg }">
           <div>
@@ -12,9 +12,9 @@
       </el-col>
     </el-row>
 
-    <el-row :gutter="16" class="mt-20">
-      <el-col :span="16">
-        <div class="page-card">
+    <el-row :gutter="16" class="dashboard-workspace">
+      <el-col class="dashboard-main-col" :span="16">
+        <div class="page-card progress-card">
           <div class="section-title">求职进度</div>
           <el-steps :active="stepActive" finish-status="success" align-center>
             <el-step title="完善资料" description="个人信息与求职意向" />
@@ -30,7 +30,7 @@
           </div>
         </div>
 
-        <div class="page-card mt-20">
+        <div class="page-card recent-card">
           <div class="section-title">最近投递</div>
           <el-table :data="applies" stripe>
             <el-table-column prop="jobTitle" label="岗位" min-width="160" />
@@ -42,7 +42,7 @@
           </el-table>
         </div>
       </el-col>
-      <el-col :span="8">
+      <el-col class="dashboard-side-col" :span="8">
         <div class="profile-card page-card">
           <el-avatar :size="76" :src="profile.avatar"><el-icon><User /></el-icon></el-avatar>
           <h3>{{ profile.realName || profile.username }}</h3>
@@ -53,7 +53,7 @@
             <el-progress :percentage="resume?.completeRate || 0" :stroke-width="10" />
           </div>
         </div>
-        <div class="page-card mt-20">
+        <div class="page-card reminder-card">
           <div class="section-title">待办提醒</div>
           <el-timeline>
             <el-timeline-item
@@ -117,6 +117,51 @@ onMounted(async () => {
 </script>
 
 <style scoped lang="scss">
+.student-dashboard-page {
+  width: min(150rem, calc(100% - clamp(1rem, 3vw, 3rem)));
+  min-height: calc(100dvh - 70px - clamp(1.5rem, 3vw, 2.5rem));
+  padding: clamp(.75rem, 1.2vw, 1.25rem);
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+  gap: clamp(.9rem, 1.2vw, 1.25rem);
+}
+.dashboard-stats,
+.dashboard-workspace {
+  min-width: 0;
+}
+.dashboard-workspace {
+  min-height: 0;
+}
+.dashboard-main-col,
+.dashboard-side-col {
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+.progress-card {
+  min-height: clamp(15rem, 20vh, 18rem);
+}
+.recent-card {
+  flex: 1;
+  min-height: 0;
+  margin-top: clamp(.9rem, 1.2vw, 1.25rem);
+  display: flex;
+  flex-direction: column;
+}
+.recent-card :deep(.el-table) {
+  flex: 1;
+  min-height: 18rem;
+  font-size: .9375rem;
+}
+.recent-card :deep(.el-table__inner-wrapper) {
+  height: 100%;
+}
+.recent-card :deep(.el-table .cell) {
+  line-height: 1.6;
+}
+.recent-card :deep(.el-table__row) {
+  height: 3.375rem;
+}
 .stat-card { height: 110px; border-radius: var(--cr-radius); color: #fff; padding: 22px; display: flex; justify-content: space-between; align-items: center; box-shadow: var(--cr-shadow-soft); .num { font-size: 28px; font-weight: 750; } .title { margin-top: 8px; opacity: .95; } }
 .section-title { font-size: 16px; font-weight: 700; color: var(--cr-text); margin-bottom: 18px; border-left: 3px solid var(--cr-primary); padding-left: 10px; }
 .quick-actions { text-align: center; margin-top: 28px; }
@@ -124,11 +169,41 @@ onMounted(async () => {
 .resume-rate { text-align: left; span { display: block; color: var(--cr-text-soft); margin-bottom: 10px; } }
 .notice-reminder { cursor: pointer; strong { color: var(--cr-text); } p { margin: 6px 0 0; color: var(--cr-text-soft); line-height: 1.6; } }
 .notice-actions { margin-top: 8px; text-align: right; }
+.reminder-card {
+  flex: 1;
+  min-height: 0;
+  margin-top: clamp(.9rem, 1.2vw, 1.25rem);
+  display: flex;
+  flex-direction: column;
+}
+.reminder-card :deep(.el-timeline) {
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+  padding-right: .25rem;
+}
+.reminder-card :deep(.el-empty) {
+  flex: 1;
+}
 
 @media (max-width: 900px) {
+  .student-dashboard-page {
+    min-height: 0;
+    display: block;
+  }
   :deep(.el-col) {
     max-width: 100%;
     flex: 0 0 100%;
+  }
+  .dashboard-workspace {
+    margin-top: 1rem;
+  }
+  .profile-card {
+    margin-top: 1rem;
+  }
+  .recent-card,
+  .reminder-card {
+    min-height: 22rem;
   }
 }
 </style>

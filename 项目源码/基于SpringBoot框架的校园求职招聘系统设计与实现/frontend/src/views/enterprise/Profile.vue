@@ -12,7 +12,7 @@
         <el-upload class="identity-uploader" :show-file-list="false" :http-request="uploadLogo" accept="image/*">
           <div class="identity-upload">
             <div class="identity-preview">
-              <el-avatar :size="96" :src="form.logo" shape="square" class="logo-avatar">
+              <el-avatar :size="128" :src="form.logo" shape="square" class="logo-avatar">
                 <el-icon><OfficeBuilding /></el-icon>
               </el-avatar>
               <span class="upload-mark"><el-icon><UploadFilled /></el-icon></span>
@@ -20,6 +20,11 @@
             <div class="identity-copy">
               <span class="upload-label">{{ form.logo ? '更换 Logo' : '上传 Logo' }}</span>
               <span class="upload-sub">会显示在企业主页和岗位列表</span>
+            </div>
+            <div class="identity-hints">
+              <div><span>主页展示</span><strong>企业头像</strong></div>
+              <div><span>岗位列表</span><strong>品牌识别</strong></div>
+              <div><span>建议尺寸</span><strong>正方形图片</strong></div>
             </div>
           </div>
         </el-upload>
@@ -88,6 +93,7 @@ onMounted(load)
 }
 
 .profile-card {
+  min-height: calc(100dvh - 8.5rem);
   padding: clamp(24px, 2vw, 34px);
 }
 
@@ -102,7 +108,7 @@ onMounted(load)
 
 .profile-body {
   display: grid;
-  grid-template-columns: minmax(248px, 300px) minmax(0, 1fr);
+  grid-template-columns: minmax(340px, 420px) minmax(0, 1fr);
   gap: clamp(28px, 3vw, 48px);
   align-items: start;
 }
@@ -119,15 +125,15 @@ onMounted(load)
 .identity-upload {
   width: 100%;
   min-width: 0;
-  min-height: 278px;
-  padding: 24px 18px;
+  min-height: 520px;
+  padding: 34px 28px;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  gap: 16px;
+  justify-content: flex-start;
+  gap: 20px;
   border: 1px solid var(--cr-border);
-  border-radius: 8px;
+  border-radius: 12px;
   background: linear-gradient(180deg, #f8fbff 0%, #ffffff 100%);
   cursor: pointer;
   transition: border-color .2s ease, box-shadow .2s ease;
@@ -140,28 +146,28 @@ onMounted(load)
 
 .identity-preview {
   position: relative;
-  width: 96px;
-  height: 96px;
-  flex: 0 0 96px;
+  width: 128px;
+  height: 128px;
+  flex: 0 0 128px;
 }
 
 .logo-avatar {
-  width: 96px !important;
-  height: 96px !important;
+  width: 128px !important;
+  height: 128px !important;
   border: 2px solid #fff;
-  border-radius: 8px;
+  border-radius: 12px;
   background: linear-gradient(135deg, var(--cr-primary-soft), var(--cr-accent-soft));
   color: var(--cr-primary);
-  font-size: 34px;
+  font-size: 44px;
   box-shadow: inset 0 0 0 1px rgba(37, 99, 235, .16), 0 6px 16px rgba(31, 45, 61, .12);
 }
 
 .upload-mark {
   position: absolute;
-  right: -4px;
-  bottom: -4px;
-  width: 28px;
-  height: 28px;
+  right: -6px;
+  bottom: -6px;
+  width: 36px;
+  height: 36px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -182,17 +188,46 @@ onMounted(load)
 
 .upload-label {
   color: var(--cr-text);
-  font-size: 15px;
+  font-size: 22px;
   font-weight: 600;
   line-height: 1.3;
 }
 
 .upload-sub {
-  max-width: 190px;
-  margin-top: 6px;
+  max-width: 260px;
+  margin-top: 8px;
   color: var(--cr-text-soft);
-  font-size: 12px;
-  line-height: 1.4;
+  font-size: 15px;
+  line-height: 1.7;
+}
+
+.identity-hints {
+  width: 100%;
+  margin-top: 12px;
+  padding-top: 22px;
+  display: grid;
+  gap: 12px;
+  border-top: 1px solid var(--cr-border-soft);
+}
+
+.identity-hints div {
+  min-width: 0;
+  padding: 16px;
+  border: 1px solid var(--cr-border-soft);
+  border-radius: 10px;
+  background: #fff;
+}
+
+.identity-hints span {
+  display: block;
+  margin-bottom: 6px;
+  color: var(--cr-text-muted);
+  font-size: 14px;
+}
+
+.identity-hints strong {
+  color: var(--cr-text);
+  font-size: 17px;
 }
 
 .profile-form {
@@ -206,6 +241,7 @@ onMounted(load)
 
 @media (max-width: 1180px) {
   .profile-card {
+    min-height: 0;
     padding: 24px;
   }
 
@@ -227,7 +263,7 @@ onMounted(load)
 
   .identity-upload {
     min-width: 0;
-    min-height: 220px;
+    min-height: 0;
   }
 }
 

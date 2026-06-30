@@ -1,5 +1,5 @@
 <template>
-  <div class="page-container"><div class="page-card">
+  <div class="page-container student-list-page"><div class="page-card page-flex-card compact-list-card student-list-card">
     <div class="header"><div><h2>我的帖子</h2><p>管理自己发布的求职交流内容。</p></div><el-button type="primary" @click="$router.push('/forum')">去社区发帖</el-button></div><el-divider/>
     <el-table :data="list" stripe v-loading="loading">
       <el-table-column prop="title" label="标题" min-width="220"/>

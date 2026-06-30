@@ -1,6 +1,6 @@
 <template>
-  <div class="page-container">
-    <div class="page-card">
+  <div class="page-container enterprise-list-page">
+    <div class="page-card page-flex-card compact-list-card enterprise-list-card">
       <div class="header">
         <h2>人才库</h2>
         <p>沉淀优秀候选人，支持按专业、学历和关键词检索公开简历。</p>

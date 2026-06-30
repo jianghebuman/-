@@ -267,8 +267,61 @@ onMounted(load)
 <style scoped lang="scss">
 .header { display:flex; justify-content:space-between; align-items:center; gap:1rem; h2{margin-bottom:6px;} p{color:var(--cr-text-muted);} }
 .header-actions { display:flex; align-items:center; gap:.75rem; flex-wrap:wrap; justify-content:flex-end; }
+.resume-page {
+  width: min(150rem, calc(100% - clamp(1rem, 3vw, 3rem)));
+  padding: clamp(.75rem, 1.2vw, 1.25rem);
+}
 .resume-layout {
   align-items: flex-start;
+}
+.resume-main-card {
+  min-height: clamp(47rem, calc(100dvh - 11.5rem), 56rem);
+  padding: clamp(1.5rem, 1.7vw, 2rem);
+}
+.resume-main-card .header h2 {
+  font-size: clamp(1.8rem, 1.55vw, 2.25rem);
+  line-height: 1.25;
+}
+.resume-main-card .header p {
+  margin-top: .45rem;
+  font-size: clamp(1.0625rem, .96vw, 1.25rem);
+  line-height: 1.65;
+}
+.resume-main-card :deep(.el-divider--horizontal) {
+  margin: 1.5rem 0;
+}
+.resume-main-card :deep(.el-form-item) {
+  margin-bottom: 1.35rem;
+}
+.resume-main-card :deep(.el-form-item__label) {
+  height: 3.375rem;
+  align-items: center;
+  color: var(--cr-text-soft);
+  font-size: 1.0625rem;
+  font-weight: 700;
+  line-height: 1.35;
+}
+.resume-main-card :deep(.el-input__wrapper) {
+  min-height: 3.375rem;
+  padding: 0 1.125rem;
+}
+.resume-main-card :deep(.el-input__inner),
+.resume-main-card :deep(.el-radio__label),
+.resume-main-card :deep(.el-textarea__inner) {
+  font-size: 1.0625rem;
+}
+.resume-main-card :deep(.el-textarea__inner) {
+  padding: 1rem 1.125rem;
+  line-height: 1.7;
+}
+.resume-main-card :deep(.el-radio) {
+  height: 3.375rem;
+  margin-right: 1.5rem;
+}
+.resume-main-card :deep(.el-button) {
+  min-height: 3rem;
+  padding: 0 1.25rem;
+  font-size: 1.0625rem;
 }
 .resume-side-col {
   display: flex;
@@ -405,12 +458,16 @@ onMounted(load)
     font-weight: 700;
   }
 }
-:deep(.section-head){display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;h3{border-left:3px solid var(--cr-primary);padding-left:10px;color:var(--cr-text);}}
-:deep(.section-item){display:flex;justify-content:space-between;padding:14px;border:1px solid var(--cr-border-soft);border-radius:6px;margin-bottom:10px;background:#fafafa;}
-:deep(.item-title){font-weight:600;color:var(--cr-text);margin-bottom:4px;}
-:deep(.item-time){color:var(--cr-text-muted);font-size:12px;margin-bottom:6px;}
-:deep(.item-desc){color:var(--cr-text-soft);line-height:1.6;white-space:pre-line;}
-:deep(.empty-line){color:var(--cr-text-muted);text-align:center;padding:24px;}
+:deep(.resume-section) {
+  padding: clamp(1.25rem, 1.5vw, 1.75rem);
+}
+:deep(.section-head){display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;h3{border-left:3px solid var(--cr-primary);padding-left:.75rem;color:var(--cr-text);font-size:1.375rem;line-height:1.35;}}
+:deep(.section-head .el-button){min-height:2.5rem;padding:0 1rem;font-size:1rem;}
+:deep(.section-item){display:flex;justify-content:space-between;gap:1rem;padding:1rem 1.125rem;border:1px solid var(--cr-border-soft);border-radius:.625rem;margin-bottom:.75rem;background:#fafafa;}
+:deep(.item-title){font-size:1.0625rem;font-weight:700;color:var(--cr-text);margin-bottom:.375rem;}
+:deep(.item-time){color:var(--cr-text-muted);font-size:.9375rem;margin-bottom:.375rem;}
+:deep(.item-desc){color:var(--cr-text-soft);font-size:1rem;line-height:1.7;white-space:pre-line;}
+:deep(.empty-line){color:var(--cr-text-muted);text-align:center;padding:2rem;font-size:1rem;}
 .resume-preview { color:var(--cr-text); }
 .preview-head { text-align:center; border-bottom:1px solid var(--cr-border-soft); padding-bottom:1rem; margin-bottom:1rem;
   h1{font-size:1.75rem;margin-bottom:.5rem;} p{color:var(--cr-text-muted);line-height:1.8;}
@@ -420,6 +477,6 @@ onMounted(load)
 :deep(.preview-item:last-child){border-bottom:0;}
 :deep(.preview-item-title){font-weight:650;color:var(--cr-text);margin-bottom:.25rem;}
 :deep(.preview-item-time),:deep(.preview-empty){color:var(--cr-text-muted);font-size:.8125rem;}
-@media (max-width:48rem){.header{align-items:flex-start;flex-direction:column}.header-actions{justify-content:flex-start}.header-actions :deep(.el-button){margin-left:0;}.resume-tips{position:static;min-height:0;}}
+@media (max-width:48rem){.header{align-items:flex-start;flex-direction:column}.header-actions{justify-content:flex-start}.header-actions :deep(.el-button){margin-left:0;}.resume-main-card{min-height:0;}.resume-tips{position:static;min-height:0;}}
 </style>
 

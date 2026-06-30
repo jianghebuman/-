@@ -201,6 +201,51 @@ li {
 .compact-list-card {
   min-height: var(--portal-list-card-min-height, calc(100dvh - 19rem));
 }
+.enterprise-list-page,
+.student-list-page {
+  width: min(150rem, calc(100% - clamp(1rem, 3vw, 3rem)));
+}
+.enterprise-list-card,
+.student-list-card {
+  --portal-list-card-min-height: calc(100dvh - 8.5rem);
+}
+.enterprise-list-card .header,
+.student-list-card .header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 0.875rem;
+  flex-wrap: wrap;
+}
+.enterprise-list-card .header h2,
+.student-list-card .header h2 {
+  margin-bottom: 0.375rem;
+  color: var(--cr-text);
+  font-size: clamp(1.25rem, 1.8vw, 1.5rem);
+}
+.enterprise-list-card .header p,
+.student-list-card .header p {
+  color: var(--cr-text-muted);
+  line-height: 1.6;
+}
+.enterprise-list-card .el-table,
+.student-list-card .el-table {
+  flex: 1;
+  min-height: 18rem;
+  font-size: 0.9375rem;
+}
+.enterprise-list-card .el-table__inner-wrapper,
+.student-list-card .el-table__inner-wrapper {
+  height: 100%;
+}
+.enterprise-list-card .el-table .cell,
+.student-list-card .el-table .cell {
+  line-height: 1.6;
+}
+.enterprise-list-card .el-table__row,
+.student-list-card .el-table__row {
+  height: 3.375rem;
+}
 .mb-10 { margin-bottom: 0.625rem; }
 .mb-20 { margin-bottom: 1.25rem; }
 .mt-20 { margin-top: 1.25rem; }

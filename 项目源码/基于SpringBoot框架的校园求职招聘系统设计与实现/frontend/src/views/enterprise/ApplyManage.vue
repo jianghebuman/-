@@ -1,6 +1,6 @@
 <template>
-  <div class="page-container">
-    <div class="page-card">
+  <div class="page-container enterprise-list-page">
+    <div class="page-card page-flex-card compact-list-card enterprise-list-card">
       <div class="header">
         <h2>简历筛选</h2>
         <p>查看收到的简历、标记流程状态、发起面试或加入人才库。</p>

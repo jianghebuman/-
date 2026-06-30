@@ -1,6 +1,6 @@
 <template>
-  <div class="page-container">
-    <div class="page-card">
+  <div class="page-container student-list-page">
+    <div class="page-card page-flex-card compact-list-card student-list-card">
       <div class="header">
         <div>
           <h2>附件简历</h2>
