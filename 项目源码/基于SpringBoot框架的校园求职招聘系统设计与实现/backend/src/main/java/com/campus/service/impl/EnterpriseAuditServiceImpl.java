@@ -11,6 +11,7 @@ import com.campus.mapper.EnterpriseMapper;
 import com.campus.service.EnterpriseAuditService;
 import com.campus.service.EnterpriseVerificationService;
 import com.campus.service.EnterpriseVerificationService.VerificationResult;
+import com.campus.service.SystemNoticeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -30,6 +31,8 @@ public class EnterpriseAuditServiceImpl extends ServiceImpl<EnterpriseAuditMappe
     private EnterpriseMapper enterpriseMapper;
     @Autowired
     private EnterpriseVerificationService enterpriseVerificationService;
+    @Autowired
+    private SystemNoticeService systemNoticeService;
 
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -84,6 +87,11 @@ public class EnterpriseAuditServiceImpl extends ServiceImpl<EnterpriseAuditMappe
         update.setId(enterpriseId);
         update.setAuditStatus(autoPass ? 2 : 1);
         enterpriseMapper.updateById(update);
+        if (autoPass) {
+            systemNoticeService.send(enterpriseId, "ENTERPRISE", "企业认证已通过",
+                    "您的企业认证已通过系统自动核验，可正常开展招聘。",
+                    "AUDIT");
+        }
     }
 
     @Override

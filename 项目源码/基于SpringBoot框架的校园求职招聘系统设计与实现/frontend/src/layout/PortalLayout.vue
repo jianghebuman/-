@@ -69,8 +69,8 @@ import { useRouter } from 'vue-router'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { School, User, ArrowDown } from '@element-plus/icons-vue'
 import { useUserStore } from '@/store/user'
-import { chatApi, noticeApi } from '@/api'
 import { showLoginPrompt } from '@/utils/loginPrompt'
+import { refreshUnreadCounts } from '@/utils/unreadCounts'
 
 const router = useRouter()
 const userStore = useUserStore()
@@ -101,14 +101,8 @@ const handleNav = (path) => {
 }
 
 const refreshBadges = async () => {
-  if (!userStore.isLogin || userStore.role === 'ADMIN') {
-    userStore.setUnreadCounts(0, 0)
-    return
-  }
   try {
-    const [noticeRes, chatRes] = await Promise.all([noticeApi.unread(), chatApi.conversations()])
-    const chatTotal = (chatRes.data || []).reduce((sum, item) => sum + Number(item.unread || 0), 0)
-    userStore.setUnreadCounts(Number(noticeRes.data || 0), chatTotal)
+    await refreshUnreadCounts(userStore)
   } catch (e) {
     userStore.setUnreadCounts(0, 0)
   }

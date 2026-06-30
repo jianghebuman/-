@@ -27,9 +27,10 @@
 import { ref, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 import { Back, Clock, Location, Trophy } from '@element-plus/icons-vue'
-import { activityApi, noticeApi, publicApi } from '@/api'
+import { activityApi, publicApi } from '@/api'
 import { useUserStore } from '@/store/user'
 import { showLoginPrompt, showSignupSuccessPrompt } from '@/utils/loginPrompt'
+import { refreshUnreadCounts } from '@/utils/unreadCounts'
 
 const route = useRoute()
 const userStore = useUserStore()
@@ -52,8 +53,7 @@ const onSign = async () => {
   }
   const res = await activityApi.sign(2, fair.value.id)
   showSignupSuccessPrompt(`${res.message || '报名成功，请准时参加'}。时间：${formatDateTime(fair.value.fairTime) || '待定'}，地点：${fair.value.location || '待定'}。`)
-  const unreadRes = await noticeApi.unread()
-  userStore.setUnreadCounts(Number(unreadRes.data || 0), userStore.unreadChatCount)
+  await refreshUnreadCounts(userStore, { includeChat: false })
   load()
 }
 

@@ -10,6 +10,7 @@ import com.campus.entity.InterviewNotice;
 import com.campus.entity.OfferRecord;
 import com.campus.service.InterviewService;
 import com.campus.service.OfferService;
+import com.campus.service.SystemNoticeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -28,6 +29,9 @@ public class StudentProcessController {
 
     @Autowired
     private OfferService offerService;
+
+    @Autowired
+    private SystemNoticeService systemNoticeService;
 
     /** 我的面试通知分页 */
     @GetMapping("/interview")
@@ -58,6 +62,11 @@ public class StudentProcessController {
         update.setId(id);
         update.setStudentStatus(status);
         interviewService.updateById(update);
+        if (!status.equals(notice.getStudentStatus())) {
+            systemNoticeService.send(notice.getEnterpriseId(), "ENTERPRISE", "学生已确认面试",
+                    "学生已" + (status == 1 ? "确认参加" : "拒绝") + "面试通知，请及时跟进。",
+                    "INTERVIEW");
+        }
         return Result.success(status == 1 ? "已确认参加面试" : "已拒绝面试", null);
     }
 
@@ -89,6 +98,12 @@ public class StudentProcessController {
         update.setId(id);
         update.setOfferStatus(status);
         offerService.updateById(update);
+        if (!status.equals(offer.getOfferStatus())) {
+            String position = offer.getPosition() == null ? "相关岗位" : offer.getPosition();
+            systemNoticeService.send(offer.getEnterpriseId(), "ENTERPRISE", "学生已处理 Offer",
+                    "学生已" + (status == 1 ? "接受" : "拒绝") + "【" + position + "】的 Offer。",
+                    "OFFER");
+        }
         return Result.success(status == 1 ? "已接受Offer" : "已拒绝Offer", null);
     }
 }

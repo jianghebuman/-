@@ -12,6 +12,7 @@ import com.campus.entity.Student;
 import com.campus.mapper.ForumCommentMapper;
 import com.campus.mapper.ForumPostMapper;
 import com.campus.mapper.StudentMapper;
+import com.campus.service.SystemNoticeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -39,6 +40,9 @@ public class ForumController {
 
     @Autowired
     private StudentMapper studentMapper;
+
+    @Autowired
+    private SystemNoticeService systemNoticeService;
 
     /** 发帖：归属当前学生，作者名取学生真实姓名，审核状态默认 1（通过） */
     @PostMapping("/posts")
@@ -111,6 +115,11 @@ public class ForumController {
         update.setId(id);
         update.setCommentCount((post.getCommentCount() == null ? 0 : post.getCommentCount()) + 1);
         forumPostMapper.updateById(update);
+        if (!studentId.equals(post.getStudentId())) {
+            systemNoticeService.send(post.getStudentId(), "STUDENT", "帖子收到新评论",
+                    authorName + " 评论了您的帖子【" + post.getTitle() + "】。",
+                    "FORUM");
+        }
 
         return Result.success("评论成功", null);
     }

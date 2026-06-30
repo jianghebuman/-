@@ -99,6 +99,7 @@ import { ElMessage } from 'element-plus'
 import { Promotion, Star, OfficeBuilding, ChatLineRound } from '@element-plus/icons-vue'
 import { publicApi, studentApi } from '@/api'
 import { useUserStore } from '@/store/user'
+import { refreshUnreadCounts } from '@/utils/unreadCounts'
 
 const route = useRoute()
 const router = useRouter()
@@ -140,6 +141,8 @@ const confirmApply = async () => {
   try {
     await studentApi.apply({ jobId: job.value.id, resumeId: applyForm.resumeId, applyRemark: applyForm.applyRemark })
     ElMessage.success('投递成功，请在「投递记录」查看进度')
+    await refreshUnreadCounts(userStore, { includeChat: false }).catch(() => {})
+    job.value.applyCount = Number(job.value.applyCount || 0) + 1
     applyDialog.value = false
   } finally { applying.value = false }
 }

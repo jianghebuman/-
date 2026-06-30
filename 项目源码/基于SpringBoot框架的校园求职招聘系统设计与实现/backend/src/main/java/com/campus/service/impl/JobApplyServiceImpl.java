@@ -8,13 +8,12 @@ import com.campus.entity.Enterprise;
 import com.campus.entity.JobApply;
 import com.campus.entity.JobPost;
 import com.campus.entity.Resume;
-import com.campus.entity.SystemNotice;
 import com.campus.mapper.EnterpriseMapper;
 import com.campus.mapper.JobApplyMapper;
 import com.campus.mapper.JobPostMapper;
 import com.campus.mapper.ResumeMapper;
-import com.campus.mapper.SystemNoticeMapper;
 import com.campus.service.JobApplyService;
+import com.campus.service.SystemNoticeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -42,7 +41,7 @@ public class JobApplyServiceImpl extends ServiceImpl<JobApplyMapper, JobApply> i
     private ResumeMapper resumeMapper;
 
     @Autowired
-    private SystemNoticeMapper systemNoticeMapper;
+    private SystemNoticeService systemNoticeService;
 
     @Autowired
     private EnterpriseMapper enterpriseMapper;
@@ -85,15 +84,19 @@ public class JobApplyServiceImpl extends ServiceImpl<JobApplyMapper, JobApply> i
         update.setId(jobId);
         update.setApplyCount((job.getApplyCount() == null ? 0 : job.getApplyCount()) + 1);
         jobPostMapper.updateById(update);
-        // 6. 给企业发系统通知
-        SystemNotice notice = new SystemNotice();
-        notice.setReceiverId(job.getEnterpriseId());
-        notice.setReceiverType("ENTERPRISE");
-        notice.setTitle("收到新的简历投递");
-        notice.setContent("您发布的职位【" + job.getTitle() + "】收到了一份新的简历投递，请及时查看。");
-        notice.setNoticeType("APPLY");
-        notice.setIsRead(0);
-        systemNoticeMapper.insert(notice);
+        // 6. 给企业和学生发系统通知
+        systemNoticeService.send(
+                job.getEnterpriseId(),
+                "ENTERPRISE",
+                "收到新的简历投递",
+                "您发布的职位【" + job.getTitle() + "】收到了一份新的简历投递，请及时查看。",
+                "APPLY");
+        systemNoticeService.send(
+                studentId,
+                "STUDENT",
+                "投递成功",
+                "您已成功投递职位【" + job.getTitle() + "】，可在投递记录中查看进度。",
+                "APPLY");
     }
 
     @Override
@@ -168,5 +171,11 @@ public class JobApplyServiceImpl extends ServiceImpl<JobApplyMapper, JobApply> i
             update.setApplyCount(job.getApplyCount() - 1);
             jobPostMapper.updateById(update);
         }
+        systemNoticeService.send(
+                apply.getEnterpriseId(),
+                "ENTERPRISE",
+                "学生撤回投递",
+                "学生已撤回职位【" + (job == null ? apply.getJobId() : job.getTitle()) + "】的投递记录。",
+                "APPLY");
     }
 }

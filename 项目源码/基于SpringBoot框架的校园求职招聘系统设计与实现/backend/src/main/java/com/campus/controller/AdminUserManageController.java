@@ -11,6 +11,7 @@ import com.campus.entity.Student;
 import com.campus.service.EnterpriseService;
 import com.campus.service.OperationLogService;
 import com.campus.service.StudentService;
+import com.campus.service.SystemNoticeService;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.campus.mapper.EnterpriseAuditMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,6 +40,8 @@ public class AdminUserManageController {
     private BCryptPasswordEncoder passwordEncoder;
     @Autowired
     private OperationLogService operationLogService;
+    @Autowired
+    private SystemNoticeService systemNoticeService;
 
     // ==================== 学生管理 ====================
 
@@ -157,6 +160,12 @@ public class AdminUserManageController {
         enterpriseService.update(up);
         Enterprise enterprise = enterpriseService.getById(audit.getEnterpriseId());
         String companyName = enterprise == null ? String.valueOf(audit.getEnterpriseId()) : enterprise.getCompanyName();
+        systemNoticeService.send(audit.getEnterpriseId(), "ENTERPRISE",
+                status == 2 ? "企业认证审核通过" : "企业认证审核驳回",
+                status == 2
+                        ? "您的企业认证已审核通过，可正常开展招聘。"
+                        : "您的企业认证未通过审核。原因：" + (remark == null ? "请修改材料后重新提交。" : remark),
+                "AUDIT");
         operationLogService.record("OPERATION", "企业管理",
                 (status == 2 ? "审核通过企业认证：" : "驳回企业认证：") + companyName, 1);
         return Result.success(status == 2 ? "审核通过" : "已驳回", null);

@@ -10,13 +10,12 @@ import com.campus.entity.InterviewFeedback;
 import com.campus.entity.InterviewNotice;
 import com.campus.entity.JobApply;
 import com.campus.entity.JobPost;
-import com.campus.entity.SystemNotice;
 import com.campus.mapper.InterviewFeedbackMapper;
 import com.campus.mapper.InterviewNoticeMapper;
 import com.campus.mapper.JobApplyMapper;
 import com.campus.mapper.JobPostMapper;
-import com.campus.mapper.SystemNoticeMapper;
 import com.campus.service.InterviewService;
+import com.campus.service.SystemNoticeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -34,7 +33,7 @@ public class InterviewServiceImpl extends ServiceImpl<InterviewNoticeMapper, Int
     private JobApplyMapper jobApplyMapper;
 
     @Autowired
-    private SystemNoticeMapper systemNoticeMapper;
+    private SystemNoticeService systemNoticeService;
 
     @Autowired
     private InterviewFeedbackMapper interviewFeedbackMapper;
@@ -72,19 +71,9 @@ public class InterviewServiceImpl extends ServiceImpl<InterviewNoticeMapper, Int
         applyUpdate.setStatus(2);
         jobApplyMapper.updateById(applyUpdate);
         // 给学生发系统通知
-        String jobTitle = "";
-        JobPost job = jobPostMapper.selectById(apply.getJobId());
-        if (job != null) {
-            jobTitle = job.getTitle();
-        }
-        SystemNotice sn = new SystemNotice();
-        sn.setReceiverId(apply.getStudentId());
-        sn.setReceiverType("STUDENT");
-        sn.setTitle("面试邀请");
-        sn.setContent("您收到职位「" + jobTitle + "」的面试邀请，请及时确认。");
-        sn.setNoticeType("INTERVIEW");
-        sn.setIsRead(0);
-        systemNoticeMapper.insert(sn);
+        systemNoticeService.send(apply.getStudentId(), "STUDENT", "面试邀请",
+                "您收到职位「" + jobTitle(apply.getJobId()) + "」的面试邀请，请及时确认。",
+                "INTERVIEW");
         return notice.getId();
     }
 
@@ -112,6 +101,9 @@ public class InterviewServiceImpl extends ServiceImpl<InterviewNoticeMapper, Int
         notice.setStudentId(null);
         notice.setStudentStatus(null);
         this.updateById(notice);
+        systemNoticeService.send(db.getStudentId(), "STUDENT", "面试安排已更新",
+                "您职位「" + jobTitle(db.getJobId()) + "」的面试安排已更新，请及时查看。",
+                "INTERVIEW");
     }
 
     @Override
@@ -131,5 +123,13 @@ public class InterviewServiceImpl extends ServiceImpl<InterviewNoticeMapper, Int
         feedback.setIsPass(isPass);
         feedback.setInterviewer(interviewer);
         interviewFeedbackMapper.insert(feedback);
+        systemNoticeService.send(db.getStudentId(), "STUDENT", "面试评价已更新",
+                "您职位「" + jobTitle(db.getJobId()) + "」的面试评价已录入，请及时查看后续流程。",
+                "INTERVIEW");
+    }
+
+    private String jobTitle(Long jobId) {
+        JobPost job = jobPostMapper.selectById(jobId);
+        return job == null ? "" : job.getTitle();
     }
 }

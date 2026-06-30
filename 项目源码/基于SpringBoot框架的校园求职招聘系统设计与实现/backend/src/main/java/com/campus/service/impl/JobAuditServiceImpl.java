@@ -11,6 +11,7 @@ import com.campus.mapper.EnterpriseMapper;
 import com.campus.mapper.JobCategoryMapper;
 import com.campus.mapper.JobPostMapper;
 import com.campus.service.JobAuditService;
+import com.campus.service.SystemNoticeService;
 import com.campus.vo.JobAuditVO;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,6 +34,8 @@ public class JobAuditServiceImpl implements JobAuditService {
     private EnterpriseMapper enterpriseMapper;
     @Autowired
     private JobCategoryMapper jobCategoryMapper;
+    @Autowired
+    private SystemNoticeService systemNoticeService;
 
     @Override
     public PageResult<JobAuditVO> auditPage(Integer pageNum, Integer pageSize, Integer auditStatus, String title) {
@@ -82,6 +85,9 @@ public class JobAuditServiceImpl implements JobAuditService {
         update.setAuditStatus(1);
         update.setAuditRemark("");
         jobPostMapper.updateById(update);
+        systemNoticeService.send(db.getEnterpriseId(), "ENTERPRISE", "岗位审核通过",
+                "您发布的岗位【" + db.getTitle() + "】已审核通过，可以对外展示。",
+                "AUDIT");
     }
 
     @Override
@@ -95,6 +101,9 @@ public class JobAuditServiceImpl implements JobAuditService {
         update.setAuditStatus(2);
         update.setAuditRemark(auditRemark);
         jobPostMapper.updateById(update);
+        systemNoticeService.send(db.getEnterpriseId(), "ENTERPRISE", "岗位审核驳回",
+                "您发布的岗位【" + db.getTitle() + "】审核未通过。原因：" + (auditRemark == null ? "请修改后重新提交。" : auditRemark),
+                "AUDIT");
     }
 
     @Override
@@ -107,5 +116,8 @@ public class JobAuditServiceImpl implements JobAuditService {
         update.setId(jobId);
         update.setStatus(0);
         jobPostMapper.updateById(update);
+        systemNoticeService.send(db.getEnterpriseId(), "ENTERPRISE", "岗位已下架",
+                "您发布的岗位【" + db.getTitle() + "】已被管理员下架，请及时处理。",
+                "AUDIT");
     }
 }

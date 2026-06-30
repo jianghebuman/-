@@ -366,6 +366,7 @@ public class PublicController {
             return Result.error("留言内容不能为空");
         }
         MessageFeedback save = new MessageFeedback();
+        save.setUserId(feedback.getUserId());
         save.setUserName(feedback.getUserName());
         save.setContent(feedback.getContent());
         save.setContact(feedback.getContact());

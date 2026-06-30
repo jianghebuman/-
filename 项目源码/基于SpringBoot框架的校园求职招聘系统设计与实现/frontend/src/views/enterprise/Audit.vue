@@ -63,8 +63,11 @@
 import { reactive, ref, computed, onMounted } from 'vue'
 import { ElMessage } from 'element-plus'
 import { enterpriseApi } from '@/api'
+import { useUserStore } from '@/store/user'
+import { refreshUnreadCounts } from '@/utils/unreadCounts'
 
 const form = reactive({ licenseNo: '', licenseImg: '', extraImg: '' })
+const userStore = useUserStore()
 const latest = ref(null)
 const auditStatus = ref(0)
 const submitting = ref(false)
@@ -117,6 +120,7 @@ const submit = async () => {
   try {
     await enterpriseApi.submitAudit(form)
     ElMessage.success('认证申请已提交，系统将先进行权威数据核验')
+    await refreshUnreadCounts(userStore, { includeChat: false }).catch(() => {})
     load()
   } finally {
     submitting.value = false

@@ -9,7 +9,12 @@
         <template v-for="m in menus" :key="m.path">
           <el-menu-item :index="m.path">
             <el-icon><component :is="m.icon" /></el-icon>
-            <template #title>{{ m.title }}</template>
+            <template #title>
+              <span class="menu-title">
+                {{ m.title }}
+                <span v-if="isNoticeMenu(m) && unreadCount" class="menu-unread">{{ formatBadge(unreadCount) }}</span>
+              </span>
+            </template>
           </el-menu-item>
         </template>
       </el-menu>
@@ -50,11 +55,12 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
+import { ref, computed, onMounted, onBeforeUnmount, watch } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { ElMessageBox } from 'element-plus'
 import { School, Fold, Expand, User, ArrowDown } from '@element-plus/icons-vue'
 import { useUserStore } from '@/store/user'
+import { refreshUnreadCounts } from '@/utils/unreadCounts'
 
 defineProps({
   title: { type: String, default: '管理系统' },
@@ -69,6 +75,18 @@ const asideWidth = computed(() => (effectiveCollapse.value ? '64px' : 'clamp(196
 const userStore = useUserStore()
 const router = useRouter()
 const route = useRoute()
+const unreadCount = computed(() => Number(userStore.unreadNoticeCount || 0))
+let badgeTimer
+
+const isNoticeMenu = (menu) => menu.path?.endsWith('/notice')
+const formatBadge = (count) => Number(count) > 99 ? '99+' : Number(count)
+const refreshBadges = async () => {
+  try {
+    await refreshUnreadCounts(userStore)
+  } catch (e) {
+    userStore.setUnreadCounts(0, 0)
+  }
+}
 
 const onCmd = (cmd) => {
   if (cmd === 'logout') {
@@ -89,11 +107,15 @@ const updateWindowWidth = () => {
 
 onMounted(() => {
   window.addEventListener('resize', updateWindowWidth)
+  refreshBadges()
+  badgeTimer = window.setInterval(refreshBadges, 30000)
 })
 
 onBeforeUnmount(() => {
   window.removeEventListener('resize', updateWindowWidth)
+  window.clearInterval(badgeTimer)
 })
+watch(() => userStore.token, refreshBadges)
 </script>
 
 <style scoped lang="scss">
@@ -134,6 +156,21 @@ onBeforeUnmount(() => {
 :deep(.el-menu-item.is-active .el-icon) {
   background: rgba(255, 255, 255, 0.18);
   color: #fff;
+}
+.menu-title { min-width: 0; display: inline-flex; align-items: center; gap: 8px; }
+.menu-unread {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 16px;
+  height: 16px;
+  padding: 0 5px;
+  border-radius: 999px;
+  background: var(--cr-danger);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 1;
 }
 :deep(.el-menu--collapse .el-menu-item .el-icon) {
   margin-right: 0;
