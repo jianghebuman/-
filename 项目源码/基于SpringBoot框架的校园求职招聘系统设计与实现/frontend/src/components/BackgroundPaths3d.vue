@@ -152,4 +152,15 @@ const backPathsCount = computed(() => Math.ceil(paths.value.length / 2))
     animation: none;
   }
 }
+
+@media (max-width: 48rem) {
+  .background-paths-3d {
+    opacity: calc(var(--paths-3d-opacity, 0.58) * 0.58);
+  }
+
+  .background-paths-3d svg,
+  .background-paths-3d path {
+    animation: none;
+  }
+}
 </style>

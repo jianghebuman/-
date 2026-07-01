@@ -115,4 +115,10 @@ watch(
     display: none;
   }
 }
+
+@media (max-width: 48rem) {
+  .meteors-3d-field {
+    display: none;
+  }
+}
 </style>

@@ -1824,18 +1824,46 @@ onMounted(async () => {
 
 @media (max-width: 48rem) {
   .hero-shell {
-    padding: 1.25rem;
+    min-height: auto;
+    gap: .875rem;
+    padding: 1rem;
     border-radius: 1rem;
   }
 
+  .hero-shell::before {
+    inset: 1rem auto 1rem .875rem;
+    width: .1875rem;
+  }
+
+  .hero-copy {
+    padding-left: .625rem;
+  }
+
+  .hero-copy,
+  .hero-board,
+  .stats-strip,
+  .activity-marquee,
+  .section,
+  .info-grid {
+    animation: none;
+  }
+
   .hero-copy h1 {
-    font-size: clamp(2.25rem, 14vw, 3.75rem);
+    max-width: 18rem;
+    font-size: clamp(2.1rem, 10vw, 2.75rem);
+    line-height: 1.08;
+  }
+
+  .hero-subtitle {
+    font-size: .95rem;
+    line-height: 1.75;
   }
 
   .hero-search {
-    grid-template-columns: minmax(0, 1fr) minmax(5.25rem, auto);
+    grid-template-columns: minmax(0, 1fr) minmax(6.5rem, auto);
     gap: .625rem;
     padding: .5rem;
+    backdrop-filter: none;
   }
 
   .keyword-input {
@@ -1851,51 +1879,117 @@ onMounted(async () => {
   .search-button {
     grid-column: 2;
     order: 2;
-    min-inline-size: 5.25rem;
+    width: 100%;
+    min-inline-size: 6.5rem;
     padding-inline: .75rem;
   }
 
+  .hero-dock {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    width: 100%;
+  }
+
+  .hero-dock .cr-dock-button {
+    width: 100%;
+    min-width: 0;
+  }
+
   .hero-board {
-    min-height: 21rem;
+    min-height: 0;
+    align-self: auto;
+    display: block;
+    perspective: none;
   }
 
   .board-grid {
-    inset: 1rem;
+    display: none;
   }
 
-  .board-card-main {
-    top: 1.25rem;
-    width: 88%;
-  }
-
-  .board-card-side {
-    bottom: 2.75rem;
-    width: 80%;
-  }
-
-  .board-card-mini {
-    right: .5rem;
-    width: 13.75rem;
-    padding: .875rem;
-    gap: .7rem;
+  .showcase-panel {
+    width: 100%;
+    min-height: 0;
+    display: grid;
+    gap: .75rem;
+    padding: .75rem;
+    overflow: hidden;
+    transform-style: flat;
+    backdrop-filter: none;
   }
 
   .showcase-background {
-    inset: .75rem;
+    position: relative;
+    inset: auto;
+    min-height: 5.75rem;
+    transform: none;
+  }
+
+  .showcase-background::after,
+  .showcase-flow-lines,
+  .showcase-noise-texture,
+  .hero-meteors-3d,
+  .showcase-meteors-3d,
+  .mini-meteors,
+  .hero-rays {
+    display: none;
+  }
+
+  .hero-aurora {
+    opacity: .16;
+  }
+
+  .hero-aurora::before,
+  .hero-aurora::after {
+    animation: none;
+    filter: blur(.65rem);
+  }
+
+  .hero-paths-3d,
+  .showcase-paths-3d {
+    opacity: .16;
   }
 
   .showcase-depth-grid {
-    inset: 4.5rem .75rem .75rem 3.5rem;
+    display: none;
   }
 
   .showcase-badge {
     top: .75rem;
     right: .75rem;
-    min-width: 10.75rem;
-    width: 42%;
-    min-height: 3.75rem;
-    padding: .7rem .8rem .7rem .95rem;
-    gap: .55rem;
+    left: .75rem;
+    width: auto;
+    min-width: 0;
+    min-height: 4.25rem;
+    padding: .75rem .875rem;
+    gap: .6rem;
+    backdrop-filter: none;
+  }
+
+  .board-card,
+  .board-card-main,
+  .board-card-side,
+  .board-card-mini {
+    position: relative;
+    inset: auto;
+    width: 100%;
+    transform: none;
+    backdrop-filter: none;
+  }
+
+  .board-card-main,
+  .board-card-side,
+  .board-card-mini {
+    padding: .875rem;
+  }
+
+  .salary-range {
+    margin-top: .75rem;
+    font-size: 1.25rem;
+  }
+
+  .mini-card-summary {
+    max-width: none;
+    font-size: .75rem;
   }
 
   .showcase-badge span {
@@ -1910,20 +2004,18 @@ onMounted(async () => {
     font-size: 1.15rem;
   }
 
-  .mini-card-summary {
-    font-size: .75rem;
-  }
-
   .flow-step {
-    grid-template-columns: 2rem minmax(0, 1fr);
-    min-height: 2.55rem;
-    gap: .55rem;
-    padding: .55rem .6rem .55rem .35rem;
+    grid-template-columns: 1fr;
+    justify-items: center;
+    min-height: 5rem;
+    gap: .35rem;
+    padding: .55rem .35rem;
+    text-align: center;
   }
 
   .step-index {
-    width: 1.95rem;
-    height: 1.95rem;
+    width: 1.8rem;
+    height: 1.8rem;
   }
 
   .step-copy b {
@@ -1934,11 +2026,36 @@ onMounted(async () => {
     font-size: .6875rem;
   }
 
-  .stats-strip,
+  .flow-steps {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: .45rem;
+  }
+
+  .flow-steps::before {
+    display: none;
+  }
+
   .magic-bento,
   .activity-marquee,
   .info-grid {
     grid-template-columns: 1fr;
+  }
+
+  .stats-strip {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .stat-item {
+    border-right: 1px solid var(--cr-border-soft);
+    border-bottom: 1px solid var(--cr-border-soft);
+  }
+
+  .stat-item:nth-child(2n) {
+    border-right: 0;
+  }
+
+  .stat-item:nth-last-child(-n + 2) {
+    border-bottom: 0;
   }
 
   .bento-card {
@@ -1951,35 +2068,79 @@ onMounted(async () => {
 
   .marquee-viewport {
     margin-inline: -.25rem;
+    overflow-x: auto;
+    -webkit-mask-image: none;
+    mask-image: none;
+    scrollbar-width: none;
+  }
+
+  .marquee-viewport::-webkit-scrollbar {
+    display: none;
+  }
+
+  .marquee-track {
+    width: max-content;
+  }
+
+  .marquee-group {
+    animation: none;
+  }
+
+  .marquee-group[aria-hidden="true"] {
+    display: none;
   }
 
   .marquee-chip {
     width: clamp(14rem, 70vw, 20rem);
   }
 
-  .stat-item {
-    border-right: 0;
-    border-bottom: 1px solid var(--cr-border-soft);
-  }
-
-  .stat-item:last-child {
-    border-bottom: 0;
-  }
-
   .section-heading.with-link {
     align-items: flex-start;
   }
 
+  .text-animate-word,
+  .text-animate-line,
+  .text-animate-on-view {
+    opacity: 1;
+    transform: none;
+    filter: none;
+    animation: none;
+    will-change: auto;
+  }
+
+  .animated-gradient-text,
+  .animated-gradient-text.text-animate-word,
+  .text-highlighter::after,
+  .hero-search::before,
+  .board-card-main::before,
+  .job-card::before,
+  .showcase-flow-lines {
+    animation: none;
+  }
 }
 
-@media (max-width: 30rem) {
+@media (max-width: 22rem) {
+  .hero-search {
+    grid-template-columns: 1fr;
+  }
+
+  .keyword-input,
+  .city-select,
+  .search-button {
+    grid-column: 1;
+  }
+
+  .search-button {
+    order: 3;
+    min-inline-size: 0;
+  }
+
   .hero-actions :deep(.el-button) {
     flex: 1 1 100%;
   }
 
-  .hero-dock,
-  .hero-dock .cr-dock-button {
-    width: 100%;
+  .hero-dock {
+    grid-template-columns: 1fr;
   }
 }
 
