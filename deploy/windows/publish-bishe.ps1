@@ -13,21 +13,27 @@ $BackendDir = Get-ChildItem -Path $Repo -Recurse -Directory -Filter 'backend' |
 $FrontendDir = Get-ChildItem -Path $Repo -Recurse -Directory -Filter 'frontend' |
   Where-Object { Test-Path (Join-Path $_.FullName 'package.json') } |
   Select-Object -First 1
-$DbFile = Get-ChildItem -Path $Repo -Recurse -File -Filter 'update-data.sql' |
-  Where-Object { $_.FullName -notmatch '\\(target|node_modules|dist)\\' } |
+$DbScript = Get-ChildItem -Path $Repo -Directory |
+  ForEach-Object { Join-Path $_.FullName 'update-data.sql' } |
+  Where-Object { Test-Path $_ } |
   Select-Object -First 1
 
 if ($null -eq $BackendDir) { throw "Backend directory with pom.xml was not found under: $Repo" }
 if ($null -eq $FrontendDir) { throw "Frontend directory with package.json was not found under: $Repo" }
-if ($null -eq $DbFile) { throw "Database update script was not found under: $Repo" }
+if (!$DbScript) { throw "Database update script was not found in first-level repo directories: $Repo" }
 
 $Backend = $BackendDir.FullName
 $Frontend = $FrontendDir.FullName
 $Src = Split-Path $Backend -Parent
-$DbScript = $DbFile.FullName
 $UploadDir = Join-Path $Src 'upload'
 $ReleaseRoot = Join-Path $Repo 'deploy\releases'
 $Stage = Join-Path $ReleaseRoot '_stage'
+
+$ForbiddenSql = Select-String -LiteralPath $DbScript -Pattern 'DELIMITER|PROCEDURE|CALL\s+add_column_if_missing|CALL\s+add_index_if_missing' -CaseSensitive:$false
+if ($ForbiddenSql) {
+  $hit = $ForbiddenSql | Select-Object -First 1
+  throw "update-data.sql contains procedure-based migration syntax at line $($hit.LineNumber). Use procedure-free MariaDB-compatible SQL."
+}
 
 function Invoke-Step {
   param(

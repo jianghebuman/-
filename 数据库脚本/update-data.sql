@@ -13,50 +13,6 @@ WHERE `perm_code` = 'admin:banner'
 
 DROP TABLE IF EXISTS `banner`;
 
-DELIMITER $$
-DROP PROCEDURE IF EXISTS add_column_if_missing$$
-CREATE PROCEDURE add_column_if_missing(
-  IN p_table_name varchar(64),
-  IN p_column_name varchar(64),
-  IN p_ddl text
-)
-BEGIN
-  IF NOT EXISTS (
-    SELECT 1
-    FROM INFORMATION_SCHEMA.COLUMNS
-    WHERE TABLE_SCHEMA = DATABASE()
-      AND TABLE_NAME = p_table_name
-      AND COLUMN_NAME = p_column_name
-  ) THEN
-    SET @ddl = p_ddl;
-    PREPARE stmt FROM @ddl;
-    EXECUTE stmt;
-    DEALLOCATE PREPARE stmt;
-  END IF;
-END$$
-
-DROP PROCEDURE IF EXISTS add_index_if_missing$$
-CREATE PROCEDURE add_index_if_missing(
-  IN p_table_name varchar(64),
-  IN p_index_name varchar(64),
-  IN p_ddl text
-)
-BEGIN
-  IF NOT EXISTS (
-    SELECT 1
-    FROM INFORMATION_SCHEMA.STATISTICS
-    WHERE TABLE_SCHEMA = DATABASE()
-      AND TABLE_NAME = p_table_name
-      AND INDEX_NAME = p_index_name
-  ) THEN
-    SET @ddl = p_ddl;
-    PREPARE stmt FROM @ddl;
-    EXECUTE stmt;
-    DEALLOCATE PREPARE stmt;
-  END IF;
-END$$
-DELIMITER ;
-
 CREATE TABLE IF NOT EXISTS `school` (
   `id`          bigint      NOT NULL AUTO_INCREMENT COMMENT '主键',
   `name`        varchar(80) NOT NULL COMMENT '学校名称',
@@ -69,13 +25,10 @@ CREATE TABLE IF NOT EXISTS `school` (
   UNIQUE KEY `uk_school_name` (`name`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='学校基础数据表';
 
-CALL add_column_if_missing(
-  'student',
-  'school',
-  'ALTER TABLE `student` ADD COLUMN `school` varchar(80) DEFAULT NULL COMMENT ''学校'' AFTER `real_name`'
-);
+ALTER TABLE `student`
+  ADD COLUMN IF NOT EXISTS `school` varchar(80) DEFAULT NULL COMMENT '学校' AFTER `real_name`;
 
-CALL add_index_if_missing('student', 'idx_student_school', 'CREATE INDEX `idx_student_school` ON `student` (`school`)');
+CREATE INDEX IF NOT EXISTS `idx_student_school` ON `student` (`school`);
 
 INSERT INTO `school` (`id`,`name`,`sort`,`status`) VALUES
 (1,'江南应用科技大学',1,1),
@@ -113,11 +66,7 @@ ALTER TABLE `student`
   MODIFY COLUMN `school` varchar(80) NOT NULL COMMENT '学校',
   MODIFY COLUMN `student_no` varchar(30) NOT NULL COMMENT '学号';
 
-CALL add_index_if_missing(
-  'student',
-  'uk_student_school_no',
-  'CREATE UNIQUE INDEX `uk_student_school_no` ON `student` (`school`,`student_no`)'
-);
+CREATE UNIQUE INDEX IF NOT EXISTS `uk_student_school_no` ON `student` (`school`,`student_no`);
 
 
 -- Enterprise HR account model and HR-scoped recruitment records.
@@ -145,22 +94,28 @@ ALTER TABLE `enterprise`
   MODIFY `username` varchar(50) DEFAULT NULL COMMENT '旧企业登录账号(兼容迁移)',
   MODIFY `password` varchar(100) DEFAULT NULL COMMENT '旧企业密码(兼容迁移)';
 
-CALL add_column_if_missing('job_post', 'hr_id', 'ALTER TABLE `job_post` ADD COLUMN `hr_id` bigint DEFAULT NULL COMMENT ''负责HR账号ID'' AFTER `enterprise_id`');
-CALL add_index_if_missing('job_post', 'idx_job_hr', 'CREATE INDEX `idx_job_hr` ON `job_post` (`hr_id`)');
+ALTER TABLE `job_post`
+  ADD COLUMN IF NOT EXISTS `hr_id` bigint DEFAULT NULL COMMENT '负责HR账号ID' AFTER `enterprise_id`;
+CREATE INDEX IF NOT EXISTS `idx_job_hr` ON `job_post` (`hr_id`);
 
-CALL add_column_if_missing('job_apply', 'hr_id', 'ALTER TABLE `job_apply` ADD COLUMN `hr_id` bigint DEFAULT NULL COMMENT ''负责HR账号ID'' AFTER `enterprise_id`');
-CALL add_index_if_missing('job_apply', 'idx_apply_hr', 'CREATE INDEX `idx_apply_hr` ON `job_apply` (`hr_id`)');
+ALTER TABLE `job_apply`
+  ADD COLUMN IF NOT EXISTS `hr_id` bigint DEFAULT NULL COMMENT '负责HR账号ID' AFTER `enterprise_id`;
+CREATE INDEX IF NOT EXISTS `idx_apply_hr` ON `job_apply` (`hr_id`);
 
-CALL add_column_if_missing('interview_notice', 'hr_id', 'ALTER TABLE `interview_notice` ADD COLUMN `hr_id` bigint DEFAULT NULL COMMENT ''负责HR账号ID'' AFTER `enterprise_id`');
-CALL add_index_if_missing('interview_notice', 'idx_notice_hr', 'CREATE INDEX `idx_notice_hr` ON `interview_notice` (`hr_id`)');
+ALTER TABLE `interview_notice`
+  ADD COLUMN IF NOT EXISTS `hr_id` bigint DEFAULT NULL COMMENT '负责HR账号ID' AFTER `enterprise_id`;
+CREATE INDEX IF NOT EXISTS `idx_notice_hr` ON `interview_notice` (`hr_id`);
 
-CALL add_column_if_missing('interview_feedback', 'hr_id', 'ALTER TABLE `interview_feedback` ADD COLUMN `hr_id` bigint DEFAULT NULL COMMENT ''负责HR账号ID'' AFTER `enterprise_id`');
+ALTER TABLE `interview_feedback`
+  ADD COLUMN IF NOT EXISTS `hr_id` bigint DEFAULT NULL COMMENT '负责HR账号ID' AFTER `enterprise_id`;
 
-CALL add_column_if_missing('offer_record', 'hr_id', 'ALTER TABLE `offer_record` ADD COLUMN `hr_id` bigint DEFAULT NULL COMMENT ''负责HR账号ID'' AFTER `enterprise_id`');
-CALL add_index_if_missing('offer_record', 'idx_offer_hr', 'CREATE INDEX `idx_offer_hr` ON `offer_record` (`hr_id`)');
+ALTER TABLE `offer_record`
+  ADD COLUMN IF NOT EXISTS `hr_id` bigint DEFAULT NULL COMMENT '负责HR账号ID' AFTER `enterprise_id`;
+CREATE INDEX IF NOT EXISTS `idx_offer_hr` ON `offer_record` (`hr_id`);
 
-CALL add_column_if_missing('talent_pool', 'hr_id', 'ALTER TABLE `talent_pool` ADD COLUMN `hr_id` bigint DEFAULT NULL COMMENT ''负责HR账号ID'' AFTER `enterprise_id`');
-CALL add_index_if_missing('talent_pool', 'idx_talent_hr', 'CREATE INDEX `idx_talent_hr` ON `talent_pool` (`hr_id`)');
+ALTER TABLE `talent_pool`
+  ADD COLUMN IF NOT EXISTS `hr_id` bigint DEFAULT NULL COMMENT '负责HR账号ID' AFTER `enterprise_id`;
+CREATE INDEX IF NOT EXISTS `idx_talent_hr` ON `talent_pool` (`hr_id`);
 
 INSERT INTO `enterprise_hr` (`enterprise_id`,`username`,`password`,`real_name`,`phone`,`email`,`hr_role`,`status`)
 SELECT e.`id`, e.`username`, e.`password`, e.`contact_name`, e.`contact_phone`, e.`email`, 'SUPERVISOR', e.`status`
@@ -194,18 +149,16 @@ SET t.`hr_id` = hr.`id`
 WHERE t.`hr_id` IS NULL;
 
 -- Enterprise audit authority verification trace fields.
-CALL add_column_if_missing('enterprise_audit', 'verify_source', 'ALTER TABLE `enterprise_audit` ADD COLUMN `verify_source` varchar(120) DEFAULT NULL COMMENT ''权威核验来源'' AFTER `audit_time`');
-CALL add_column_if_missing('enterprise_audit', 'verify_source_url', 'ALTER TABLE `enterprise_audit` ADD COLUMN `verify_source_url` varchar(255) DEFAULT NULL COMMENT ''权威核验来源地址'' AFTER `verify_source`');
-CALL add_column_if_missing('enterprise_audit', 'verify_time', 'ALTER TABLE `enterprise_audit` ADD COLUMN `verify_time` datetime DEFAULT NULL COMMENT ''权威核验时间'' AFTER `verify_source_url`');
-CALL add_column_if_missing('enterprise_audit', 'verify_company_name', 'ALTER TABLE `enterprise_audit` ADD COLUMN `verify_company_name` varchar(120) DEFAULT NULL COMMENT ''权威来源企业名称'' AFTER `verify_time`');
-CALL add_column_if_missing('enterprise_audit', 'verify_credit_code', 'ALTER TABLE `enterprise_audit` ADD COLUMN `verify_credit_code` varchar(60) DEFAULT NULL COMMENT ''权威来源统一社会信用代码'' AFTER `verify_company_name`');
-CALL add_column_if_missing('enterprise_audit', 'verify_status', 'ALTER TABLE `enterprise_audit` ADD COLUMN `verify_status` varchar(60) DEFAULT NULL COMMENT ''权威来源登记状态'' AFTER `verify_credit_code`');
-CALL add_column_if_missing('enterprise_audit', 'verify_result', 'ALTER TABLE `enterprise_audit` ADD COLUMN `verify_result` tinyint NOT NULL DEFAULT 0 COMMENT ''核验结果：0未核验1一致2不一致3未接入或异常'' AFTER `verify_status`');
-CALL add_column_if_missing('enterprise_audit', 'verify_remark', 'ALTER TABLE `enterprise_audit` ADD COLUMN `verify_remark` varchar(255) DEFAULT NULL COMMENT ''核验说明'' AFTER `verify_result`');
-CALL add_column_if_missing('enterprise_audit', 'verify_snapshot_hash', 'ALTER TABLE `enterprise_audit` ADD COLUMN `verify_snapshot_hash` varchar(64) DEFAULT NULL COMMENT ''权威返回快照SHA256'' AFTER `verify_remark`');
-
-DROP PROCEDURE IF EXISTS add_column_if_missing;
-DROP PROCEDURE IF EXISTS add_index_if_missing;
+ALTER TABLE `enterprise_audit`
+  ADD COLUMN IF NOT EXISTS `verify_source` varchar(120) DEFAULT NULL COMMENT '权威核验来源' AFTER `audit_time`,
+  ADD COLUMN IF NOT EXISTS `verify_source_url` varchar(255) DEFAULT NULL COMMENT '权威核验来源地址' AFTER `verify_source`,
+  ADD COLUMN IF NOT EXISTS `verify_time` datetime DEFAULT NULL COMMENT '权威核验时间' AFTER `verify_source_url`,
+  ADD COLUMN IF NOT EXISTS `verify_company_name` varchar(120) DEFAULT NULL COMMENT '权威来源企业名称' AFTER `verify_time`,
+  ADD COLUMN IF NOT EXISTS `verify_credit_code` varchar(60) DEFAULT NULL COMMENT '权威来源统一社会信用代码' AFTER `verify_company_name`,
+  ADD COLUMN IF NOT EXISTS `verify_status` varchar(60) DEFAULT NULL COMMENT '权威来源登记状态' AFTER `verify_credit_code`,
+  ADD COLUMN IF NOT EXISTS `verify_result` tinyint NOT NULL DEFAULT 0 COMMENT '核验结果：0未核验1一致2不一致3未接入或异常' AFTER `verify_status`,
+  ADD COLUMN IF NOT EXISTS `verify_remark` varchar(255) DEFAULT NULL COMMENT '核验说明' AFTER `verify_result`,
+  ADD COLUMN IF NOT EXISTS `verify_snapshot_hash` varchar(64) DEFAULT NULL COMMENT '权威返回快照SHA256' AFTER `verify_remark`;
 
 -- New tables introduced after the original server-side seed snapshot.
 CREATE TABLE IF NOT EXISTS `job_seeker_post` (

@@ -54,6 +54,17 @@ unzip -q "$RELEASE" -d "$TMP"
 [ -f "$TMP/backend/campus-recruitment.jar" ] || { echo "Missing backend jar in release" >&2; exit 1; }
 [ -f "$TMP/frontend/dist/index.html" ] || { echo "Missing frontend dist in release" >&2; exit 1; }
 
+if [ "$RUN_DB" -eq 1 ] && [ ! -f "$TMP/database/update-data.sql" ]; then
+  echo "Missing database/update-data.sql in release" >&2
+  exit 1
+fi
+
+if [ "$RUN_DB" -eq 1 ] && grep -Eiq 'DELIMITER|PROCEDURE|CALL[[:space:]]+add_column_if_missing|CALL[[:space:]]+add_index_if_missing' "$TMP/database/update-data.sql"; then
+  echo "Refuse to run procedure-based update-data.sql on this MariaDB server." >&2
+  echo "Regenerate the release after removing stored procedures from 数据库脚本/update-data.sql." >&2
+  exit 1
+fi
+
 mkdir -p "$APP/backend" "$APP/frontend" "$APP/upload" "$APP/logs" "$APP/run" "$APP/backups"
 
 if [ "$RUN_DB" -eq 1 ]; then
