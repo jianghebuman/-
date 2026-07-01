@@ -30,7 +30,7 @@
         </el-menu>
         <div class="user-area">
           <template v-if="userStore.isLogin">
-            <el-dropdown trigger="click" popper-class="top-user-dropdown" @command="onCommand">
+            <el-dropdown trigger="click" placement="bottom-end" popper-class="top-user-dropdown" :popper-options="userDropdownPopperOptions" @command="onCommand">
               <button class="top-user-entry cr-border-beam-surface" type="button">
                 <span class="top-user-avatar-wrap">
                   <el-avatar :size="40" :src="userStore.avatar"><el-icon><User /></el-icon></el-avatar>
@@ -67,6 +67,11 @@
                     <span>个人中心</span>
                     <small>进入工作台</small>
                   </el-dropdown-item>
+                  <el-dropdown-item command="pwd" class="top-user-menu-item">
+                    <el-icon><Lock /></el-icon>
+                    <span>修改密码</span>
+                    <small>更新当前账号安全设置</small>
+                  </el-dropdown-item>
                   <el-dropdown-item command="logout" class="top-user-menu-item is-danger">
                     <el-icon><SwitchButton /></el-icon>
                     <span>退出登录</span>
@@ -99,7 +104,7 @@
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { ElMessage, ElMessageBox } from 'element-plus'
-import { School, User, ArrowDown, Bell, ChatLineRound, UserFilled, SwitchButton } from '@element-plus/icons-vue'
+import { School, User, ArrowDown, Bell, ChatLineRound, UserFilled, Lock, SwitchButton } from '@element-plus/icons-vue'
 import { useUserStore } from '@/store/user'
 import { showLoginPrompt } from '@/utils/loginPrompt'
 import { refreshUnreadCounts } from '@/utils/unreadCounts'
@@ -112,6 +117,15 @@ const unreadCount = computed(() => Number(userStore.unreadNoticeCount || 0))
 const chatUnreadCount = computed(() => Number(userStore.unreadChatCount || 0))
 const roleLabel = computed(() => ({ STUDENT: '学生用户', ENTERPRISE: '企业用户', ADMIN: '超级管理员' }[userStore.role] || '系统用户'))
 const canUsePortalMessages = computed(() => ['STUDENT', 'ENTERPRISE'].includes(userStore.role))
+const roleCenterPath = computed(() => ({ STUDENT: '/student', ENTERPRISE: '/enterprise', ADMIN: '/admin' }[userStore.role] || '/'))
+const passwordPath = computed(() => ({ STUDENT: '/student/password', ENTERPRISE: '/enterprise/password', ADMIN: '/admin/password' }[userStore.role] || '/login'))
+const userDropdownPopperOptions = {
+  modifiers: [
+    { name: 'offset', options: { offset: [18, 8] } },
+    { name: 'preventOverflow', options: { padding: { top: 8, right: 16, bottom: 8, left: 16 } } },
+    { name: 'flip', options: { padding: 16 } }
+  ]
+}
 const showFooter = computed(() => route.path === '/')
 const fitScreenPaths = new Set(['/jobs', '/enterprises', '/seekers', '/talks', '/fairs', '/news', '/forum', '/notice', '/chat'])
 const isFitScreenRoute = computed(() => fitScreenPaths.has(route.path))
@@ -172,9 +186,9 @@ const onCommand = (cmd) => {
       userStore.logout(); router.push('/login')
     }).catch(() => {})
   } else if (cmd === 'center') {
-    if (userStore.role === 'STUDENT') router.push('/student')
-    else if (userStore.role === 'ENTERPRISE') router.push('/enterprise')
-    else router.push('/admin')
+    router.push(roleCenterPath.value)
+  } else if (cmd === 'pwd') {
+    router.push(passwordPath.value)
   }
 }
 

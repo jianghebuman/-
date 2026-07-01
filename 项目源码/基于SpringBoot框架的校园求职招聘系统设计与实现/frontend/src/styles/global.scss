@@ -1050,10 +1050,11 @@ li {
       rgba(96, 165, 250, 0.94) 256deg,
       transparent 280deg,
       transparent 360deg
-    );
+  );
   appearance: none;
-  min-width: 0;
-  max-width: min(18rem, calc(100vw - 2rem));
+  width: clamp(11.25rem, 14vw, 12.5rem);
+  min-width: 11.25rem;
+  max-width: min(12.5rem, calc(100vw - 1.5rem));
   min-height: 3.5rem;
   padding: 0.375rem 0.5rem 0.375rem 0.375rem;
   display: inline-flex;
@@ -1179,7 +1180,7 @@ li {
 .top-user-copy {
   min-width: 0;
   display: grid;
-  flex: 1 1 auto;
+  flex: 1 1 0;
   align-content: center;
   gap: 0.1875rem;
   text-align: left;
@@ -1188,6 +1189,9 @@ li {
 .top-user-role {
   width: fit-content;
   max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
   min-height: 1.125rem;
   padding: 0 0.4375rem;
   display: inline-flex;
@@ -1202,7 +1206,8 @@ li {
 }
 
 .top-user-name {
-  max-width: clamp(5.5rem, 11vw, 10.75rem);
+  width: 100%;
+  max-width: 100%;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -1264,10 +1269,10 @@ li {
 
 .top-user-dropdown {
   --cr-beam-duration: 8.5s;
-  margin-right: 0.75rem !important;
-  width: min(22rem, calc(100vw - 1.5rem)) !important;
-  min-width: min(20rem, calc(100vw - 1.5rem)) !important;
-  max-width: calc(100vw - 1.5rem) !important;
+  margin-right: 0 !important;
+  width: clamp(19.5rem, 25vw, 21.25rem) !important;
+  min-width: min(19.5rem, calc(100vw - 2rem)) !important;
+  max-width: calc(100vw - 2rem) !important;
   border: 0.0625rem solid rgba(203, 216, 231, 0.76) !important;
   border-radius: var(--cr-radius) !important;
   background:

@@ -31,7 +31,7 @@
           </el-breadcrumb>
         </div>
         <div class="flex" style="align-items: center; gap: 16px;">
-          <el-dropdown trigger="click" popper-class="top-user-dropdown" @command="onCmd">
+          <el-dropdown trigger="click" placement="bottom-end" popper-class="top-user-dropdown" :popper-options="userDropdownPopperOptions" @command="onCmd">
             <button class="top-user-entry cr-border-beam-surface" type="button">
               <span class="top-user-avatar-wrap">
                 <el-avatar :size="40" :src="userStore.avatar"><el-icon><User /></el-icon></el-avatar>
@@ -102,6 +102,13 @@ const router = useRouter()
 const route = useRoute()
 const unreadCount = computed(() => Number(userStore.unreadNoticeCount || 0))
 const roleLabel = computed(() => ({ STUDENT: '学生用户', ENTERPRISE: '企业用户', ADMIN: '超级管理员' }[userStore.role] || '系统用户'))
+const userDropdownPopperOptions = {
+  modifiers: [
+    { name: 'offset', options: { offset: [18, 8] } },
+    { name: 'preventOverflow', options: { padding: { top: 8, right: 16, bottom: 8, left: 16 } } },
+    { name: 'flip', options: { padding: 16 } }
+  ]
+}
 let badgeTimer
 
 const isNoticeMenu = (menu) => menu.path?.endsWith('/notice')
