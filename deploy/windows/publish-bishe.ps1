@@ -56,24 +56,25 @@ function Invoke-CommandChecked {
   }
 }
 
-function Compress-ArchiveWithRetry {
+function Compress-DirectoryForLinux {
   param(
-    [string]$Path,
+    [string]$SourceDirectory,
     [string]$DestinationPath
   )
 
-  $lastError = $null
-  for ($i = 1; $i -le 5; $i++) {
-    try {
-      Compress-Archive -Path $Path -DestinationPath $DestinationPath -Force
-      return
-    } catch {
-      $lastError = $_
-      Start-Sleep -Seconds 2
-    }
-  }
+  Add-Type -AssemblyName System.IO.Compression
+  Add-Type -AssemblyName System.IO.Compression.FileSystem
 
-  throw $lastError
+  $source = (Resolve-Path -LiteralPath $SourceDirectory).Path
+  $zip = [System.IO.Compression.ZipFile]::Open($DestinationPath, [System.IO.Compression.ZipArchiveMode]::Create)
+  try {
+    Get-ChildItem -LiteralPath $source -Recurse -File | ForEach-Object {
+      $relative = $_.FullName.Substring($source.Length).TrimStart('\', '/') -replace '\\', '/'
+      [System.IO.Compression.ZipFileExtensions]::CreateEntryFromFile($zip, $_.FullName, $relative) | Out-Null
+    }
+  } finally {
+    $zip.Dispose()
+  }
 }
 
 $Commit = 'unknown'
@@ -143,7 +144,7 @@ Invoke-Step 'Create release package' {
   if (Test-Path $ZipPath) {
     Remove-Item -LiteralPath $ZipPath -Force
   }
-  Compress-ArchiveWithRetry -Path (Join-Path $Stage '*') -DestinationPath $ZipPath
+  Compress-DirectoryForLinux -SourceDirectory $Stage -DestinationPath $ZipPath
   Remove-Item -LiteralPath $Stage -Recurse -Force
 }
 
